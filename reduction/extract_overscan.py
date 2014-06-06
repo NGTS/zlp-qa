@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from multiprocessing.pool import ThreadPool as Pool
+import csv
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -29,14 +30,40 @@ def extract_from_file(fname):
         image = infile[0].read()
 
     mjd = header['mjd']
-    left = image[:, :20]
+    left = image[:, 1:20]
     right = image[:, -20:]
+
+    airmass = header['airmass']
+    chstemp = header['chstemp']
+    ccdtemp = header['ccdtemp']
+
 
     return {
             'mjd': mjd,
             'left': sigma_clipped_mean(left).astype(float),
             'right': sigma_clipped_mean(right).astype(float),
+            'airmass': airmass,
+            'ccdtemp': ccdtemp,
+            'chstemp': chstemp,
             }
+
+class NullPool(object):
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def map(self, fn, objects):
+        return map(fn, objects)
+
+def compute_limits(data, nsigma=3, precomputed_median=None):
+    med = (precomputed_median if precomputed_median is not None
+            else np.median(data))
+
+    std = np.std(data)
+
+    ll = med - nsigma * std
+    ul = med + nsigma * std
+
+    return ll, ul
 
 def main(args):
     with open(args.filelist) as infile:
@@ -44,20 +71,15 @@ def main(args):
     logger.info("Analysing {0} files".format(len(files)))
 
     pool = Pool()
-    data = pd.DataFrame(pool.map(extract_from_file, files)).sort('mjd')
+    data = pool.map(extract_from_file, files)
 
-    mjd0 = int(data.mjd.min())
-    data['mjd'] = data['mjd'] - mjd0
+    with open(args.output, 'w') as outfile:
+        writer = csv.DictWriter(outfile, fieldnames=data[0].keys())
+        writer.writeheader()
 
-    fig, axes = plt.subplots(figsize=(11, 8))
-    axes.plot(data.mjd, data.left, 'r.', label='left')
-    axes.plot(data.mjd, data.right, 'g.', label='right')
+        for row in data:
+            writer.writerow(row)
 
-    axes.set_xlabel(r'MJD - {}'.format(mjd0))
-    axes.set_ylabel(r'Overscan level / counts')
-
-    fig.tight_layout()
-    fig.savefig(args.output, bbox_inches='tight')
 
 
 
