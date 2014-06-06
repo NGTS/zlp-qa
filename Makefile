@@ -1,6 +1,6 @@
 EXT := png
 PLOTSDIR := plots
-PLOTS := $(PLOTSDIR)/fluxvsrms.$(EXT) $(PLOTSDIR)/00-overscan-levels.$(EXT) $(PLOTSDIR)/01-dark-levels.$(EXT) $(PLOTSDIR)/02-dark-correlation.$(EXT)
+PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) $(PLOTSDIR)/00-overscan-levels.$(EXT) $(PLOTSDIR)/01-dark-levels.$(EXT) $(PLOTSDIR)/02-dark-correlation.$(EXT)
 GENEVA := $(HOME)/storage/Geneva/
 
 all: index.html
@@ -9,7 +9,7 @@ index.html: view/build_html.py $(PLOTS)
 	python $< -o $@
 
 # Plots
-$(PLOTSDIR)/fluxvsrms.$(EXT): photometry/flux_vs_rms.py data/pre-sysrem.fits data/post-sysrem.fits
+$(PLOTSDIR)/04-flux-vs-rms.$(EXT): photometry/flux_vs_rms.py data/pre-sysrem.fits data/post-sysrem.fits
 	python $< --pre-sysrem $(word 2,$^) --post-sysrem $(word 3,$^) -o $@
 
 $(PLOTSDIR)/00-overscan-levels.$(EXT): reduction/plot_overscan_levels.py data/extracted-bias-levels.csv

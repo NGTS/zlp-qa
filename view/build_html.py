@@ -41,7 +41,7 @@ class Document(object):
         return(result)
         
 def main(args):
-    files = glob.glob('plots/*.png')
+    files = sorted(glob.glob('plots/*.png'))
     d = Document()
 
     for filename in files:
