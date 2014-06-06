@@ -1,4 +1,4 @@
-EXT := pdf
+EXT := png
 PLOTSDIR := plots
 PLOTS := $(PLOTSDIR)/fluxvsrms.$(EXT) $(PLOTSDIR)/overscan-levels.$(EXT) $(PLOTSDIR)/dark-levels.$(EXT) $(PLOTSDIR)/dark-correlation.$(EXT)
 GENEVA := $(HOME)/storage/Geneva/
