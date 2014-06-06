@@ -1,9 +1,9 @@
 EXT := png
 PLOTSDIR := plots
-PLOTS := $(PLOTSDIR)/fluxvsrms.$(EXT) $(PLOTSDIR)/overscan-levels.$(EXT) $(PLOTSDIR)/dark-levels.$(EXT) $(PLOTSDIR)/dark-correlation.$(EXT)
+PLOTS := $(PLOTSDIR)/fluxvsrms.$(EXT) $(PLOTSDIR)/00-overscan-levels.$(EXT) $(PLOTSDIR)/01-dark-levels.$(EXT) $(PLOTSDIR)/02-dark-correlation.$(EXT)
 GENEVA := $(HOME)/storage/Geneva/
 
-all: $(PLOTS) index.html
+all: index.html
 
 index.html: view/build_html.py $(PLOTS)
 	python $< -o $@
@@ -12,13 +12,13 @@ index.html: view/build_html.py $(PLOTS)
 $(PLOTSDIR)/fluxvsrms.$(EXT): photometry/flux_vs_rms.py data/pre-sysrem.fits data/post-sysrem.fits
 	python $< --pre-sysrem $(word 2,$^) --post-sysrem $(word 3,$^) -o $@
 
-$(PLOTSDIR)/overscan-levels.$(EXT): reduction/plot_overscan_levels.py data/extracted-bias-levels.csv
+$(PLOTSDIR)/00-overscan-levels.$(EXT): reduction/plot_overscan_levels.py data/extracted-bias-levels.csv
 	python $< $(word 2,$^) -o $@
 
-$(PLOTSDIR)/dark-levels.$(EXT): reduction/plot_dark_current.py data/extracted-dark-current.csv
+$(PLOTSDIR)/01-dark-levels.$(EXT): reduction/plot_dark_current.py data/extracted-dark-current.csv
 	python $< $(word 2,$^) -o $@
 
-$(PLOTSDIR)/dark-correlation.$(EXT): reduction/plot_dark_current_correlation.py data/extracted-dark-current.csv
+$(PLOTSDIR)/02-dark-correlation.$(EXT): reduction/plot_dark_current_correlation.py data/extracted-dark-current.csv
 	python $< $(word 2,$^) -o $@
 
 

@@ -21,9 +21,10 @@ class Image(object):
 
     @property
     def title(self):
-        return (os.path.splitext(self.stub)[0]
+        return (' '.join(os.path.splitext(self.stub)[0]
                 .replace('_', ' ')
                 .replace('-', ' ')
+                .split()[1:])
                 .capitalize())
 
     def __str__(self):
