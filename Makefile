@@ -49,10 +49,8 @@ data/extracted-bias-levels.csv: reduction/extract_overscan.py data/bias-frames-l
 	python $< $(word 2,$^) -o $@
 
 # Viewing
-view: view-plots
-
-view-plots: $(PLOTS)
-	xv $(PLOTS) &
+view: index.html
+	firefox $<
 
 # clean
 
