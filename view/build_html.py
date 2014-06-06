@@ -4,6 +4,7 @@
 import os
 import glob
 import argparse
+from jinja2 import Template
 
 class Image(object):
     def __init__(self, fname):
@@ -12,12 +13,6 @@ class Image(object):
     @property
     def stub(self):
         return os.path.basename(self.fname)
-
-    def html(self, width=None, height=None):
-        return '<img src="{fname}" width="{width}" height="{height}" />'.format(
-                fname=self.fname,
-                width=width if width else '',
-                height=height if height else '')
 
     @property
     def title(self):
@@ -31,46 +26,29 @@ class Image(object):
         return '<Image "{}">'.format(self.stub)
 
 class Document(object):
-    def __init__(self, width=800, height=600):
-        self.width = width
-        self.height = height
-        self.outline = '''<html>
-<head>
-</head>
-<body>
-    <div id='images'>
-    {}
-    </div>
-</body>
-</html>'''
+    def __init__(self):
         self.images = []
+        self.template = Template(open("templates/index.html").read())
 
     def add_image(self, i):
         self.images.append({
             'title': i.title,
-            'tag': i.html(width=self.width, height=self.height),
+            'location': i.fname,
             })
 
-    def render(self, level=5):
-        h_level = 'h{}'.format(level)
-        out = []
-        for image in self.images:
-            out.append('''<{hlevel}>{title}</h5>{imgsrc}'''.format(
-                hlevel=h_level,
-                title=image['title'],
-                imgsrc=image['tag'],))
-        return self.outline.format('<br />'.join(out))
-
+    def render(self):
+        result = self.template.render(images=self.images)
+        return(result)
+        
 def main(args):
     files = glob.glob('plots/*.png')
-    d = Document(width=640, height=480)
+    d = Document()
 
     for filename in files:
         d.add_image(Image(filename))
 
-
     with open(args.output, 'w') as outfile:
-        outfile.write(d.render(level=3))
+        outfile.write(d.render())
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

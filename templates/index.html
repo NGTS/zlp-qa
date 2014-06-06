@@ -1,0 +1,14 @@
+<!doctype html5>
+<html
+<head>
+</head>
+<body>
+<div id="images">
+    {%- for image in images -%}
+    <h3>{{ image['title'] }}</h3>
+    <img src="{{ image['location'] }}" width="800px" />
+    <br />
+    {% endfor %}
+</div>
+</body>
+</html>
