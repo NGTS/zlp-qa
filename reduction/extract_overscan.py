@@ -12,7 +12,7 @@ from multiprocessing.pool import ThreadPool as Pool
 import csv
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 def sigma_clipped_mean(values, nsigma=3):
@@ -24,7 +24,7 @@ def sigma_clipped_mean(values, nsigma=3):
 
 
 def extract_from_file(fname):
-    logger.debug('Analysing {0}'.format(fname))
+    logger.info('Analysing {0}'.format(fname))
     with fitsio.FITS(fname) as infile:
         header = infile[0].read_header()
         image = infile[0].read()
