@@ -51,11 +51,12 @@ view-plots: $(PLOTS)
 
 
 # phony
-.PHONY: clean clean-plots
+.PHONY: clean clean-plots destroy
 
 clean-plots:
-	rm plots/* | true
+	rm plots/*.$(EXT) | true
 
-clean:
+destroy:
 	$(MAKE) clean-plots
+	rm extracted/*.fits extracted/*.txt extracted/*.csv | true
 
