@@ -46,3 +46,16 @@ view: view-plots
 
 view-plots: $(PLOTS)
 	xv $(PLOTS) &
+
+# clean
+
+
+# phony
+.PHONY: clean clean-plots
+
+clean-plots:
+	rm plots/* | true
+
+clean:
+	$(MAKE) clean-plots
+
