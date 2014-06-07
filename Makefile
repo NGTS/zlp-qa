@@ -49,6 +49,9 @@ data/extracted-dark-current.csv: reduction/extract_dark_current.py data/dark-fra
 data/extracted-bias-levels.csv: reduction/extract_overscan.py data/bias-frames-list.txt
 	python $< $(word 2,$^) -o $@
 
+data/input-catalogue.fits:
+	scp ngtshead.astro:/ngts/pipedev/InputCatalogue/output/SimonTest6/SimonTest6_dither_NG190335+491133/catfile.fits $@
+
 # Viewing
 view: index.html
 	firefox $<
