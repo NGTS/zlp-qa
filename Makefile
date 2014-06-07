@@ -1,3 +1,4 @@
+DATE := 2014/06/07
 EXT := png
 PLOTSDIR := plots
 PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
@@ -37,10 +38,10 @@ data/post-sysrem.fits:
 	cp /home/astro/phsnag/work/NGTS/ZLP/debugging-sysrem/output/working-output.fits $@
 
 data/bias-frames-list.txt: scripts/build_bias_list.sh
-	sh $< $@
+	sh $< $@ $(DATE)
 
 data/dark-frames-list.txt: scripts/build_dark_list.sh
-	sh $< $@
+	sh $< $@ $(DATE)
 
 data/extracted-dark-current.csv: reduction/extract_dark_current.py data/dark-frames-list.txt
 	python $< $(word 2,$^) -o $@
@@ -63,5 +64,5 @@ clean-plots:
 
 destroy:
 	$(MAKE) clean-plots
-	rm extracted/*.fits extracted/*.txt extracted/*.csv | true
+	rm data/*.fits data/*.txt data/*.csv | true
 
