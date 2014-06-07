@@ -4,3 +4,4 @@ plots/*
 !plots/.gitkeep
 index.html
 !templates/index.html
+*.jar

@@ -55,6 +55,12 @@ data/input-catalogue.fits:
 data/input-catalogue-match.fits: astrometry/match_with_2mass.py data/input-catalogue.fits astrometry/stilts.jar
 	python $< $(word 2,$^) -o $@
 
+data/2mass-reference.fits: astrometry/fetch_2mass.py data/input-catalogue.fits astrometry/stilts.jar
+	python $< $(word 2,$^) -o $@
+
+astrometry/stilts.jar:
+	cp /home/astro/phsnag/work//NGTS/ZLP/wcsfit-localfits/stilts.jar $@
+
 # Viewing
 view: index.html
 	firefox $<
