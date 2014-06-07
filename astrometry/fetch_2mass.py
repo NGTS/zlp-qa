@@ -68,7 +68,7 @@ def build_catalogue(input_filename, output_filename, sr):
 def main(args):
     logger.debug('Matching from {}'.format(args.catalogue))
     logger.debug('Rendering to output file {}'.format(args.output))
-    build_catalogue(args.catalogue, args.output, sr=0.05)
+    build_catalogue(args.catalogue, args.output, sr=1.5)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

@@ -5,7 +5,8 @@ PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
 	$(PLOTSDIR)/00-overscan-levels.$(EXT) \
 	$(PLOTSDIR)/01-dark-levels.$(EXT) \
 	$(PLOTSDIR)/02-dark-correlation.$(EXT) \
-	$(PLOTSDIR)/05-rms-vs-time.$(EXT)
+	$(PLOTSDIR)/05-rms-vs-time.$(EXT) \
+	$(PLOTSDIR)/06-match-with-2mass.$(EXT)
 
 GENEVA := $(HOME)/storage/Geneva/
 
@@ -30,6 +31,9 @@ $(PLOTSDIR)/01-dark-levels.$(EXT): reduction/plot_dark_current.py data/extracted
 $(PLOTSDIR)/02-dark-correlation.$(EXT): reduction/plot_dark_current_correlation.py data/extracted-dark-current.csv
 	python $< $(word 2,$^) -o $@
 
+$(PLOTSDIR)/06-match-with-2mass.$(EXT): astrometry/plot_2mass_match.py data/input-catalogue-match.fits
+	python $< $(word 2,$^) -o $@
+
 # Data
 data/pre-sysrem.fits:
 	ln -sv /home/astro/phsnag/work/NGTS/ZLP/debugging-sysrem/data/pipeline-output.fits $@
@@ -52,8 +56,8 @@ data/extracted-bias-levels.csv: reduction/extract_overscan.py data/bias-frames-l
 data/input-catalogue.fits:
 	scp ngtshead.astro:/ngts/pipedev/InputCatalogue/output/SimonTest6/SimonTest6_dither_NG190335+491133/catfile.fits $@
 
-data/input-catalogue-match.fits: astrometry/match_with_2mass.py data/input-catalogue.fits astrometry/stilts.jar
-	python $< $(word 2,$^) -o $@
+data/input-catalogue-match.fits: astrometry/match_with_2mass.py data/input-catalogue.fits data/2mass-reference.fits astrometry/stilts.jar
+	python $< --catalogue $(word 2,$^) --2mass $(word 3,$^) -o $@
 
 data/2mass-reference.fits: astrometry/fetch_2mass.py data/input-catalogue.fits astrometry/stilts.jar
 	python $< $(word 2,$^) -o $@
