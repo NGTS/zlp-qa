@@ -1,4 +1,4 @@
-DATE := 2014/06/07
+DATE := 2014/06/06
 EXT := png
 PLOTSDIR := plots
 PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
