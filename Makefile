@@ -52,6 +52,9 @@ data/extracted-bias-levels.csv: reduction/extract_overscan.py data/bias-frames-l
 data/input-catalogue.fits:
 	scp ngtshead.astro:/ngts/pipedev/InputCatalogue/output/SimonTest6/SimonTest6_dither_NG190335+491133/catfile.fits $@
 
+data/input-catalogue-match.fits: astrometry/match_with_2mass.py data/input-catalogue.fits astrometry/stilts.jar
+	python $< $(word 2,$^) -o $@
+
 # Viewing
 view: index.html
 	firefox $<
