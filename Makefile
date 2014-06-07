@@ -32,10 +32,10 @@ $(PLOTSDIR)/02-dark-correlation.$(EXT): reduction/plot_dark_current_correlation.
 
 # Data
 data/pre-sysrem.fits:
-	cp /home/astro/phsnag/work/NGTS/ZLP/debugging-sysrem/data/pipeline-output.fits $@
+	ln -sv /home/astro/phsnag/work/NGTS/ZLP/debugging-sysrem/data/pipeline-output.fits $@
 
 data/post-sysrem.fits:
-	cp /home/astro/phsnag/work/NGTS/ZLP/debugging-sysrem/output/working-output.fits $@
+	ln -sv /home/astro/phsnag/work/NGTS/ZLP/debugging-sysrem/output/working-output.fits $@
 
 data/bias-frames-list.txt: scripts/build_bias_list.sh
 	sh $< $@ $(DATE)
