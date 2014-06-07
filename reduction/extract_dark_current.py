@@ -69,7 +69,7 @@ def main(args):
         files = [line.strip('\n') for line in infile.readlines()]
     logger.info("Analysing {0} files".format(len(files)))
 
-    pool = Pool()
+    pool = NullPool()
     data = filter(None, pool.map(extract_from_file, files))
 
     with open(args.output, 'w') as outfile:
