@@ -81,4 +81,5 @@ clean-plots:
 destroy:
 	$(MAKE) clean-plots
 	rm data/*.fits data/*.txt data/*.csv | true
+	rm astrometry/stilts.jar | true
 
