@@ -13,33 +13,67 @@ import csv
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__file__)
 
-class Stilts(object):
-    stilts_file = os.path.join(os.path.dirname(__file__),
-            'stilts.jar')
-    service_url = 'http://wfaudata.roe.ac.uk/twomass-dsa/DirectCone?DSACAT=TWOMASS&DSATAB=twomass_psc&'
+class Catalogue(object):
+    def __init__(self, ra, dec, radius=3.0, max_objects=1E6):
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.ra = ra
+        self.dec = dec
+        self.radius = radius
+        self.max_objects = int(max_objects)
 
-    def __init__(self):
-        self.command = ['java', '-jar', self.stilts_file, ]
+        self.logger.info("Searching in a radius of {radius} degrees "
+                "around position ({ra},{dec})".format(
+                    radius=self.radius,
+                    ra=self.ra,
+                    dec=self.dec))
 
-    def build_command(self, *args, **kwargs):
-        cmd = self.command[:]
-        cmd.extend(args)
-        for key, value in kwargs.iteritems():
-            cmd.append('{}={}'.format(key, value))
+    def build(self, output_filename):
+        ra = str(self.ra)
+        dec = '+{}'.format(self.dec) if self.dec > 0 else '-{}'.format(self.dec)
 
-        cmd = map(str, cmd)
+        cmd = map(str, ['find2mass',
+            ra, dec,
+            '-m', self.max_objects,
+            '-rd', self.radius])
 
-        logger.debug('Running command: [{}]'.format(' '.join(cmd)))
+        self.logger.debug("Running command [{}]".format(' '.join(cmd)))
+        output = sp.check_output(cmd, stderr=sp.PIPE)
 
-        return cmd
+        with open(output_filename, 'w') as outfile:
+            keys = ['ra', 'dec', 'jmag']
+            writer = csv.DictWriter(outfile, fieldnames=keys)
+            writer.writeheader()
 
-    def run_command(self, *args, **kwargs):
-        sp.check_call(self.build_command(*args, **kwargs))
+            for line in output.split("\n"):
+                if line and '#' not in line:
+                    data = self.extract_all(line)
 
-    @classmethod
-    def run(cls, *args, **kwargs):
-        self = cls()
-        self.run_command(*args, **kwargs)
+                    writer.writerow(data)
+
+
+    @staticmethod
+    def _extract(line, beginning, end):
+        return line[beginning:end]
+
+    def extract_ra(self, line):
+        return float(self._extract(line, 0, 10))
+
+    def extract_dec(self, line):
+        return float(self._extract(line, 12, 21))
+
+    def extract_jmag(self, line):
+        return float(self._extract(line, 54, 60))
+
+    def extract_all(self, line):
+        ra = self.extract_ra(line)
+        dec = self.extract_dec(line)
+        jmag = self.extract_jmag(line)
+
+        return {'ra': ra,
+                'dec': dec,
+                'jmag': jmag,
+                }
+
 
 def build_catalogue(input_filename, output_filename, sr):
     with fitsio.FITS(input_filename) as infile:
@@ -49,20 +83,7 @@ def build_catalogue(input_filename, output_filename, sr):
     av_ra = np.average(ra)
     av_dec = np.average(dec)
 
-    with tempfile.NamedTemporaryFile(suffix='.csv') as tfile:
-        logger.debug("Using temporary catalogue {}".format(tfile.name))
-        writer = csv.DictWriter(tfile, fieldnames=['ra', 'dec'])
-        writer.writeheader()
-        writer.writerow({'ra': av_ra, 'dec': av_dec})
-
-        tfile.seek(0)
-
-        logger.debug("Querying position ({},{})".format(av_ra, av_dec))
-        Stilts.run('coneskymatch', 'in={}'.format(tfile.name), 
-                ra='ra', dec='dec', sr=sr,
-                ifmt='csv',
-                serviceurl=Stilts.service_url,
-                out=output_filename)
+    catalogue = Catalogue(av_ra, av_dec, max_objects=5).build(output_filename)
 
 
 def main(args):

@@ -10,6 +10,8 @@ PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
 
 GENEVA := $(HOME)/storage/Geneva/
 
+REFERENCE := data/2mass-reference.csv
+
 all: index.html
 
 index.html: view/build_html.py $(PLOTS)
@@ -56,10 +58,10 @@ data/extracted-bias-levels.csv: reduction/extract_overscan.py data/bias-frames-l
 data/input-catalogue.fits:
 	scp ngtshead.astro:/ngts/pipedev/InputCatalogue/output/SimonTest6/SimonTest6_dither_NG190335+491133/catfile.fits $@
 
-data/input-catalogue-match.fits: astrometry/match_with_2mass.py data/input-catalogue.fits data/2mass-reference.fits astrometry/stilts.jar
+data/input-catalogue-match.fits: astrometry/match_with_2mass.py data/input-catalogue.fits $(REFERENCE) astrometry/stilts.jar
 	python $< --catalogue $(word 2,$^) --2mass $(word 3,$^) -o $@
 
-data/2mass-reference.fits: astrometry/fetch_2mass.py data/input-catalogue.fits astrometry/stilts.jar
+$(REFERENCE): astrometry/fetch_2mass.py data/input-catalogue.fits astrometry/stilts.jar
 	python $< $(word 2,$^) -o $@
 
 astrometry/stilts.jar:
