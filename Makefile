@@ -16,7 +16,7 @@ REFERENCE := data/2mass-reference.csv
 all: index.html
 
 index.html: view/build_html.py $(PLOTS)
-	python $< -o $@
+	python $< -o $@ --extension $(EXT)
 
 # Plots
 $(PLOTSDIR)/04-flux-vs-rms.$(EXT): photometry/flux_vs_rms.py data/pre-sysrem.fits data/post-sysrem.fits
@@ -35,6 +35,9 @@ $(PLOTSDIR)/02-dark-correlation.$(EXT): reduction/plot_dark_current_correlation.
 	python $< $(word 2,$^) -o $@
 
 $(PLOTSDIR)/06-match-with-2mass.$(EXT): astrometry/plot_2mass_match.py data/input-catalogue-match.fits
+	python $< $(word 2,$^) -o $@
+
+$(PLOTSDIR)/07-separation-vs-magnitude.$(EXT): astrometry/plot_separation_vs_magnitude.py data/input-catalogue-match.fits
 	python $< $(word 2,$^) -o $@
 
 # Data

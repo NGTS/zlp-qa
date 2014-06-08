@@ -41,7 +41,7 @@ class Document(object):
         return(result)
         
 def main(args):
-    files = sorted(glob.glob('plots/*.png'))
+    files = sorted(glob.glob('plots/*.{}'.format(args.extension)))
     d = Document()
 
     for filename in files:
@@ -54,4 +54,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--output', help='Output', required=True,
             type=str)
+    parser.add_argument('--extension', help='File extension to use',
+            required=True, type=str)
     main(parser.parse_args())
