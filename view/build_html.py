@@ -36,8 +36,9 @@ class Document(object):
             'location': i.fname,
             })
 
-    def render(self):
-        result = self.template.render(images=self.images)
+    def render(self, width=800):
+        result = self.template.render(images=self.images,
+                                      width='{}px'.format(width))
         return(result)
         
 def main(args):

@@ -1,12 +1,25 @@
 <!doctype html5>
 <html
 <head>
+    <style>
+        body {
+            background-color: #4B7399;
+        }
+
+        div#images {
+            background-color: white;
+            padding: 20px 50px;
+            width: {{ width }};
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
 </head>
 <body>
 <div id="images">
     {%- for image in images -%}
     <h3>{{ image['title'] }}</h3>
-    <img src="{{ image['location'] }}" width="800px" />
+    <img src="{{ image['location'] }}" width="{{ width }}" />
     <br />
     {% endfor %}
 </div>
