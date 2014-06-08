@@ -62,7 +62,7 @@ data/dark-frames-list.txt: scripts/build_dark_list.sh
 	sh $< $@ $(DATE)
 
 data/science-images-list.txt: scripts/build_science_list.sh
-	sh $< $@ $(DATE)
+	sh $< $@
 
 data/extracted-dark-current.csv: reduction/extract_dark_current.py data/dark-frames-list.txt
 	python $< $(word 2,$^) -o $@
