@@ -17,7 +17,7 @@ REFERENCE := data/2mass-reference.csv
 
 all: index.html
 
-index.html: view/build_html.py $(PLOTS)
+index.html: view/build_html.py $(PLOTS) templates/index.html
 	python $< -o $@ --extension $(EXT)
 
 # Plots
