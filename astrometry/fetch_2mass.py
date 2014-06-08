@@ -75,7 +75,7 @@ class Catalogue(object):
                 }
 
 
-def build_catalogue(input_filename, output_filename, sr):
+def build_catalogue(input_filename, output_filename):
     with fitsio.FITS(input_filename) as infile:
         data = zip(*infile[1]['RA', 'DEC'].read())
 
@@ -83,13 +83,13 @@ def build_catalogue(input_filename, output_filename, sr):
     av_ra = np.average(ra)
     av_dec = np.average(dec)
 
-    catalogue = Catalogue(av_ra, av_dec, max_objects=5).build(output_filename)
+    catalogue = Catalogue(av_ra, av_dec).build(output_filename)
 
 
 def main(args):
     logger.debug('Matching from {}'.format(args.catalogue))
     logger.debug('Rendering to output file {}'.format(args.output))
-    build_catalogue(args.catalogue, args.output, sr=1.5)
+    build_catalogue(args.catalogue, args.output)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
