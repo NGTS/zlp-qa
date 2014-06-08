@@ -20,12 +20,26 @@ def compute_limits(data, nsigma=3, precomputed_median=None):
 
     return ll, ul
 
-def compute_binned(x, y, nbins):
-    binned, ledges, _ = stats.binned_statistic(x, y, statistic='median',
+def compute_binned(x, y, nbins, statistic='median'):
+    binned, ledges, _ = stats.binned_statistic(x, y, statistic=statistic,
             bins=nbins)
 
     binned = np.append(binned, binned[-1])
     return ledges, binned
+
+def compute_binned_errors(x, y, nbins):
+    std, ledges, _ = stats.binned_statistic(x, y, statistic='std',
+            bins=nbins)
+    count, _, _ = stats.binned_statistic(x, y, statistic='count',
+            bins=ledges)
+
+    error = std / np.sqrt(count)
+    error = np.append(error, error[-1])
+
+    return ledges, error
+
+def compute_bin_centres(ledges):
+    return ledges + np.diff(ledges)[0] / 2.
 
 def main(args):
     with fitsio.FITS(args.catalogue) as infile:
@@ -55,8 +69,12 @@ def main(args):
     x_axis.set_ylabel(r'X')
 
     ledges, x_binned = compute_binned(x, separations, nbins)
+    _, x_binned_error = compute_binned_errors(x, separations, ledges)
+    bin_centres = compute_bin_centres(ledges)
 
     for ax in [x_axis, x_zoomed]:
+        ax.errorbar(bin_centres[:-1], x_binned[:-1], x_binned_error[:-1],
+                color='r', ls='None')
         ax.plot(ledges, x_binned, color='r', drawstyle='steps-post')
 
     x_zoomed.set_ylim(*compute_limits(x_binned, nsigma=nsigma))
@@ -67,10 +85,18 @@ def main(args):
     y_axis.set_ylabel(r'y')
 
     ledges, y_binned = compute_binned(y, separations, nbins)
+    _, y_binned_error = compute_binned_errors(y, separations, ledges)
+
     for ax in [y_axis, y_zoomed]:
+        ax.errorbar(bin_centres[:-1], y_binned[:-1], x_binned_error[:-1],
+                color='r', ls='None')
         ax.plot(ledges, y_binned, color='r', drawstyle='steps-post')
+
     y_zoomed.set_ylim(*compute_limits(y_binned, nsigma=nsigma))
     y_zoomed.set_ylabel(r'y zoomed')
+
+    for ax in axes.flatten():
+        ax.grid(True)
 
     fig.tight_layout()
     fig.savefig(args.output, bbox_inches='tight')
