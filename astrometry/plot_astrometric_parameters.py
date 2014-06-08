@@ -32,15 +32,17 @@ def main(args):
     mjd0 = int(mjd.min())
     mjd -= mjd0
 
-    fig, axes = plt.subplots(5, 1, sharex=True, figsize=(11, 8))
+    fig, axes = plt.subplots(5, 1, sharex=True, figsize=(11, 11))
 
     axes[0].plot(mjd, e.cmd_ra, marker='.', ls='None', label='cmd')
     axes[0].plot(mjd, e.tel_ra, marker='.', ls='None', label='tel')
+    axes[0].plot(mjd, e.solved_ra, marker='.', ls='None', label='solved')
     axes[0].legend(loc='best')
     axes[0].set_ylabel(r'RA')
 
     axes[1].plot(mjd, e.cmd_dec, marker='.', ls='None', label='cmd')
     axes[1].plot(mjd, e.tel_dec, marker='.', ls='None', label='tel')
+    axes[1].plot(mjd, e.solved_dec, marker='.', ls='None', label='solved')
     axes[1].legend(loc='best')
     axes[1].set_ylabel(r'DEC')
 
