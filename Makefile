@@ -7,7 +7,8 @@ PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
 	$(PLOTSDIR)/02-dark-correlation.$(EXT) \
 	$(PLOTSDIR)/05-rms-vs-time.$(EXT) \
 	$(PLOTSDIR)/06-match-with-2mass.$(EXT) \
-	$(PLOTSDIR)/07-separation-vs-magnitude.$(EXT)
+	$(PLOTSDIR)/07-separation-vs-magnitude.$(EXT) \
+	$(PLOTSDIR)/08-separation-vs-position.$(EXT)
 
 GENEVA := $(HOME)/storage/Geneva/
 
@@ -38,6 +39,9 @@ $(PLOTSDIR)/06-match-with-2mass.$(EXT): astrometry/plot_2mass_match.py data/inpu
 	python $< $(word 2,$^) -o $@
 
 $(PLOTSDIR)/07-separation-vs-magnitude.$(EXT): astrometry/plot_separation_vs_magnitude.py data/input-catalogue-match.fits
+	python $< $(word 2,$^) -o $@
+
+$(PLOTSDIR)/08-separation-vs-position.$(EXT): astrometry/plot_separation_vs_position.py data/input-catalogue-match.fits
 	python $< $(word 2,$^) -o $@
 
 # Data
