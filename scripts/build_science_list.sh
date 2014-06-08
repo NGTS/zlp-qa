@@ -2,8 +2,16 @@
 
 set -eu
 
+find_files() {
+    find ${NGTS}/flat-field-optimisation/data -name 'proc*.fits'
+}
+
+limit() {
+    head -n 200
+}
+
 main() {
-    find ${NGTS}/ZLP/wcsfit-stacking-residuals/data -name 'proc*.fits' | tail -n 50 > $1
+    find_files | limit > $1
 }
 
 main "$@"
