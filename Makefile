@@ -8,7 +8,8 @@ PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
 	$(PLOTSDIR)/05-rms-vs-time.$(EXT) \
 	$(PLOTSDIR)/06-match-with-2mass.$(EXT) \
 	$(PLOTSDIR)/07-separation-vs-magnitude.$(EXT) \
-	$(PLOTSDIR)/08-separation-vs-position.$(EXT)
+	$(PLOTSDIR)/08-separation-vs-position.$(EXT) \
+	$(PLOTSDIR)/09-extracted-astrometric-parameters.$(EXT)
 
 GENEVA := $(HOME)/storage/Geneva/
 
@@ -44,6 +45,9 @@ $(PLOTSDIR)/07-separation-vs-magnitude.$(EXT): astrometry/plot_separation_vs_mag
 $(PLOTSDIR)/08-separation-vs-position.$(EXT): astrometry/plot_separation_vs_position.py data/input-catalogue-match.fits
 	python $< $(word 2,$^) -o $@
 
+$(PLOTSDIR)/09-extracted-astrometric-parameters.$(EXT): astrometry/plot_astrometric_parameters.py data/astrometric-extraction.csv
+	python $< $(word 2,$^) -o $@
+
 # Data
 data/pre-sysrem.fits:
 	ln -sv /home/astro/phsnag/work/NGTS/ZLP/debugging-sysrem/data/pipeline-output.fits $@
@@ -57,6 +61,9 @@ data/bias-frames-list.txt: scripts/build_bias_list.sh
 data/dark-frames-list.txt: scripts/build_dark_list.sh
 	sh $< $@ $(DATE)
 
+data/science-images-list.txt: scripts/build_science_list.sh
+	sh $< $@ $(DATE)
+
 data/extracted-dark-current.csv: reduction/extract_dark_current.py data/dark-frames-list.txt
 	python $< $(word 2,$^) -o $@
 
@@ -68,6 +75,9 @@ data/input-catalogue.fits:
 
 data/input-catalogue-match.fits: astrometry/match_with_2mass.py data/input-catalogue.fits $(REFERENCE) astrometry/stilts.jar
 	python $< --catalogue $(word 2,$^) --2mass $(word 3,$^) -o $@
+
+data/astrometric-extraction.csv: astrometry/extract_wcs_parameters.py data/science-images-list.txt
+	python $< $(word 2,$^) -o $@
 
 $(REFERENCE): astrometry/fetch_2mass.py data/input-catalogue.fits astrometry/stilts.jar
 	python $< $(word 2,$^) -o $@
