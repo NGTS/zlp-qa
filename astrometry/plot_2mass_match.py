@@ -8,8 +8,6 @@ from astropy import units as u
 from astropy.coordinates import ICRS
 import matplotlib.pyplot as plt
 
-
-
 def main(args):
     with fitsio.FITS(args.catalogue) as infile:
         hdu = infile[1]

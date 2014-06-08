@@ -6,7 +6,8 @@ PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
 	$(PLOTSDIR)/01-dark-levels.$(EXT) \
 	$(PLOTSDIR)/02-dark-correlation.$(EXT) \
 	$(PLOTSDIR)/05-rms-vs-time.$(EXT) \
-	$(PLOTSDIR)/06-match-with-2mass.$(EXT)
+	$(PLOTSDIR)/06-match-with-2mass.$(EXT) \
+	$(PLOTSDIR)/07-separation-vs-magnitude.$(EXT)
 
 GENEVA := $(HOME)/storage/Geneva/
 
