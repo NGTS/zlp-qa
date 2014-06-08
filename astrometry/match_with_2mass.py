@@ -47,7 +47,9 @@ def match(input_catalogue, reference_catalogue, output_filename, error=10):
     ra2 = 'ra'
     dec2 = 'dec'
 
-    Stilts.run('tskymatch2', in1=in1, in2=in2, out=output_filename,
+    Stilts.run('tskymatch2', in1=in1, in2=in2,
+            out=output_filename,
+            ifmt2='csv',
             error=error, ra1=ra1, dec1=dec1, ra2=ra2, dec2=dec2)
 
 

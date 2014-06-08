@@ -12,14 +12,13 @@ import matplotlib.pyplot as plt
 
 def main(args):
     with fitsio.FITS(args.catalogue) as infile:
-        data = infile[1]['RA', 'ra_1', 'DEC', 'dec_1'][:]
         hdu = infile[1]
-        ra1 = hdu['RA'][:]
-        dec1 = hdu['DEC'][:]
+        ra1 = hdu['RA_1'][:]
+        dec1 = hdu['DEC_1'][:]
 
-        ra2 = hdu['ra_1'][:]
-        dec2 = hdu['dec_1'][:]
-        
+        ra2 = hdu['ra_2'][:]
+        dec2 = hdu['dec_2'][:]
+
 
     coords1 = ICRS(ra=ra1, dec=dec1, unit=(u.radian, u.radian))
     coords2 = ICRS(ra=ra2, dec=dec2, unit=(u.degree, u.degree))
