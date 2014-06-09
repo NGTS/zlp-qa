@@ -35,7 +35,7 @@ def main(args):
         itertools.product(centres, centres),
         axes.flatten())
 
-    margin = 64
+    margin = 128
     for (x_centre, y_centre), axis in zipped:
         ind = ((x >= x_centre - margin) & (x <= x_centre + margin) &
                (y >= y_centre - margin) & (y <= y_centre + margin))
