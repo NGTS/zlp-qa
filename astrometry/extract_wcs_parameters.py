@@ -36,7 +36,7 @@ class Extracted(object):
 
     def wcs_solution(self):
         file_wcs = wcs.WCS(self.header)
-        coordinates = file_wcs.all_pix2world([1024, ], [1024, ], 0)
+        coordinates = file_wcs.all_pix2world([1024, ], [1024, ], 1)
         solved_ra = coordinates[0][0]
         solved_dec = coordinates[1][0]
 
