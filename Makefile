@@ -14,6 +14,7 @@ PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
 	$(PLOTSDIR)/11-vector-matches.$(EXT) \
 	$(PLOTSDIR)/12-catalogue-misses.$(EXT)
 
+NSIGMA := 2
 
 GENEVA := $(HOME)/storage/Geneva/
 
@@ -104,12 +105,12 @@ data/solved-image.fits: data/science-images-list.txt
 
 data/catfile.fits: data/solved-image.fits
 	cd data && \
-		imcore $(notdir $<) noconf $(notdir $@) 2 7 && \
+		imcore $(notdir $<) noconf $(notdir $@) 2 $(NSIGMA) && \
 		wcsfit $(notdir $<) $(notdir $@) catcache --site cds
 
 data/catcache_catcache:
 	cd data && \
-		imcore $(notdir $<) noconf $(notdir $@) 2 7 && \
+		imcore $(notdir $<) noconf $(notdir $@) 2 $(NSIGMA) && \
 		wcsfit $(notdir $<) $(notdir $@) catcache --site cds
 
 
