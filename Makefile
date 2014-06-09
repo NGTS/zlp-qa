@@ -9,7 +9,9 @@ PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
 	$(PLOTSDIR)/06-match-with-2mass.$(EXT) \
 	$(PLOTSDIR)/07-separation-vs-magnitude.$(EXT) \
 	$(PLOTSDIR)/08-separation-vs-position.$(EXT) \
-	$(PLOTSDIR)/09-extracted-astrometric-parameters.$(EXT)
+	$(PLOTSDIR)/09-extracted-astrometric-parameters.$(EXT) \
+	$(PLOTSDIR)/10-match-region.$(EXT)
+
 
 GENEVA := $(HOME)/storage/Geneva/
 
@@ -47,6 +49,10 @@ $(PLOTSDIR)/08-separation-vs-position.$(EXT): astrometry/plot_separation_vs_posi
 
 $(PLOTSDIR)/09-extracted-astrometric-parameters.$(EXT): astrometry/plot_astrometric_parameters.py data/astrometric-extraction.csv
 	python $< $(word 2,$^) -o $@
+
+$(PLOTSDIR)/10-match-region.$(EXT): astrometry/plot_match_region.py data/input-catalogue-match.fits
+	python $< $(word 2,$^) -o $@
+
 
 # Data
 data/pre-sysrem.fits:
