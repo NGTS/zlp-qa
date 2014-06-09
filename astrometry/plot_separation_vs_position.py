@@ -9,6 +9,16 @@ from astropy.coordinates import ICRS
 import matplotlib.pyplot as plt
 from scipy import stats
 
+def link_y_limits(ax1, ax2):
+    ax1_y = ax1.get_ylim()
+    ax2_y = ax2.get_ylim()
+
+    ll = min(ax1_y[0], ax2_y[0])
+    ul = max(ax1_y[1], ax2_y[1])
+
+    for ax in [ax1, ax2]:
+        ax.set_ylim(ll, ul)
+
 def compute_limits(data, nsigma=3, precomputed_median=None):
     med = (precomputed_median if precomputed_median is not None
             else np.median(data))
@@ -94,6 +104,8 @@ def main(args):
 
     y_zoomed.set_ylim(*compute_limits(y_binned, nsigma=nsigma))
     y_zoomed.set_ylabel(r'y zoomed')
+
+    link_y_limits(x_zoomed, y_zoomed)
 
     for ax in axes.flatten():
         ax.grid(True)
