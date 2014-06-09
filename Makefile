@@ -11,7 +11,8 @@ PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
 	$(PLOTSDIR)/08-separation-vs-position.$(EXT) \
 	$(PLOTSDIR)/09-extracted-astrometric-parameters.$(EXT) \
 	$(PLOTSDIR)/10-match-region.$(EXT) \
-	$(PLOTSDIR)/11-vector-matches.$(EXT)
+	$(PLOTSDIR)/11-vector-matches.$(EXT) \
+	$(PLOTSDIR)/12-catalogue-misses.$(EXT)
 
 
 GENEVA := $(HOME)/storage/Geneva/
@@ -58,6 +59,8 @@ $(PLOTSDIR)/11-vector-matches.$(EXT): toml-qcplots/vector_plot.py data/catcache 
 	cd data && \
 		python ../$< catfile.fits solved-image.fits ../$@
 
+$(PLOTSDIR)/12-catalogue-misses.$(EXT): astrometry/plot_misses.py data/input-catalogue-match.fits data/input-catalogue.fits $(REFERENCE)
+	python $< --match $(word 2,$^) --extracted $(word 3,$^) --reference $(REFERENCE) --output $@
 
 # Data
 data/pre-sysrem.fits:
