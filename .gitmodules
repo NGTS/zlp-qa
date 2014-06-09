@@ -1,0 +1,3 @@
+[submodule "toml-qcplots"]
+	path = toml-qcplots
+	url = git@github.com:NGTS/QCplots.git
