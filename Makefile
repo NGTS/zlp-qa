@@ -10,7 +10,8 @@ PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
 	$(PLOTSDIR)/07-separation-vs-magnitude.$(EXT) \
 	$(PLOTSDIR)/08-separation-vs-position.$(EXT) \
 	$(PLOTSDIR)/09-extracted-astrometric-parameters.$(EXT) \
-	$(PLOTSDIR)/10-match-region.$(EXT)
+	$(PLOTSDIR)/10-match-region.$(EXT) \
+	$(PLOTSDIR)/11-vector-matches.$(EXT)
 
 
 GENEVA := $(HOME)/storage/Geneva/
@@ -53,6 +54,10 @@ $(PLOTSDIR)/09-extracted-astrometric-parameters.$(EXT): astrometry/plot_astromet
 $(PLOTSDIR)/10-match-region.$(EXT): astrometry/plot_match_region.py data/input-catalogue-match.fits
 	python $< $(word 2,$^) -o $@
 
+$(PLOTSDIR)/11-vector-matches.$(EXT): toml-qcplots/vector_plot.py data/catcache data/catfile.fits data/solved-image.fits
+	cd data && \
+		python ../$< catfile.fits solved-image.fits ../$@
+
 
 # Data
 data/pre-sysrem.fits:
@@ -90,6 +95,25 @@ $(REFERENCE): astrometry/fetch_2mass.py data/input-catalogue.fits astrometry/sti
 
 astrometry/stilts.jar:
 	cp /home/astro/phsnag/work//NGTS/ZLP/wcsfit-localfits/stilts.jar $@
+
+data/solved-image.fits: data/science-images-list.txt
+	cp $(shell head -n 1 $<) $@
+
+data/catfile.fits: data/solved-image.fits
+	cd data && \
+		imcore $(notdir $<) noconf $(notdir $@) 2 7 && \
+		wcsfit $(notdir $<) $(notdir $@) catcache --site cds
+
+data/catcache_catcache:
+	cd data && \
+		imcore $(notdir $<) noconf $(notdir $@) 2 7 && \
+		wcsfit $(notdir $<) $(notdir $@) catcache --site cds
+
+
+data/catcache: data/catcache_catcache
+	cd data && \
+		cp -r $(notdir $<) $(notdir $@)
+
 
 # Viewing
 view: index.html
