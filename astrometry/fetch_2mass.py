@@ -14,16 +14,16 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__file__)
 
 class Catalogue(object):
-    def __init__(self, ra, dec, radius=3.0, max_objects=1E6):
+    def __init__(self, ra, dec, box_width=3, max_objects=1E6):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.ra = ra
         self.dec = dec
-        self.radius = radius
+        self.box_width = box_width
         self.max_objects = int(max_objects)
 
-        self.logger.info("Searching in a radius of {radius} degrees "
+        self.logger.info("Searching in a box of {box_width} degrees "
                 "around position ({ra},{dec})".format(
-                    radius=self.radius,
+                    box_width=self.box_width,
                     ra=self.ra,
                     dec=self.dec))
 
@@ -34,13 +34,13 @@ class Catalogue(object):
         cmd = map(str, ['find2mass',
             ra, dec,
             '-m', self.max_objects,
-            '-rd', self.radius])
+            '-bd', self.box_width])
 
         self.logger.debug("Running command [{}]".format(' '.join(cmd)))
         output = sp.check_output(cmd, stderr=sp.PIPE)
 
         with open(output_filename, 'w') as outfile:
-            keys = ['ra', 'dec', 'jmag']
+            keys = ['ra', 'dec', 'jmag', 'name_2mass']
             writer = csv.DictWriter(outfile, fieldnames=keys)
             writer.writeheader()
 
@@ -63,15 +63,20 @@ class Catalogue(object):
 
     def extract_jmag(self, line):
         return float(self._extract(line, 54, 60))
+    
+    def extract_name(self, line):
+        return self._extract(line, 36, 52)
 
     def extract_all(self, line):
         ra = self.extract_ra(line)
         dec = self.extract_dec(line)
         jmag = self.extract_jmag(line)
+        name = self.extract_name(line)
 
         return {'ra': ra,
                 'dec': dec,
                 'jmag': jmag,
+                'name_2mass': name,
                 }
 
 
