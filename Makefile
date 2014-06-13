@@ -12,7 +12,8 @@ PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
 	$(PLOTSDIR)/09-extracted-astrometric-parameters.$(EXT) \
 	$(PLOTSDIR)/10-match-region.$(EXT) \
 	$(PLOTSDIR)/11-vector-matches.$(EXT) \
-	$(PLOTSDIR)/12-catalogue-misses.$(EXT)
+	$(PLOTSDIR)/12-catalogue-misses.$(EXT) \
+	$(PLOTSDIR)/13-sysrem-basis-functions.$(EXT)
 
 NSIGMA := 2
 
@@ -28,6 +29,9 @@ index.html: view/build_html.py $(PLOTS) templates/index.html
 # Plots
 $(PLOTSDIR)/04-flux-vs-rms.$(EXT): photometry/flux_vs_rms.py data/pre-sysrem.fits data/post-sysrem.fits
 	python $< --pre-sysrem $(word 2,$^) --post-sysrem $(word 3,$^) -o $@
+
+$(PLOTSDIR)/13-sysrem-basis-functions.$(EXT): photometry/plot_sysrem_basis_functions.py data/post-sysrem.fits
+	python $< $(word 2,$^) -o $@
 
 $(PLOTSDIR)/05-rms-vs-time.$(EXT): photometry/rms_vs_time.py data/pre-sysrem.fits data/post-sysrem.fits
 	python $< --pre-sysrem $(word 2,$^) --post-sysrem $(word 3,$^) -o $@
@@ -63,12 +67,13 @@ $(PLOTSDIR)/11-vector-matches.$(EXT): toml-qcplots/vector_plot.py data/catcache 
 $(PLOTSDIR)/12-catalogue-misses.$(EXT): astrometry/plot_misses.py data/input-catalogue-match.fits data/input-catalogue.fits $(REFERENCE)
 	python $< --match $(word 2,$^) --extracted $(word 3,$^) --reference $(REFERENCE) --output $@
 
+
 # Data
 data/pre-sysrem.fits:
-	ln -sv /home/astro/phsnag/work/NGTS/ZLP/debugging-sysrem/data/pipeline-output.fits $@
+	ln -sv /home/astro/phsnag/work/NGTS/pipeline/ZLP/debugging-sysrem/data/pipeline-output.fits $@
 
 data/post-sysrem.fits:
-	ln -sv /home/astro/phsnag/work/NGTS/ZLP/debugging-sysrem/output/working-output.fits $@
+	ln -sv /home/astro/phsnag/work/NGTS/pipeline/ZLP/debugging-sysrem/output/working-output.fits $@
 
 data/bias-frames-list.txt: scripts/build_bias_list.sh
 	sh $< $@ $(DATE)
