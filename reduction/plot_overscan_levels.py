@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from multiprocessing.pool import ThreadPool as Pool
+import sys
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -78,7 +79,11 @@ def main(args):
     axes[1].plot(data.mjd, data.left, 'r.', label='left')
     axes[1].plot(data.mjd, data.right, 'g.', label='right')
     axes[1].set_ylabel(r'Overscan level / counts')
-    axes[1].set_ylim(*compute_limits(data.right))
+
+    ll_left, ul_left = compute_limits(data.left)
+    ll_right, ul_right = compute_limits(data.right)
+    axes[1].set_ylim(min(ll_left, ll_right),
+                     max(ul_left, ul_right))
 
     axes[2].plot(data.mjd, data.chstemp, 'r.')
     axes[2].set_ylabel(r'Chassis temp')
@@ -96,7 +101,10 @@ def main(args):
         ax.grid(True)
 
     fig.tight_layout()
-    fig.savefig(args.output, bbox_inches='tight')
+    if args.output.strip() == '-':
+        fig.savefig(sys.stdout, bbox_inches='tight')
+    else:
+        fig.savefig(args.output, bbox_inches='tight')
 
 
 

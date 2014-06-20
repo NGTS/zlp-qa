@@ -8,6 +8,7 @@ from astropy import units as u
 from astropy.coordinates import ICRS
 import matplotlib.pyplot as plt
 from scipy import stats
+import sys
 
 def link_y_limits(ax1, ax2):
     ax1_y = ax1.get_ylim()
@@ -111,7 +112,11 @@ def main(args):
         ax.grid(True)
 
     fig.tight_layout()
-    fig.savefig(args.output, bbox_inches='tight')
+    if args.output.strip() == '-':
+        fig.savefig(sys.stdout, bbox_inches='tight')
+    else:
+        fig.savefig(args.output, bbox_inches='tight')
+
 
 
 

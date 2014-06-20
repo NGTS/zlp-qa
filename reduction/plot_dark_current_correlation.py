@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import argparse
 import numpy as np
+import sys
 
 from plot_overscan_levels import compute_limits
 
@@ -23,7 +24,10 @@ def main(args):
     axis.set_ylabel(r'Dark current / $\mathrm{e}^- s^{-1}$')
     
     fig.tight_layout()
-    fig.savefig(args.output, bbox_inches='tight')
+    if args.output.strip() == '-':
+        fig.savefig(sys.stdout, bbox_inches='tight')
+    else:
+        fig.savefig(args.output, bbox_inches='tight')
 
 
 if __name__ == '__main__':

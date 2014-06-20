@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import argparse
 from collections import namedtuple
 import logging
+import sys
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -58,7 +60,10 @@ def main(args):
     ax.set_ylim(1E-3, 10)
     fig.tight_layout()
 
-    fig.savefig(args.output, bbox_inches='tight')
+    if args.output.strip() == '-':
+        fig.savefig(sys.stdout, bbox_inches='tight')
+    else:
+        fig.savefig(args.output, bbox_inches='tight')
     
 
 if __name__ == '__main__':

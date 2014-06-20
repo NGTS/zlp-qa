@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from multiprocessing.pool import ThreadPool as Pool
+import sys
 
 from plot_overscan_levels import sigma_clipped_mean, NullPool, compute_limits
 
@@ -54,7 +55,10 @@ def main(args):
         ax.grid(True)
 
     fig.tight_layout()
-    fig.savefig(args.output, bbox_inches='tight')
+    if args.output.strip() == '-':
+        fig.savefig(sys.stdout, bbox_inches='tight')
+    else:
+        fig.savefig(args.output, bbox_inches='tight')
 
 
 

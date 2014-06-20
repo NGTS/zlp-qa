@@ -4,6 +4,7 @@
 from __future__ import division, print_function, absolute_import
 
 import fitsio
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import argparse
@@ -40,7 +41,11 @@ def main(args):
     axes[-1].set_xlabel(r'Frame')
 
     fig.tight_layout()
-    fig.savefig(args.output, bbox_inches='tight')
+
+    if args.output.strip() == '-':
+        fig.savefig(sys.stdout, bbox_inches='tight')
+    else:
+        fig.savefig(args.output, bbox_inches='tight')
 
 
 

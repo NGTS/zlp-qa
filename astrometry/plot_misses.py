@@ -8,6 +8,7 @@ import argparse
 import itertools
 from collections import namedtuple
 import csv
+import sys
 
 def missing_from_2mass(args):
     with fitsio.FITS(args.match) as infile:
@@ -84,7 +85,10 @@ def main(args):
         len(ngts_mag), len(mag_2mass)))
 
     fig.tight_layout()
-    fig.savefig(args.output, bbox_inches='tight')
+    if args.output.strip() == '-':
+        fig.savefig(sys.stdout, bbox_inches='tight')
+    else:
+        fig.savefig(args.output, bbox_inches='tight')
     
 
 if __name__ == '__main__':

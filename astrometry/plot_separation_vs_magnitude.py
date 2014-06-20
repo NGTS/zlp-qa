@@ -3,6 +3,7 @@
 
 import numpy as np
 import argparse
+import sys
 import fitsio
 from astropy import units as u
 from astropy.coordinates import ICRS
@@ -59,7 +60,11 @@ def main(args):
     axis.grid(True)
 
     fig.tight_layout()
-    fig.savefig(args.output, bbox_inches='tight')
+    if args.output.strip() == '-':
+        fig.savefig(sys.stdout, bbox_inches='tight')
+    else:
+        fig.savefig(args.output, bbox_inches='tight')
+
 
 
 

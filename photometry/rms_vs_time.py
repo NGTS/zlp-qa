@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+import sys
 import fitsio
 import numpy as np
 import matplotlib.pyplot as plt
@@ -77,7 +78,11 @@ def main(args):
     ax.set_ylim(*compute_limits(post.flux, nsigma=5))
 
     fig.tight_layout()
-    fig.savefig(args.output, bbox_inches='tight')
+
+    if args.output.strip() == '-':
+        fig.savefig(sys.stdout, bbox_inches='tight')
+    else:
+        fig.savefig(args.output, bbox_inches='tight')
     
 
 if __name__ == '__main__':

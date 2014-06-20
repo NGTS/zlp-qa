@@ -7,6 +7,7 @@ import matplotlib as mpl
 mpl.rc('patch', edgecolor='None')
 import matplotlib.pyplot as plt
 import csv
+import sys
 
 class Extracted(object):
     def __init__(self, fname):
@@ -63,7 +64,10 @@ def main(args):
 
 
     fig.tight_layout()
-    fig.savefig(args.output, bbox_inches='tight')
+    if args.output.strip() == '-':
+        fig.savefig(sys.stdout, bbox_inches='tight')
+    else:
+        fig.savefig(args.output, bbox_inches='tight')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

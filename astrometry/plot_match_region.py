@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 import itertools
+import sys
 
 
 def hide_labels(axis):
@@ -49,7 +50,12 @@ def main(args):
 
     padding = 0.5
     fig.tight_layout(h_pad=padding, w_pad=padding)
-    fig.savefig(args.output, bbox_inches='tight')
+    if args.output.strip() == '-':
+        fig.savefig(sys.stdout, bbox_inches='tight')
+    else:
+        fig.savefig(args.output, bbox_inches='tight')
+
+
 
 
 
