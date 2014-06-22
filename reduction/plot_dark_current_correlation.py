@@ -6,11 +6,15 @@ import pandas as pd
 import argparse
 import numpy as np
 import sys
+import os
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+import qa_common
 from plot_overscan_levels import compute_limits
 
 def main(args):
-    data = pd.read_table(args.extracted, sep=',')
+    data = qa_common.CSVContainer(args.extracted)
 
     offset_value = 0.1
     offset = np.random.uniform(-offset_value, offset_value, data.chstemp.size)
