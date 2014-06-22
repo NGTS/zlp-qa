@@ -7,10 +7,12 @@ import logging
 import fitsio
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
 from multiprocessing.pool import ThreadPool as Pool
 import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
+import qa_common
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger()
@@ -66,7 +68,7 @@ def compute_limits(data, nsigma=3, precomputed_median=None):
     return ll, ul
 
 def main(args):
-    data = pd.read_table(args.extracted, sep=',')
+    data = qa_common.CSVContainer(args.extracted)
 
     mjd0 = int(data.mjd.min())
     data['mjd'] = data['mjd'] - mjd0
