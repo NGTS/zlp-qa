@@ -43,12 +43,14 @@ def plot_summary(s, colour, label, ax=None):
             label=label)
 
 def main(args):
-    pre, post = (extract_flux_data(args.pre_sysrem),
-            extract_flux_data(args.post_sysrem))
+    pre = extract_flux_data(args.pre_sysrem)
+    if args.post_sysrem:
+        post = extract_flux_data(args.post_sysrem)
 
     fig, ax = plt.subplots(figsize=(11, 8))
     plot_summary(pre, 'b', 'Pre', ax=ax)
-    plot_summary(post, 'r', 'Post', ax=ax)
+    if args.post_sysrem:
+        plot_summary(post, 'r', 'Post', ax=ax)
     ax.legend(loc='best')
     ax.set_yscale('log')
     ax.yaxis.set_major_formatter(plt.ScalarFormatter())
