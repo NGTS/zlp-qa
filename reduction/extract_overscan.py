@@ -7,7 +7,6 @@ import logging
 import fitsio
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
 from multiprocessing.pool import ThreadPool as Pool
 import csv
 

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import matplotlib.pyplot as plt
-import pandas as pd
 import argparse
 import numpy as np
 import sys
