@@ -60,14 +60,16 @@ def compute_limits(data, nsigma=3, precomputed_median=None):
     return ll, ul
 
 def main(args):
-    pre, post = (extract_flux_data(args.pre_sysrem),
-            extract_flux_data(args.post_sysrem))
-
     fig, ax = plt.subplots(figsize=(11, 8))
-    plot_summary(pre, 'b', 'Pre', ax=ax)
-    plot_summary(post, 'r', 'Post', ax=ax)
-    plot_breaks(post)
 
+    if args.pre_sysrem:
+        pre = extract_flux_data(args.pre_sysrem)
+        plot_summary(pre, 'b', 'Pre', ax=ax)
+
+    if args.post_sysrem:
+        post = extract_flux_data(args.post_sysrem)
+        plot_summary(post, 'r', 'Post', ax=ax)
+        plot_breaks(post)
 
     ax.legend(loc='best')
 
@@ -75,7 +77,10 @@ def main(args):
     ax.set_ylabel(r'FRMS')
     ax.grid(True)
 
-    ax.set_ylim(*compute_limits(post.flux, nsigma=5))
+    if args.pre_sysrem:
+        ax.set_ylim(*compute_limits(pre.flux, nsigma=5))
+    elif args.post_sysrem:
+        ax.set_ylim(*compute_limits(post.flux, nsigma=5))
 
     fig.tight_layout()
 
