@@ -70,11 +70,11 @@ def main(args):
     fig, ax = plt.subplots(figsize=(11, 8))
 
     if args.pre_sysrem:
-        pre = extract_flux_data(args.pre_sysrem)
+        pre = extract_flux_data(args.pre_sysrem, args.exptime)
         plot_summary(pre, 'b', 'Pre', ax=ax)
 
     if args.post_sysrem:
-        post = extract_flux_data(args.post_sysrem)
+        post = extract_flux_data(args.post_sysrem, args.exptime)
         plot_summary(post, 'r', 'Post', ax=ax)
         plot_breaks(post)
 
@@ -84,10 +84,11 @@ def main(args):
     ax.set_ylabel(r'FRMS')
     ax.grid(True)
 
-    if args.pre_sysrem:
-        ax.set_ylim(*compute_limits(pre.flux, nsigma=5))
-    elif args.post_sysrem:
-        ax.set_ylim(*compute_limits(post.flux, nsigma=5))
+    if args.nsigma is not None:
+        if args.post_sysrem:
+            ax.set_ylim(*compute_limits(post.flux, nsigma=args.nsigma))
+        elif args.pre_sysrem:
+            ax.set_ylim(*compute_limits(pre.flux, nsigma=args.nsigma))
 
     fig.tight_layout()
 
@@ -106,6 +107,8 @@ if __name__ == '__main__':
     parser.add_argument('--post-sysrem', help='Input filename',
             type=str)
     parser.add_argument('--exptime', help='Exposure time to filter out',
+                        required=False, default=None, type=float)
+    parser.add_argument('-n', '--nsigma', help='Sigma clip the output',
                         required=False, default=None, type=float)
 
     main(parser.parse_args())
