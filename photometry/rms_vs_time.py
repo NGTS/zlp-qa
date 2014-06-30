@@ -14,11 +14,18 @@ logger = logging.getLogger(__name__)
 
 summary = namedtuple('Summary', ['frames', 'flux', 'breaks'])
 
-def extract_flux_data(fname):
+def extract_flux_data(fname, chosen_exptime=None):
     logger.info("Extracting from {}".format(fname))
     with fitsio.FITS(fname) as infile:
         mjd = infile['hjd'][0:1, :][0]
         flux = infile['flux'].read()
+        imagelist = infile['imagelist']
+        exptime = imagelist['exposure'].read()
+
+    if chosen_exptime is not None:
+        ind = exptime == chosen_exptime
+        mjd = mjd[ind]
+        flux = flux[:, ind]
 
     per_ap_median = np.median(flux, axis=1)
     ind = (per_ap_median > 0)
@@ -98,5 +105,7 @@ if __name__ == '__main__':
             type=str)
     parser.add_argument('--post-sysrem', help='Input filename',
             type=str)
+    parser.add_argument('--exptime', help='Exposure time to filter out',
+                        required=False, default=None, type=float)
 
     main(parser.parse_args())
