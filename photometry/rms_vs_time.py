@@ -19,8 +19,10 @@ def extract_flux_data(fname, chosen_exptime=None):
     with fitsio.FITS(fname) as infile:
         mjd = infile['hjd'][0:1, :][0]
         flux = infile['flux'].read()
-        imagelist = infile['imagelist']
-        exptime = imagelist['exposure'].read()
+
+        if chosen_exptime is not None:
+            imagelist = infile['imagelist']
+            exptime = imagelist['exposure'].read()
 
     if chosen_exptime is not None:
         ind = exptime == chosen_exptime
