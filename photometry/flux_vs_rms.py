@@ -15,9 +15,16 @@ logger = logging.getLogger(__name__)
 
 summary = namedtuple('Summary', ['mags', 'frms'])
 
-def extract_flux_data(fname, zp=21.18):
+def extract_flux_data(fname, zp=21.18, clouds=None):
     with fitsio.FITS(fname) as infile:
         flux = infile['flux'].read()
+        imagelist = infile['imagelist']
+        cloud_data = imagelist['clouds'].read()
+
+    if clouds is not None:
+        old_npts = flux.shape[1]
+        flux = flux[:, cloud_data < clouds]
+        logger.info("Rejecting {} cloudy frames".format(old_npts - flux.shape[1]))
 
     av_flux = np.average(flux, axis=1)
     std_flux = np.std(flux, axis=1)
@@ -44,9 +51,9 @@ def plot_summary(s, colour, label, ax=None):
 
 def main(args):
     if args.pre_sysrem:
-        pre = extract_flux_data(args.pre_sysrem)
+        pre = extract_flux_data(args.pre_sysrem, clouds=args.clouds)
     if args.post_sysrem:
-        post = extract_flux_data(args.post_sysrem)
+        post = extract_flux_data(args.post_sysrem, clouds=args.clouds)
 
     fig, ax = plt.subplots(figsize=(11, 8))
     if args.pre_sysrem:
@@ -78,5 +85,7 @@ if __name__ == '__main__':
             type=str)
     parser.add_argument('--post-sysrem', help='Input filename',
             type=str)
+    parser.add_argument('--clouds', help='Cloud rejection max',
+                        required=False, type=float)
 
     main(parser.parse_args())
