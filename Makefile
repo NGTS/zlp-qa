@@ -14,7 +14,7 @@ PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
 	$(PLOTSDIR)/12-catalogue-misses.$(EXT) \
 	$(PLOTSDIR)/13-sysrem-basis-functions.$(EXT)
 
-all: $(PLOTS) check-root-dir
+all: index.html check-root-dir
 
 check-root-dir:
 ifndef ROOTDIR
