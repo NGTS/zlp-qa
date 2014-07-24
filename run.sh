@@ -92,18 +92,7 @@ make_astrometric_summary() {
     local readonly imglist=${TMPDIR}/astrometric-pngs.txt
 
     find -L ${rootdir}/Reduction/output -name '*.png' | grep -v psf > ${imglist}
-    local readonly nimages=$(cat ${imglist} | wc -l)
-
-    first=$(head -n 1 ${imglist})
-    last=$(tail -n 1 ${imglist})
-
-    midpoint=$(python -c "print ${nimages} / 2")
-    mid=$(cat ${imglist} | head -n ${midpoint} | tail -n 1)
-
-    cp ${first} ${plotsdir}/80-first-vector.png
-    cp ${mid} ${plotsdir}/81-mid-vector.png
-    cp ${last} ${plotsdir}/82-last-vector.png
-
+    python scripts/copy_pngs.py ${imglist} -o ${plotsdir} --stub vector-astrometry --offset 80
 }
 
 make_psf_summary() {
@@ -113,17 +102,7 @@ make_psf_summary() {
     local readonly imglist=${TMPDIR}/psf-pngs.txt
 
     find -L ${rootdir}/Reduction/output -name '*.png' | grep psf > ${imglist}
-    local readonly nimages=$(cat ${imglist} | wc -l)
-
-    first=$(head -n 1 ${imglist})
-    last=$(tail -n 1 ${imglist})
-
-    midpoint=$(python -c "print ${nimages} / 2")
-    mid=$(cat ${imglist} | head -n ${midpoint} | tail -n 1)
-
-    cp ${first} ${plotsdir}/90-first-psf.png
-    cp ${mid} ${plotsdir}/91-mid-psf.png
-    cp ${last} ${plotsdir}/92-last-psf.png
+    python scripts/copy_pngs.py ${imglist} -o ${plotsdir} --stub psf --offset 90
 }
 
 make_html() {
