@@ -16,6 +16,9 @@ PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
 
 all: index.html check-root-dir
 
+index.html: view/build_html.py $(PLOTS) templates/index.html
+	python $< -o $@ --extension $(EXT)
+
 check-root-dir:
 ifndef ROOTDIR
 	$(error ROOTDIR is undefined)
