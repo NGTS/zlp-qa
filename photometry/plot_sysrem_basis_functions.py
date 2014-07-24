@@ -5,10 +5,10 @@ from __future__ import division, print_function, absolute_import
 
 import fitsio
 import sys
-import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 
+from qa_common import plt
 
 
 def main(args):

@@ -1,6 +1,12 @@
 import csv
 import numpy as np
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+matplotlib.rc('patch', edgecolor='None')
+
 class CSVContainer(object):
     def __init__(self, fname):
         self.fname = fname

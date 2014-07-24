@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import matplotlib.pyplot as plt
 import argparse
 import numpy as np
 import sys
 import os
+
+from qa_common import plt
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 

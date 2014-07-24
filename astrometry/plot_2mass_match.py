@@ -7,7 +7,8 @@ import argparse
 import fitsio
 from astropy import units as u
 from astropy.coordinates import ICRS
-import matplotlib.pyplot as plt
+
+from qa_common import plt
 
 def main(args):
     with fitsio.FITS(args.catalogue) as infile:

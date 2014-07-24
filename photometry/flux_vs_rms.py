@@ -4,11 +4,12 @@
 
 import fitsio
 import numpy as np
-import matplotlib.pyplot as plt
 import argparse
 from collections import namedtuple
 import logging
 import sys
+
+from qa_common import plt
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

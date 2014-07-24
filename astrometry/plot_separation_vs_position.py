@@ -6,9 +6,10 @@ import argparse
 import fitsio
 from astropy import units as u
 from astropy.coordinates import ICRS
-import matplotlib.pyplot as plt
 from scipy import stats
 import sys
+
+from qa_common import plt
 
 def link_y_limits(ax1, ax2):
     ax1_y = ax1.get_ylim()

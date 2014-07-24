@@ -176,6 +176,8 @@ setup_environment() {
     if [[ -d ${HOME}/anaconda ]]; then
         export PATH=${HOME}/anaconda/bin:${PATH}
     fi
+
+    export PYTHONPATH=$(abspath $0):$PYTHONPATH
 }
 
 usage() {

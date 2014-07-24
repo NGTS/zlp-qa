@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import fitsio
-import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 import itertools
 import sys
+
+from qa_common import plt
 
 
 def hide_labels(axis):

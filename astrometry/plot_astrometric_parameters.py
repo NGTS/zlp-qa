@@ -3,11 +3,10 @@
 
 import numpy as np
 import argparse
-import matplotlib as mpl
-mpl.rc('patch', edgecolor='None')
-import matplotlib.pyplot as plt
 import csv
 import sys
+
+from qa_common import plt
 
 class Extracted(object):
     def __init__(self, fname):

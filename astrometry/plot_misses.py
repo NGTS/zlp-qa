@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import fitsio
-import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 import itertools
 from collections import namedtuple
 import csv
 import sys
+
+from qa_common import plt
 
 def missing_from_2mass(args):
     with fitsio.FITS(args.match) as infile:

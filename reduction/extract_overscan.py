@@ -6,9 +6,10 @@ import argparse
 import logging
 import fitsio
 import numpy as np
-import matplotlib.pyplot as plt
 from multiprocessing.pool import ThreadPool as Pool
 import csv
+
+from qa_common import plt
 
 
 logging.basicConfig(level=logging.INFO)

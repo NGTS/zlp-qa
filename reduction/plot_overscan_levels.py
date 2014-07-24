@@ -6,13 +6,13 @@ import argparse
 import logging
 import fitsio
 import numpy as np
-import matplotlib.pyplot as plt
 from multiprocessing.pool import ThreadPool as Pool
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import qa_common
+from qa_common import plt
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger()
