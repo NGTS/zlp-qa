@@ -42,7 +42,8 @@ class Document(object):
         return(result)
         
 def main(args):
-    files = sorted(glob.glob('plots/*.{}'.format(args.extension)))
+    files = sorted(glob.glob('{}/plots/*.{}'.format(args.sourcedir, args.extension)))
+    files = (os.path.relpath(fname, args.sourcedir) for fname in files)
     d = Document()
 
     for filename in files:
@@ -53,6 +54,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('sourcedir')
     parser.add_argument('-o', '--output', help='Output', required=True,
             type=str)
     parser.add_argument('--extension', help='File extension to use',
