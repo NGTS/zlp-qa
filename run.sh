@@ -37,6 +37,22 @@ make_images() {
     else
         echo "Output file ${OUTPUTFILE} exists, skipping"
     fi
+
+    OUTPUTFILE="${outputdir}/04-flux-vs-rms.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        local readonly presysrem=$(find ${rootdir}/AperturePhot/output -name 'output.fits')
+        local readonly postsysrem=$(find ${rootdir}/AperturePhot/output -name 'tamout.fits')
+        if [[ -z ${postsysrem} ]]; then
+            echo "No post-sysrem file found"
+            python photometry/flux_vs_rms.py --pre-sysrem ${presysrem} -o ${OUTPUTFILE}
+        else
+            python photometry/flux_vs_rms.py --pre-sysrem ${presysrem} --post-sysrem ${postsysrem} -o ${OUTPUTFILE}
+        fi
+    else
+        echo "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+
+
 }
 
 main() {
