@@ -82,7 +82,7 @@ def main(args):
 
     ax.legend(loc='best')
 
-    ax.set_xlabel(r'MJD')
+    ax.set_xlabel(r'Frame')
     ax.set_ylabel(r'FRMS')
     ax.grid(True)
 
