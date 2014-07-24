@@ -5,13 +5,17 @@ set -e
 main() {
     validate_arguments "$@"
 
-    local readonly script_dir="$(dirname $(readlink -f $0))"
+    local readonly script_dir="$(dirname $(abspath $0))"
     echo "Running scripts from directory ${script_dir}"
 
-    local readonly rootdir=$1
-    local readonly outputdir=$2
+    local readonly rootdir=$(abspath $1)
+    local readonly outputdir=$(abspath $2)
 
     make ROOTDIR="${rootdir}" PLOTSDIR="${outputdir}"
+}
+
+abspath() {
+    readlink -f "$1"
 }
 
 validate_arguments() {
