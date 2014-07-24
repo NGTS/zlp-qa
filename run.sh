@@ -137,7 +137,7 @@ ensure_stilts() {
 
 main() {
     validate_arguments "$@"
-    ensure_stilts
+    # ensure_stilts
 
     local readonly script_dir="$(dirname $(abspath $0))"
     echo "Running scripts from directory ${script_dir}"
