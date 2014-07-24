@@ -30,6 +30,13 @@ make_images() {
     else
         echo "Output file ${OUTPUTFILE} exists, skipping"
     fi
+
+    OUTPUTFILE="${outputdir}/02-dark-correlation.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        python reduction/plot_dark_current_correlation.py ${TMPDIR}/extracted-dark-levels.csv -o ${OUTPUTFILE}
+    else
+        echo "Output file ${OUTPUTFILE} exists, skipping"
+    fi
 }
 
 main() {
