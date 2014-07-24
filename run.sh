@@ -79,6 +79,14 @@ make_images() {
         echo "Output file ${OUTPUTFILE} exists, skipping"
     fi
 
+    OUTPUTFILE="${plotsdir}/10-pixel-centre-of-mass.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        local readonly filename=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
+        python photometry/pixel-com.py "${filename}" -o "${OUTPUTFILE}"
+    else
+        echo "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+
     make_astrometric_summary "${rootdir}" "${plotsdir}"
     make_psf_summary "${rootdir}" "${plotsdir}"
 
