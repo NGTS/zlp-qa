@@ -137,6 +137,7 @@ ensure_stilts() {
 
 main() {
     validate_arguments "$@"
+    setup_environment
     # ensure_stilts
 
     local readonly script_dir="$(dirname $(abspath $0))"
@@ -168,6 +169,12 @@ validate_arguments() {
     if [[ ! -d ${rootdir} ]]; then
         echo "Cannot find directory ${rootdir}" >&2
         exit 1
+    fi
+}
+
+setup_environment() {
+    if [[ -d ${HOME}/anaconda ]]; then
+        export PATH=${HOME}/anaconda:${PATH}
     fi
 }
 
