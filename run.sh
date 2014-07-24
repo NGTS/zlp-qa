@@ -21,6 +21,13 @@ make_images() {
     else
         echo "Output file ${OUTPUTFILE} exists, skipping"
     fi
+
+    OUTPUTFILE="${outputdir}/01-dark-levels.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        find ${rootdir}/OriginalData/images -type d -name '*dark*' | xargs -I {} find {} -name 'IMAGE*.fits' > ${TMPDIR}/dark-frames.list
+        python reduction/extract_dark_current.py ${TMPDIR}/dark-frames.list -o ${TMPDIR}/extracted-dark-levels.csv
+        python reduction/plot_dark_current.py ${TMPDIR}/extracted-dark-levels.csv -o ${}
+    fi
 }
 
 main() {
