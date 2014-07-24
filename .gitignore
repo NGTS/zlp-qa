@@ -6,3 +6,4 @@ index.html
 !templates/index.html
 *.jar
 tom-testing
+*.pyc
