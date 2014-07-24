@@ -70,6 +70,16 @@ make_images() {
         echo "Output file ${OUTPUTFILE} exists, skipping"
     fi
 
+    OUTPUTFILE="${plotsdir}/09-extracted-astrometric-parameters.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        find ${rootdir}/Reduction/output/ -name 'proc*.fits' | grep image > ${TMPDIR}/science-images-list.txt
+        python astrometry/extract_wcs_parameters.py ${TMPDIR}/science-images-list.txt -o ${TMPDIR}/astrometric-extraction.csv
+        python astrometry/plot_astrometric_parameters.py ${TMPDIR}/astrometric-extraction.csv -o ${OUTPUTFILE}
+    else
+        echo "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+
+
     make_html "${outputdir}"
 }
 
