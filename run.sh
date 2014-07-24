@@ -11,7 +11,13 @@ main() {
     local readonly rootdir=$(abspath $1)
     local readonly outputdir=$(abspath $2)
 
-    (cd ${script_dir} && make ROOTDIR="${rootdir}" PLOTSDIR="${outputdir}")
+    ensure_directory "${outputdir}"
+
+    (cd ${script_dir} && make_images "${rootdir}" "${outputdir}")
+}
+
+ensure_directory() {
+    test -d "$1" || mkdir -p "$1"
 }
 
 abspath() {
