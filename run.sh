@@ -52,6 +52,19 @@ make_images() {
         echo "Output file ${OUTPUTFILE} exists, skipping"
     fi
 
+    OUTPUTFILE="${outputdir}/05-rms-vs-time.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        local readonly presysrem=$(find ${rootdir}/AperturePhot/output -name 'output.fits')
+        local readonly postsysrem=$(find ${rootdir}/AperturePhot/output -name 'tamout.fits')
+        if [[ -z ${postsysrem} ]]; then 
+            echo "No post-sysrem file found"
+            python photometry/rms_vs_time.py --pre-sysrem ${presysrem} -o ${OUTPUTFILE}
+        else
+            python photometry/rms_vs_time.py --pre-sysrem ${presysrem} --post-sysrem ${postsysrem} -o ${OUTPUTFILE}
+        fi
+    else
+        echo "Output file ${OUTPUTFILE} exists, skipping"
+    fi
 
 }
 
