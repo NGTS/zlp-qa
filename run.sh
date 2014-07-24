@@ -174,7 +174,7 @@ validate_arguments() {
 
 setup_environment() {
     if [[ -d ${HOME}/anaconda ]]; then
-        export PATH=${HOME}/anaconda:${PATH}
+        export PATH=${HOME}/anaconda/bin:${PATH}
     fi
 }
 
