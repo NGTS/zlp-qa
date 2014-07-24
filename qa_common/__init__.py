@@ -6,6 +6,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 matplotlib.rc('patch', edgecolor='None')
+matplotlib.rc('image', cmap='afm_hot')
 
 class CSVContainer(object):
     def __init__(self, fname):
