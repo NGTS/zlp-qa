@@ -11,7 +11,7 @@ main() {
     local readonly rootdir=$(abspath $1)
     local readonly outputdir=$(abspath $2)
 
-    make ROOTDIR="${rootdir}" PLOTSDIR="${outputdir}"
+    (cd ${script_dir} && make ROOTDIR="${rootdir}" PLOTSDIR="${outputdir}")
 }
 
 abspath() {
