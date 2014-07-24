@@ -32,9 +32,9 @@ def extract_from_file(fname):
     left = image[:, 1:20]
     right = image[:, -20:]
 
-    airmass = header['airmass']
-    chstemp = header['chstemp']
-    ccdtemp = header['ccdtemp']
+    airmass = header.get('airmass', 0)
+    chstemp = header.get('chstemp', 0)
+    ccdtemp = header.get('ccdtemp', 0)
 
 
     return {
