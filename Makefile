@@ -1,6 +1,5 @@
 EXT = png
 
-PLOTSDIR := plots
 PLOTS := $(PLOTSDIR)/04-flux-vs-rms.$(EXT) \
 	$(PLOTSDIR)/00-overscan-levels.$(EXT) \
 	$(PLOTSDIR)/01-dark-levels.$(EXT) \
@@ -20,4 +19,9 @@ all: $(PLOTS) check-root-dir
 check-root-dir:
 ifndef ROOTDIR
 	$(error ROOTDIR is undefined)
+endif
+
+check-plots-dir:
+ifndef PLOTSDIR
+	$(error PLOTSDIR is undefined)
 endif
