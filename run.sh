@@ -19,7 +19,7 @@ make_images() {
     # extract overscan levels
     OUTPUTFILE="${plotsdir}/00-overscan-levels.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        find ${rootdir}/OriginalData/images -name 'IMAGE*.fits' > ${TMPDIR}/bias-frames.list
+        find -L ${rootdir}/OriginalData/images -name 'IMAGE*.fits' > ${TMPDIR}/bias-frames.list
         python reduction/extract_overscan.py ${TMPDIR}/bias-frames.list -o ${TMPDIR}/extracted-bias-levels.csv
         python reduction/plot_overscan_levels.py ${TMPDIR}/extracted-bias-levels.csv -o ${OUTPUTFILE}
     else
@@ -28,7 +28,7 @@ make_images() {
 
     OUTPUTFILE="${plotsdir}/01-dark-levels.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        find ${rootdir}/OriginalData/images -type d -name '*dark*' | xargs -I {} find {} -name 'IMAGE*.fits' > ${TMPDIR}/dark-frames.list
+        find -L ${rootdir}/OriginalData/images -type d -name '*dark*' | xargs -I {} find -L {} -name 'IMAGE*.fits' > ${TMPDIR}/dark-frames.list
         python reduction/extract_dark_current.py ${TMPDIR}/dark-frames.list -o ${TMPDIR}/extracted-dark-levels.csv
         python reduction/plot_dark_current.py ${TMPDIR}/extracted-dark-levels.csv -o ${OUTPUTFILE}
     else
@@ -44,8 +44,8 @@ make_images() {
 
     OUTPUTFILE="${plotsdir}/04-flux-vs-rms.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        local readonly presysrem=$(find ${rootdir}/AperturePhot/output -name 'output.fits')
-        local readonly postsysrem=$(find ${rootdir}/AperturePhot/output -name 'tamout.fits')
+        local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
+        local readonly postsysrem=$(find -L ${rootdir}/AperturePhot/output -name 'tamout.fits')
         if [[ -z ${postsysrem} ]]; then
             echo "No post-sysrem file found"
             python photometry/flux_vs_rms.py --pre-sysrem ${presysrem} -o ${OUTPUTFILE}
@@ -58,8 +58,8 @@ make_images() {
 
     OUTPUTFILE="${plotsdir}/05-rms-vs-time.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        local readonly presysrem=$(find ${rootdir}/AperturePhot/output -name 'output.fits')
-        local readonly postsysrem=$(find ${rootdir}/AperturePhot/output -name 'tamout.fits')
+        local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
+        local readonly postsysrem=$(find -L ${rootdir}/AperturePhot/output -name 'tamout.fits')
         if [[ -z ${postsysrem} ]]; then 
             echo "No post-sysrem file found"
             python photometry/rms_vs_time.py --pre-sysrem ${presysrem} -o ${OUTPUTFILE}
@@ -72,7 +72,7 @@ make_images() {
 
     OUTPUTFILE="${plotsdir}/09-extracted-astrometric-parameters.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        find ${rootdir}/Reduction/output/ -name 'proc*.fits' | grep image > ${TMPDIR}/science-images-list.txt
+        find -L ${rootdir}/Reduction/output/ -name 'proc*.fits' | grep image > ${TMPDIR}/science-images-list.txt
         python astrometry/extract_wcs_parameters.py ${TMPDIR}/science-images-list.txt -o ${TMPDIR}/astrometric-extraction.csv
         python astrometry/plot_astrometric_parameters.py ${TMPDIR}/astrometric-extraction.csv -o ${OUTPUTFILE}
     else
@@ -91,7 +91,7 @@ make_astrometric_summary() {
 
     local readonly imglist=${TMPDIR}/astrometric-pngs.txt
 
-    find ${rootdir}/Reduction/output -name '*.png' | grep -v psf > ${imglist}
+    find -L ${rootdir}/Reduction/output -name '*.png' | grep -v psf > ${imglist}
     local readonly nimages=$(cat ${imglist} | wc -l)
 
     first=$(head -n 1 ${imglist})
@@ -112,7 +112,7 @@ make_psf_summary() {
 
     local readonly imglist=${TMPDIR}/psf-pngs.txt
 
-    find ${rootdir}/Reduction/output -name '*.png' | grep psf > ${imglist}
+    find -L ${rootdir}/Reduction/output -name '*.png' | grep psf > ${imglist}
     local readonly nimages=$(cat ${imglist} | wc -l)
 
     first=$(head -n 1 ${imglist})
