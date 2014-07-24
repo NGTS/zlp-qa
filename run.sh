@@ -68,8 +68,13 @@ make_images() {
 
 }
 
+ensure_stilts() {
+    test -f astrometry/stilts.jar || curl -L http://www.star.bris.ac.uk/~mbt/stilts/stilts.jar > astrometry/stilts.jar
+}
+
 main() {
     validate_arguments "$@"
+    ensure_stilts
 
     local readonly script_dir="$(dirname $(abspath $0))"
     echo "Running scripts from directory ${script_dir}"
