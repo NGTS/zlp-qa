@@ -8,7 +8,8 @@ Compute the pixel centre of mass
 import fitsio
 import argparse
 import numpy as np
-import matplotlib.pyplot as plt
+
+from qa_common import plt
 
 def main(args):
     with fitsio.FITS(args.fname) as infile:
