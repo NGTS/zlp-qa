@@ -70,6 +70,14 @@ make_images() {
         echo "Output file ${OUTPUTFILE} exists, skipping"
     fi
 
+    OUTPUTFILE="${plotsdir}/06-photometry-time-series.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
+        python photometry/plot_photometry_time_series.py ${presysrem} -o ${OUTPUTFILE}
+    else
+        echo "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+
     OUTPUTFILE="${plotsdir}/09-extracted-astrometric-parameters.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         find -L ${rootdir}/Reduction/output/ -name 'proc*.fits' | grep image > ${TMPDIR}/science-images-list.txt
