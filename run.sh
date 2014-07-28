@@ -39,6 +39,19 @@ plot_dark_levels() {
 
 }
 
+plot_dark_correlation() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
+
+    OUTPUTFILE="${plotsdir}/02-dark-correlation.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        python reduction/plot_dark_current_correlation.py ${TMPDIR}/extracted-dark-levels.csv -o ${OUTPUTFILE}
+    else
+        echo "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+
+}
+
 make_images() {
     local readonly rootdir=$(abspath $1)
     local readonly outputdir=$(abspath $2)
@@ -48,12 +61,7 @@ make_images() {
 
     plot_overscan_levels "${rootdir}" "${plotsdir}"
     plot_dark_levels "${rootdir}" "${plotsdir}"
-    OUTPUTFILE="${plotsdir}/02-dark-correlation.${EXT}"
-    if [[ ! -f ${OUTPUTFILE} ]]; then
-        python reduction/plot_dark_current_correlation.py ${TMPDIR}/extracted-dark-levels.csv -o ${OUTPUTFILE}
-    else
-        echo "Output file ${OUTPUTFILE} exists, skipping"
-    fi
+    plot_dark_correlation "${rootdir}" "${plotsdir}"
 
     OUTPUTFILE="${plotsdir}/04-flux-vs-rms.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
