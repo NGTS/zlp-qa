@@ -91,6 +91,20 @@ plot_rms_vs_time() {
 
 }
 
+plot_photometric_time_series() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
+
+    OUTPUTFILE="${plotsdir}/06-photometry-time-series.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
+        python photometry/plot_photometry_time_series.py ${presysrem} -o ${OUTPUTFILE}
+    else
+        echo "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+
+}
+
 make_images() {
     local readonly rootdir=$(abspath $1)
     local readonly outputdir=$(abspath $2)
@@ -103,14 +117,7 @@ make_images() {
     plot_dark_correlation "${rootdir}" "${plotsdir}"
     plot_flux_vs_rms "${rootdir}" "${plotsdir}"
     plot_rms_vs_time "${rootdir}" "${plotsdir}"
-
-    OUTPUTFILE="${plotsdir}/06-photometry-time-series.${EXT}"
-    if [[ ! -f ${OUTPUTFILE} ]]; then
-        local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
-        python photometry/plot_photometry_time_series.py ${presysrem} -o ${OUTPUTFILE}
-    else
-        echo "Output file ${OUTPUTFILE} exists, skipping"
-    fi
+    plot_photometric_time_series "${rootdir}" "${plotsdir}"
 
     OUTPUTFILE="${plotsdir}/09-extracted-astrometric-parameters.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
