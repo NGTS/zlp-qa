@@ -24,14 +24,9 @@ plot_overscan_levels() {
 
 }
 
-make_images() {
-    local readonly rootdir=$(abspath $1)
-    local readonly outputdir=$(abspath $2)
-    local readonly plotsdir="${outputdir}/plots"
-
-    ensure_directory "${plotsdir}"
-
-    plot_overscan_levels "${rootdir}" "${plotsdir}"
+plot_dark_levels() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
 
     OUTPUTFILE="${plotsdir}/01-dark-levels.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
@@ -42,6 +37,17 @@ make_images() {
         echo "Output file ${OUTPUTFILE} exists, skipping"
     fi
 
+}
+
+make_images() {
+    local readonly rootdir=$(abspath $1)
+    local readonly outputdir=$(abspath $2)
+    local readonly plotsdir="${outputdir}/plots"
+
+    ensure_directory "${plotsdir}"
+
+    plot_overscan_levels "${rootdir}" "${plotsdir}"
+    plot_dark_levels "${rootdir}" "${plotsdir}"
     OUTPUTFILE="${plotsdir}/02-dark-correlation.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         python reduction/plot_dark_current_correlation.py ${TMPDIR}/extracted-dark-levels.csv -o ${OUTPUTFILE}
