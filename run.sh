@@ -52,16 +52,9 @@ plot_dark_correlation() {
 
 }
 
-make_images() {
-    local readonly rootdir=$(abspath $1)
-    local readonly outputdir=$(abspath $2)
-    local readonly plotsdir="${outputdir}/plots"
-
-    ensure_directory "${plotsdir}"
-
-    plot_overscan_levels "${rootdir}" "${plotsdir}"
-    plot_dark_levels "${rootdir}" "${plotsdir}"
-    plot_dark_correlation "${rootdir}" "${plotsdir}"
+plot_flux_vs_rms() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
 
     OUTPUTFILE="${plotsdir}/04-flux-vs-rms.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
@@ -76,6 +69,19 @@ make_images() {
     else
         echo "Output file ${OUTPUTFILE} exists, skipping"
     fi
+}
+
+make_images() {
+    local readonly rootdir=$(abspath $1)
+    local readonly outputdir=$(abspath $2)
+    local readonly plotsdir="${outputdir}/plots"
+
+    ensure_directory "${plotsdir}"
+
+    plot_overscan_levels "${rootdir}" "${plotsdir}"
+    plot_dark_levels "${rootdir}" "${plotsdir}"
+    plot_dark_correlation "${rootdir}" "${plotsdir}"
+    plot_flux_vs_rms "${rootdir}" "${plotsdir}"
 
     OUTPUTFILE="${plotsdir}/05-rms-vs-time.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
