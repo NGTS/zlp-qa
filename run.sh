@@ -120,6 +120,19 @@ plot_extracted_astrometic_parameters() {
 
 }
 
+plot_pixel_centre_of_mass() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
+
+    OUTPUTFILE="${plotsdir}/10-pixel-centre-of-mass.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        local readonly filename=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
+        python photometry/pixel-com.py "${filename}" -o "${OUTPUTFILE}"
+    else
+        echo "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+}
+
 make_images() {
     local readonly rootdir=$(abspath $1)
     local readonly outputdir=$(abspath $2)
@@ -134,14 +147,7 @@ make_images() {
     plot_rms_vs_time "${rootdir}" "${plotsdir}"
     plot_photometric_time_series "${rootdir}" "${plotsdir}"
     plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"
-
-    OUTPUTFILE="${plotsdir}/10-pixel-centre-of-mass.${EXT}"
-    if [[ ! -f ${OUTPUTFILE} ]]; then
-        local readonly filename=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
-        python photometry/pixel-com.py "${filename}" -o "${OUTPUTFILE}"
-    else
-        echo "Output file ${OUTPUTFILE} exists, skipping"
-    fi
+    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}"
 
     make_astrometric_summary "${rootdir}" "${plotsdir}"
     make_psf_summary "${rootdir}" "${plotsdir}"
