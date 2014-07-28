@@ -2,19 +2,15 @@
 
 set -e
 
-make_images() {
-    local readonly rootdir=$(abspath $1)
-    local readonly outputdir=$(abspath $2)
-    local readonly plotsdir="${outputdir}/plots"
+if [[ -z "${TMPDIR}" ]]; then
+    TMPDIR=/tmp
+fi
 
-    ensure_directory "${plotsdir}"
+EXT=png
 
-
-    if [[ -z "${TMPDIR}" ]]; then
-        TMPDIR=/tmp
-    fi
-
-    EXT=png
+plot_overscan_levels() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
 
     # extract overscan levels
     OUTPUTFILE="${plotsdir}/00-overscan-levels.${EXT}"
@@ -25,6 +21,17 @@ make_images() {
     else
         echo "Output file ${OUTPUTFILE} exists, skipping"
     fi
+
+}
+
+make_images() {
+    local readonly rootdir=$(abspath $1)
+    local readonly outputdir=$(abspath $2)
+    local readonly plotsdir="${outputdir}/plots"
+
+    ensure_directory "${plotsdir}"
+
+    plot_overscan_levels "${rootdir}" "${plotsdir}"
 
     OUTPUTFILE="${plotsdir}/01-dark-levels.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
