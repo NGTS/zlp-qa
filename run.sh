@@ -181,4 +181,10 @@ Program usage: $0 <rootdir> <outputdir>
 EOF
 }
 
-main "$@"
+is_main() {
+    [[ "${BASH_SOURCE[0]}" == "$0" ]]
+}
+
+if is_main; then
+    main "$@"
+fi
