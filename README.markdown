@@ -18,7 +18,7 @@ Input data:
 
 * collapsed fits file
   * before and after sysrem
-* for Tom's code, probably raw images :cry:
+* for Tom's code, probably raw images :smile:
 
 Astrometry
 ----------
