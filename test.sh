@@ -4,7 +4,7 @@ set -e
 
 main() {
     local readonly rootdir=../zlp-script/testdata
-    local readonly plotdir=/tmp/plots
+    local readonly plotdir=plots
 
     test -d ${plotdir} && rm -rf ${plotdir}
 
