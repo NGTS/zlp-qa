@@ -12,7 +12,7 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import qa_common
-from qa_common import plt
+from qa_common import plt, plot_night_breaks
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger()
@@ -73,13 +73,15 @@ def main(args):
     mjd0 = int(data.mjd.min())
     data['mjd'] = data['mjd'] - mjd0
 
+    frames = np.arange(data.mjd.size)
+
     fig, axes = plt.subplots(5, 1, figsize=(11, 8), sharex=True)
-    axes[0].plot(data.mjd, data.right - data.left, 'k.')
+    axes[0].plot(frames, data.right - data.left, 'k.')
     axes[0].set_ylabel(r'Left - Right')
     axes[0].set_ylim(*compute_limits(data.right - data.left))
 
-    axes[1].plot(data.mjd, data.left, 'r.', label='left')
-    axes[1].plot(data.mjd, data.right, 'g.', label='right')
+    axes[1].plot(frames, data.left, 'r.', label='left')
+    axes[1].plot(frames, data.right, 'g.', label='right')
     axes[1].set_ylabel(r'Overscan level / counts')
 
     ll_left, ul_left = compute_limits(data.left)
@@ -87,20 +89,21 @@ def main(args):
     axes[1].set_ylim(min(ll_left, ll_right),
                      max(ul_left, ul_right))
 
-    axes[2].plot(data.mjd, data.chstemp, 'r.')
+    axes[2].plot(frames, data.chstemp, 'r.')
     axes[2].set_ylabel(r'Chassis temp')
     axes[2].set_ylim(*compute_limits(data.chstemp))
 
-    axes[3].plot(data.mjd, data.ccdtemp, 'r.')
+    axes[3].plot(frames, data.ccdtemp, 'r.')
     axes[3].set_ylabel(r'CCD temp')
 
-    axes[4].plot(data.mjd, data.airmass, 'r.')
+    axes[4].plot(frames, data.airmass, 'r.')
     axes[4].set_ylabel(r'Airmass')
 
-    axes[-1].set_xlabel(r'MJD - {}'.format(mjd0))
+    axes[-1].set_xlabel('Frame')
 
     for ax in axes:
-        ax.grid(True)
+        ax.grid(True, axis='y')
+        plot_night_breaks(ax, data.mjd)
 
     fig.tight_layout()
     if args.output.strip() == '-':

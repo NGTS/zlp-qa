@@ -9,7 +9,7 @@ import fitsio
 import argparse
 import numpy as np
 
-from qa_common import plt
+from qa_common import plt, plot_night_breaks
 
 def main(args):
     with fitsio.FITS(args.fname) as infile:
@@ -17,19 +17,20 @@ def main(args):
         ccdy = infile['ccdy'].read()
         mjd = infile['imagelist']['tmid'].read()
 
-    mjd0 = int(mjd.min())
-    mjd -= mjd0
+    frames = np.arange(mjd.size)
 
     fn = np.median
     fig, axis = plt.subplots()
-    mappable_x = axis.plot(mjd, fn(ccdx, axis=0), 'b.')[0]
+    mappable_x = axis.plot(frames, fn(ccdx, axis=0), 'b.')[0]
     axis2 = axis.twinx()
-    mappable_y = axis2.plot(mjd, fn(ccdy, axis=0), 'g.')[0]
+    mappable_y = axis2.plot(frames, fn(ccdy, axis=0), 'g.')[0]
 
     axis2.legend([mappable_x, mappable_y], ['X', 'Y'], loc='best')
     axis.set_ylabel(r'X')
     axis2.set_ylabel(r'Y')
-    axis.set_xlabel(r'MJD - {}'.format(mjd0))
+    axis.set_xlabel('Frame')
+
+    plot_night_breaks(axis, mjd)
 
     fig.tight_layout()
     fig.savefig(args.output, bbox_inches='tight')
