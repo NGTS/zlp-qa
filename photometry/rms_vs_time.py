@@ -45,7 +45,7 @@ def extract_flux_data(fname, chosen_exptime=None):
     breaks = np.where(np.diff(mjd) > 0.5)[0]
 
     lq, uq = scoreatpercentile(normalise_flux, [25, 75], axis=0)
-    std = np.std(normalise_flux, axis=0)
+    std = np.std(normalise_flux, axis=0) / np.sqrt(normalise_flux.shape[0])
 
     return summary(frames, med_flux, breaks, lq, uq, std)
 
@@ -53,7 +53,8 @@ def extract_flux_data(fname, chosen_exptime=None):
 def plot_summary(s, colour, label, ax=None):
     ax = ax if ax else plt.gca()
 
-    ax.plot(s.frames, s.flux, ls='None', marker='.', color=colour,
+    ax.errorbar(s.frames, s.flux, s.std, ls='None', color=colour, alpha=0.5)
+    ax.plot(s.frames, s.flux, ls='None', marker='.', color='k',
             label=label)
 
 
