@@ -8,13 +8,14 @@ import numpy as np
 import argparse
 from collections import namedtuple
 import logging
+from scipy.stats import scoreatpercentile
 
 from qa_common import plt
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-summary = namedtuple('Summary', ['frames', 'flux', 'breaks'])
+summary = namedtuple('Summary', ['frames', 'flux', 'breaks', 'lq', 'uq', 'std'])
 
 def extract_flux_data(fname, chosen_exptime=None):
     logger.info("Extracting from {}".format(fname))
@@ -43,7 +44,10 @@ def extract_flux_data(fname, chosen_exptime=None):
     frames = np.arange(mjd.size)
     breaks = np.where(np.diff(mjd) > 0.5)[0]
 
-    return summary(frames, med_flux, breaks)
+    lq, uq = scoreatpercentile(normalise_flux, [25, 75], axis=0)
+    std = np.std(normalise_flux, axis=0)
+
+    return summary(frames, med_flux, breaks, lq, uq, std)
 
 
 def plot_summary(s, colour, label, ax=None):
