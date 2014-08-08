@@ -89,9 +89,12 @@ def main(args):
 
     ax.legend(loc='best')
 
+    ax.axhline(0, ls='--', color='k')
+    ax.axhline(-1E-3, ls=':', color='k')
+    ax.axhline(1E-3, ls=':', color='k')
+
     ax.set_xlabel(r'Frame')
     ax.set_ylabel(r'FRMS')
-    ax.grid(True)
 
     if args.nsigma is not None:
         if args.post_sysrem:
