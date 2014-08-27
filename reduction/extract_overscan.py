@@ -8,12 +8,23 @@ import fitsio
 import numpy as np
 from multiprocessing.pool import ThreadPool as Pool
 import csv
+import re
 
 from qa_common import plt
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
+
+overscan_regex = re.compile(r'\[(\d+):(\d+),(\d+):(\d+)\]')
+
+def parse_overscan_region(region_txt):
+    limits = map(int, overscan_regex.search(region_txt).groups())
+    xmin, xmax, ymin, ymax = limits
+    return (
+        slice(xmin, xmax),
+        slice(ymin, ymax)
+    )
 
 def sigma_clipped_mean(values, nsigma=3):
     median_value = np.median(values)
@@ -29,17 +40,20 @@ def extract_from_file(fname):
         header = infile[0].read_header()
         image = infile[0].read()
 
+    sx, sy = parse_overscan_region(header['biassec'])
+
     mjd = header['mjd']
     left = image[:, 1:20]
-    right = image[:, -20:]
+    right = image[sy, sx]
 
     airmass = header.get('airmass', 0)
     chstemp = header.get('chstemp', 0)
     ccdtemp = header.get('ccdtemp', 0)
-
+    image_id = header['image_id']
 
     return {
             'mjd': mjd,
+            'image_id': image_id,
             'left': sigma_clipped_mean(left).astype(float),
             'right': sigma_clipped_mean(right).astype(float),
             'airmass': airmass,
