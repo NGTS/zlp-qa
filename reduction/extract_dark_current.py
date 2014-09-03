@@ -35,7 +35,7 @@ def extract_from_file(fname):
     left = image[:, 1:20]
     right = image[:, -20:]
 
-    gain = 3.3
+    gain = header['gainfact']
     exptime = header['exposure']
 
     left_overscan = sigma_clipped_mean(left)

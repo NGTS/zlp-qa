@@ -30,11 +30,12 @@ def missing_from_2mass(args):
 def missing_from_casu(args):
     with fitsio.FITS(args.match) as infile:
         hdu = infile[1]
+        header = hdu.read_header()
+        gain = header['gainfact']
+        exptime = header['exposure']
 
         matched_names = set(hdu['sequence_number'][:].astype(int))
 
-    gain = 2.1
-    exptime = 5.
     with fitsio.FITS(args.extracted) as infile:
         extracted_names = infile[1]['sequence_number'][:].astype(int)
         ra = np.degrees(infile[1]['ra'][:])
