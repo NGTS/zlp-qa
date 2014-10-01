@@ -203,8 +203,9 @@ ensure_directory() {
 }
 
 abspath() {
-    readlink -f "$1"
+    python -c "import os; print os.path.realpath('${1}')"
 }
+
 
 validate_arguments() {
     if [[ "$#" != 2 ]]; then
