@@ -40,11 +40,11 @@ def extract_from_file(fname):
         header = infile[0].read_header()
         image = infile[0].read()
 
-    sx, sy = parse_overscan_region(header['biassec'])
+    # sx, sy = parse_overscan_region(header['biassec'])
 
     mjd = header['mjd']
-    left = image[:, 1:20]
-    right = image[sy, sx]
+    left = image[4:, 1:20]
+    right = image[4:, -15:]
 
     airmass = header.get('airmass', 0)
     chstemp = header.get('chstemp', 0)
