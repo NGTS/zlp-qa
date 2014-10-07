@@ -11,9 +11,10 @@ EXT=png
 plot_overscan_levels() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
+    local readonly plot_number="$3"
 
     # extract overscan levels
-    OUTPUTFILE="${plotsdir}/00-overscan-levels.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-overscan-levels.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         find -L ${rootdir}/OriginalData/images -name 'IMAGE*.fits' > ${TMPDIR}/bias-frames.list
         python reduction/extract_overscan.py ${TMPDIR}/bias-frames.list -o ${TMPDIR}/extracted-bias-levels.csv
@@ -27,8 +28,9 @@ plot_overscan_levels() {
 plot_dark_levels() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
+    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/01-dark-levels.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-dark-levels.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         find -L ${rootdir}/OriginalData/images -type d -name '*dark*' | xargs -I {} find -L {} -name 'IMAGE*.fits' > ${TMPDIR}/dark-frames.list
         python reduction/extract_dark_current.py ${TMPDIR}/dark-frames.list -o ${TMPDIR}/extracted-dark-levels.csv
@@ -42,8 +44,9 @@ plot_dark_levels() {
 plot_dark_correlation() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
+    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/02-dark-correlation.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-dark-correlation.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         python reduction/plot_dark_current_correlation.py ${TMPDIR}/extracted-dark-levels.csv -o ${OUTPUTFILE}
     else
@@ -55,8 +58,9 @@ plot_dark_correlation() {
 plot_flux_vs_rms() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
+    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/04-flux-vs-rms.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-flux-vs-rms.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         local readonly postsysrem=$(find -L ${rootdir}/AperturePhot/output -name 'tamout.fits')
@@ -74,8 +78,9 @@ plot_flux_vs_rms() {
 plot_rms_vs_time() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
+    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/05-rms-vs-time.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-rms-vs-time.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         local readonly postsysrem=$(find -L ${rootdir}/AperturePhot/output -name 'tamout.fits')
@@ -94,8 +99,9 @@ plot_rms_vs_time() {
 plot_photometric_time_series() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
+    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/06-photometry-time-series.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-photometry-time-series.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         python photometry/plot_photometry_time_series.py ${presysrem} -o ${OUTPUTFILE}
@@ -108,8 +114,9 @@ plot_photometric_time_series() {
 plot_extracted_astrometic_parameters() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
+    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/09-extracted-astrometric-parameters.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-extracted-astrometric-parameters.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         find -L ${rootdir}/Reduction/output/ -name 'proc*.fits' | grep image > ${TMPDIR}/science-images-list.txt
         python astrometry/extract_wcs_parameters.py ${TMPDIR}/science-images-list.txt -o ${TMPDIR}/astrometric-extraction.csv
@@ -123,8 +130,9 @@ plot_extracted_astrometic_parameters() {
 plot_pixel_centre_of_mass() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
+    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/10-pixel-centre-of-mass.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-pixel-centre-of-mass.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly filename=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         python photometry/pixel-com.py "${filename}" -o "${OUTPUTFILE}"
@@ -140,19 +148,24 @@ make_images() {
 
     ensure_directory "${plotsdir}"
 
-    plot_overscan_levels "${rootdir}" "${plotsdir}"
-    plot_dark_levels "${rootdir}" "${plotsdir}"
-    plot_dark_correlation "${rootdir}" "${plotsdir}"
-    plot_flux_vs_rms "${rootdir}" "${plotsdir}"
-    plot_rms_vs_time "${rootdir}" "${plotsdir}"
-    plot_photometric_time_series "${rootdir}" "${plotsdir}"
-    plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"
-    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}"
+    plot_overscan_levels "${rootdir}" "${plotsdir}" 0
+    plot_dark_levels "${rootdir}" "${plotsdir}" 1
+    plot_dark_correlation "${rootdir}" "${plotsdir}" 2
+    plot_flux_vs_rms "${rootdir}" "${plotsdir}" 4
+    plot_rms_vs_time "${rootdir}" "${plotsdir}" 5
+    plot_photometric_time_series "${rootdir}" "${plotsdir}" 6
+    plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  9
+    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 10
 
     make_astrometric_summary "${rootdir}" "${plotsdir}"
     make_psf_summary "${rootdir}" "${plotsdir}"
 
     make_html "${outputdir}"
+}
+
+compute_plot_number() {
+    local readonly number="$1"
+    printf "%02d" "${number}"
 }
 
 make_astrometric_summary() {
