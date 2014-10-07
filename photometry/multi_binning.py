@@ -253,4 +253,5 @@ def noisemodel(x,N):
 
   return curve
 
-main()
+if __name__ == '__main__':
+  main()
