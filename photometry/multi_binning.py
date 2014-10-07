@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import pyfits as pf
+from scipy.optimize import leastsq
 
 def main():
   filename = '13-tamout2.fits'
@@ -72,9 +73,6 @@ def load_data(filename,mask=[]):
   return outdict
 
 def noisecharacterise(datadict,fname=[],fluxrange=[5000,20000],c='b',model=True):
-  import math
-  from pylab import *
-  from scipy.optimize import leastsq
 # Characterises the noise level of bright, non saturated stars from the output of sysrem
 # as a function of number of bins
 
@@ -94,7 +92,7 @@ def noisecharacterise(datadict,fname=[],fluxrange=[5000,20000],c='b',model=True)
 
   binstep = 0.1
 
-  binrange = [int(math.ceil(10.0**(x))) for x in np.arange(binlow,binhigh,binstep)]
+  binrange = [int(np.ceil(10.0**(x))) for x in np.arange(binlow,binhigh,binstep)]
 
   binrange = sort(array(list(set(binrange))))
 
