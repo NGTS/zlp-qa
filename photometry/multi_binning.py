@@ -44,6 +44,11 @@ def main(args):
 
     levels = np.array([left_edges[0]] + list(right_edges))
 
+    if args.serial:
+        pool_class = NullPool
+    else:
+        pool_class = mp.Pool
+
     fig, axis = plt.subplots()
     for i in range(0, len(left_edges)):
         colorVal = scalarMap.to_rgba(values[i])
