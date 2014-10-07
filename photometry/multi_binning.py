@@ -27,7 +27,6 @@ def main(args):
 
   CS3 = plt.contourf(Z, values[::-1],norm=cNorm, cmap=mymap)
 
-  fname = filename.strip('.fits')+'_binning.pdf'
   for i in range(0,len(left_edges)):
     colorVal = scalarMap.to_rgba(values[i])
     noisecharacterise(data_dict,fluxrange=[left_edges[i],right_edges[i]],c=colorVal,model=False)
@@ -38,7 +37,10 @@ def main(args):
 
   cbar.ax.set_yticklabels(nicelist[::-1])# vertically oriented colorbar
 
-  savefig(fname)
+  if args.output is not None:
+    savefig(args.output, bbox_inches='tight')
+  else:
+    show()
 
 def load_data(filename,mask=[]):
   dateclip = datesplit(filename)
@@ -254,4 +256,6 @@ def noisemodel(x,N):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('filename')
+  parser.add_argument('-o', '--output', help='Save to output file',
+                      required=False)
   main(parser.parse_args())
