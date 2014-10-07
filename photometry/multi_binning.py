@@ -4,7 +4,7 @@ import os
 from pylab import *
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
-from astropy.io import fits as pf
+import fitsio
 from scipy.optimize import leastsq
 import argparse
 
@@ -48,8 +48,8 @@ def main(args):
 def load_data(filename, mask=[]):
     dateclip = datesplit(filename)
 
-    tmid = pf.getdata(filename, 'imagelist')['TMID']
-    flux = pf.getdata(filename, 'flux')
+    tmid = fitsio.read(filename, 'imagelist')['TMID']
+    flux = fitsio.read(filename, 'flux')
 
     print 'all nights in data: ', dateclip[:, 0]
     if len(mask) > 0:
@@ -65,11 +65,11 @@ def load_data(filename, mask=[]):
     tmid = tmid[cut]
     flux = flux[:, cut]
 
-    mean_fluxes = pf.getdata(filename, 'CATALOGUE')['FLUX_MEAN']
+    mean_fluxes = fitsio.read(filename, 'CATALOGUE')['FLUX_MEAN']
 
-    meanbias = pf.getdata(filename, 'IMAGELIST')['MEANBIAS']
+    meanbias = fitsio.read(filename, 'IMAGELIST')['MEANBIAS']
 
-    T = pf.getdata(filename, 'IMAGELIST')['T']
+    T = fitsio.read(filename, 'IMAGELIST')['T']
 
     outdict = {'time': tmid, 'flux': flux, 'mean_fluxes': mean_fluxes[
         cut], 'meanbias': meanbias[cut], 'T': T[cut]}
@@ -84,10 +84,6 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b', model=
     tmid = datadict['time']
 
     cadence = np.median(np.diff(tmid)) * 24 * 60
-
-# needs to be a 1 dimensional array of fluxes
-#  flux = pf.getdata(filename, 'flux')
-#  tmid = pf.getdata(filename, 'imagelist')['TMID']
 
     flux = datadict['flux']
 
@@ -209,7 +205,7 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b', model=
 def datesplit(filename):
     # returns an array index that can be used a cut an output file in desired
     # dateranges
-    time = pf.getdata(filename, 'imagelist')['TMID']
+    time = fitsio.read(filename, 'imagelist')['TMID']
     nights_used = [time[0]]
     for i in range(1, len(time)):
         shift = time[i] - time[i - 1]
