@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import os
-from pylab import *
+import numpy as np
+import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import fitsio
@@ -23,7 +24,7 @@ def main(args):
     cNorm = colors.Normalize(vmin=0, vmax=values[-1])
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=mymap)
 
-    levels = array([left_edges[0]] + list(right_edges))
+    levels = np.array([left_edges[0]] + list(right_edges))
 
     Z = [[0, 0], [0, 0]]
 
@@ -34,16 +35,16 @@ def main(args):
         noisecharacterise(
             data_dict, fluxrange=[left_edges[i], right_edges[i]], c=colorVal, model=False)
 
-    cbar = colorbar(CS3, ticks=values[::-1])
+    cbar = plt.colorbar(CS3, ticks=values[::-1])
 
     nicelist = [int(left_edges[0])] + [int(x) for x in right_edges]
 
     cbar.ax.set_yticklabels(nicelist[::-1])  # vertically oriented colorbar
 
     if args.output is not None:
-        savefig(args.output, bbox_inches='tight')
+        plt.savefig(args.output, bbox_inches='tight')
     else:
-        show()
+        plt.show()
 
 
 def load_data(filename, mask=[]):
@@ -69,7 +70,7 @@ def load_data(filename, mask=[]):
     for time in tmid:
         clip = [((time > date[0]) & (time < date[1])) for date in dateclip]
         cut += [any(clip)]
-    cut = array(cut)
+    cut = np.array(cut)
 
     tmid = tmid[cut]
     flux = flux[:, cut]
@@ -80,9 +81,10 @@ def load_data(filename, mask=[]):
     return outdict
 
 
-def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b', model=True):
-    # Characterises the noise level of bright, non saturated stars from the output of sysrem
-    # as a function of number of bins
+def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b',
+                      model=True):
+    '''Characterises the noise level of bright, non saturated stars from the 
+    output of sysrem as a function of number of bins'''
 
     tmid = datadict['time']
 
@@ -98,7 +100,7 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b', model=
     binrange = [int(np.ceil(10.0 ** (x)))
                 for x in np.arange(binlow, binhigh, binstep)]
 
-    binrange = sort(array(list(set(binrange))))
+    binrange = np.sort(np.array(list(set(binrange))))
 
     binrange = binrange[binrange < len(flux[0]) / 3]
 
@@ -107,34 +109,34 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b', model=
 
     zero = 21.18135675
 
-    mag_min = zero - 2.512 * log10(maxflux)
-    mag_max = zero - 2.512 * log10(minflux)
+    mag_min = zero - 2.512 * np.log10(maxflux)
+    mag_max = zero - 2.512 * np.log10(minflux)
     rms_lim = 1e9
 
-    avflux = median(flux, axis=1)
-    stdflux = std(flux, axis=1)
+    avflux = np.median(flux, axis=1)
+    stdflux = np.std(flux, axis=1)
     rms = stdflux
     rms = abs(1.0857 * 1000.0 * stdflux / avflux)
     print avflux
     print stdflux
     print rms
 
-    sane_keys = [((rms != inf) & (avflux != inf) & (rms != 0) & (rms < rms_lim) & (
-        avflux != 0) & (rms != NaN) & (avflux != NaN) & (avflux < maxflux) & (avflux > minflux))]
+    sane_keys = [((rms != np.inf) & (avflux != np.inf) & (rms != 0) & (rms < rms_lim) & (
+        avflux != 0) & (rms != np.NaN) & (avflux != np.NaN) & (avflux < maxflux) & (avflux > minflux))]
 
     flux_sane = flux[sane_keys].copy()
 
     print 'Using ', len(flux_sane), ' stars between ', mag_min, ' and ', mag_max, ' kepler mag'
     print 'Using ', len(flux_sane[0]), ' time points'
 
-    print max(median(flux_sane, axis=1))
-    print min(median(flux_sane, axis=1))
+    print max(np.median(flux_sane, axis=1))
+    print min(np.median(flux_sane, axis=1))
 
     median_list = [np.median(rms[sane_keys])]
     N_bin_list = [1]
     quartiles = [
         [np.percentile(rms[sane_keys], 25), np.percentile(rms[sane_keys], 75)]]
-    rms_error = [(np.std(rms[sane_keys])) / sqrt(len(rms[sane_keys]) * 1000)]
+    rms_error = [(np.std(rms[sane_keys])) / np.sqrt(len(rms[sane_keys]) * 1000)]
 
     for N in binrange:
 
@@ -142,25 +144,25 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b', model=
 
         binned = binning(flux_sane, N)
 
-        avflux = median(binned, axis=1)
-        stdflux = std(binned, axis=1)
+        avflux = np.median(binned, axis=1)
+        stdflux = np.std(binned, axis=1)
         rms = stdflux
         rms = abs(1.0857 * 1000.0 * stdflux / avflux)
 
-        sanity = ((rms != inf) & (avflux != inf) & (rms != 0) & (avflux != 0) & (
-            rms != NaN) & (avflux != NaN) & (avflux < maxflux) & (avflux > minflux))
+        sanity = ((rms != np.inf) & (avflux != np.inf) & (rms != 0) & (avflux != 0) & (
+            rms != np.NaN) & (avflux != np.NaN) & (avflux < maxflux) & (avflux > minflux))
         rmssane = rms[sanity]
         median_list += [np.median(rmssane)]
         quartiles += [[np.percentile(rmssane, 25), np.percentile(rmssane, 75)]]
         N_bin_list += [N]
-        rms_error += [(np.std(rms[sanity])) / sqrt(1000 * len(rms[sanity]))]
+        rms_error += [(np.std(rms[sanity])) / np.sqrt(1000 * len(rms[sanity]))]
 
     prior = [median_list[0], median_list[-1]]
 
-    N_bin_list = array(N_bin_list)
-    median_list = array(median_list)
-    rms_error = array(rms_error)
-    quartiles = array(quartiles)
+    N_bin_list = np.array(N_bin_list)
+    median_list = np.array(median_list)
+    rms_error = np.array(rms_error)
+    quartiles = np.array(quartiles)
 
     low_quart = quartiles[:, 0]
     high_quart = quartiles[:, 1]
@@ -202,12 +204,12 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b', model=
     ax1.set_xticks((1, 5, 10, 60))
     ax1.set_xticklabels(('1', '5', '10', '60'))
 
-    grid()
+    plt.grid()
 
 
 def datesplit(filename):
-    # returns an array index that can be used a cut an output file in desired
-    # dateranges
+    '''returns an array index that can be used a cut an output file in desired
+    dateranges'''
     time = fitsio.read(filename, 'imagelist')['TMID']
     nights_used = [time[0]]
     for i in range(1, len(time)):
@@ -217,21 +219,19 @@ def datesplit(filename):
 
     nights_used += [1e9]
 
-    nights_used = array(nights_used)
+    nights_used = np.array(nights_used)
 
     dateclip = []
     for i in range(len(nights_used) - 1):
         dateclip += [nights_used[i:i + 2]]
-    dateclip = array(dateclip)
+    dateclip = np.array(dateclip)
 
     return dateclip
 
 
 def binning(series, bin):
-
-    # bins a time series to the level specified by 'bin'
-
-    bins = floor(len(series[0, :]) / bin)
+    '''bins a time series to the level specified by `bin`'''
+    bins = np.floor(len(series[0, :]) / bin)
 
     binned = []
 
