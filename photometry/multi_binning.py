@@ -6,7 +6,7 @@ from pylab import *
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
-import pyfits as pf
+from astropy.io import fits as pf
 from scipy.optimize import leastsq
 
 def main():
