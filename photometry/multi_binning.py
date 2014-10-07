@@ -69,7 +69,6 @@ def main(args):
     nicelist = [int(left_edges[0])] + [int(x) for x in right_edges]
     cbar.ax.set_yticklabels(nicelist[::-1])  # vertically oriented colorbar
 
-    axis.set_ylim(0.4, 21)
     axis.set_yscale('log')
     axis.set_xscale('log')
     axis.set_xlabel("Bin size (Minutes)")
