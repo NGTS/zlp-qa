@@ -13,6 +13,13 @@ from collections import namedtuple
 
 NoiseResult = namedtuple('NoiseResult', ['x', 'y', 'yerr', 'white'])
 
+class NullPool(object):
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def map(self, fn, l):
+        return map(fn, l)
+
 def main(args):
     filename = args.filename
     data_dict = load_data(filename)
@@ -277,4 +284,6 @@ if __name__ == '__main__':
     parser.add_argument('filename')
     parser.add_argument('-o', '--output', help='Save to output file',
                         required=False)
+    parser.add_argument('--serial', help='Do not use parallel processing',
+                        action='store_true', default=False)
     main(parser.parse_args())
