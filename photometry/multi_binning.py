@@ -17,7 +17,7 @@ import logging
 NoiseResult = namedtuple('NoiseResult', ['x', 'y', 'yerr', 'white'])
 
 logger = mp.log_to_stderr()
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 class NullPool(object):
