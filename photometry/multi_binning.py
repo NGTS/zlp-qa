@@ -8,10 +8,10 @@ import matplotlib.colors as colors
 import matplotlib.cm as cmx
 from astropy.io import fits as pf
 from scipy.optimize import leastsq
+import argparse
 
-def main():
-  filename = '13-tamout2.fits'
-
+def main(args):
+  filename = args.filename
   data_dict = load_data(filename)
 
   left_edges = 10**np.linspace(2, 5, 10)[:-1]
@@ -254,4 +254,6 @@ def noisemodel(x,N):
   return curve
 
 if __name__ == '__main__':
-  main()
+  parser = argparse.ArgumentParser()
+  parser.add_argument('filename')
+  main(parser.parse_args())
