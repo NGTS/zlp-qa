@@ -26,25 +26,30 @@ def main(args):
 
     levels = np.array([left_edges[0]] + list(right_edges))
 
-    Z = [[0, 0], [0, 0]]
-
-    CS3 = plt.contourf(Z, values[::-1], norm=cNorm, cmap=mymap)
-
+    fig, axis = plt.subplots()
     for i in range(0, len(left_edges)):
         colorVal = scalarMap.to_rgba(values[i])
         noisecharacterise(
-            data_dict, fluxrange=[left_edges[i], right_edges[i]], c=colorVal, model=False)
+            data_dict, fluxrange=[left_edges[i], right_edges[i]], c=colorVal,
+            model=False, ax=axis)
 
-    cbar = plt.colorbar(CS3, ticks=values[::-1])
-
+    cbar = create_colourbar(fig, values, mymap, cNorm)
     nicelist = [int(left_edges[0])] + [int(x) for x in right_edges]
-
     cbar.ax.set_yticklabels(nicelist[::-1])  # vertically oriented colorbar
 
+    fig.tight_layout()
     if args.output is not None:
         plt.savefig(args.output, bbox_inches='tight')
     else:
         plt.show()
+
+
+def create_colourbar(fig, values, mymap, cNorm):
+    ax = fig.get_axes()[0]
+    Z = [[0, 0], [0, 0]]
+    CS3 = ax.contourf(Z, values[::-1], norm=cNorm, cmap=mymap)
+    cbar = fig.colorbar(CS3, ticks=values[::-1])
+    return cbar
 
 
 def load_data(filename, mask=[]):
@@ -82,9 +87,10 @@ def load_data(filename, mask=[]):
 
 
 def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b',
-                      model=True):
+                      model=True, ax=None):
     '''Characterises the noise level of bright, non saturated stars from the 
     output of sysrem as a function of number of bins'''
+    ax = ax if ax is not None else plt.gca()
 
     tmid = datadict['time']
 
@@ -136,7 +142,8 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b',
     N_bin_list = [1]
     quartiles = [
         [np.percentile(rms[sane_keys], 25), np.percentile(rms[sane_keys], 75)]]
-    rms_error = [(np.std(rms[sane_keys])) / np.sqrt(len(rms[sane_keys]) * 1000)]
+    rms_error = [
+        (np.std(rms[sane_keys])) / np.sqrt(len(rms[sane_keys]) * 1000)]
 
     for N in binrange:
 
@@ -182,29 +189,26 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b',
 
     # cadence in minutes
 
-    ax1 = plt.subplot(111)
-    ax1.set_ylim(0.4, 21)
-    ax1.set_xlim(cadence * N_bin_list[0] * 0.9, cadence * N_bin_list[-1] * 1.1)
-    ax1.errorbar(cadence * N_bin_list, median_list,
+    ax.set_ylim(0.4, 21)
+    ax.set_xlim(cadence * N_bin_list[0] * 0.9, cadence * N_bin_list[-1] * 1.1)
+    ax.errorbar(cadence * N_bin_list, median_list,
                  yerr=rms_error, color=c, linewidth=2.0)
-#  ax1.plot(N_bin_list,median_list[0]/sqrt(N_bin_list), 'r-')
-    ax1.plot(cadence * N_bin_list, white_curve, '--', color='grey', alpha=0.8)
+#  ax.plot(N_bin_list,median_list[0]/sqrt(N_bin_list), 'r-')
+    ax.plot(cadence * N_bin_list, white_curve, '--', color='grey', alpha=0.8)
     if model == True:
-        ax1.plot(cadence * N_bin_list, low_quart, 'b-')
-        ax1.plot(cadence * N_bin_list, high_quart, 'b-')
-        ax1.plot(cadence * N_bin_list, noise_curve, 'r-')
-        ax1.plot(cadence * N_bin_list, red_curve, 'r--')
-    ax1.set_yscale('log')
-    ax1.set_xscale('log')
-#  ax1.set_xlabel("Bin length (minutes)")
-    ax1.set_xlabel("Bin size (Minutes)")
-    ax1.set_ylabel("Fractional RMS (millimags)")
-    ax1.set_yticks((0.5, 1, 2, 5, 10, 20, 50, 100))
-    ax1.set_yticklabels(('0.5', '1', '2', '5', '10', '20', '50', '100'))
-    ax1.set_xticks((1, 5, 10, 60))
-    ax1.set_xticklabels(('1', '5', '10', '60'))
-
-    plt.grid()
+        ax.plot(cadence * N_bin_list, low_quart, 'b-')
+        ax.plot(cadence * N_bin_list, high_quart, 'b-')
+        ax.plot(cadence * N_bin_list, noise_curve, 'r-')
+        ax.plot(cadence * N_bin_list, red_curve, 'r--')
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+#  ax.set_xlabel("Bin length (minutes)")
+    ax.set_xlabel("Bin size (Minutes)")
+    ax.set_ylabel("Fractional RMS (millimags)")
+    ax.set_yticks((0.5, 1, 2, 5, 10, 20, 50, 100))
+    ax.set_yticklabels(('0.5', '1', '2', '5', '10', '20', '50', '100'))
+    ax.set_xticks((1, 5, 10, 60))
+    ax.set_xticklabels(('1', '5', '10', '60'))
 
 
 def datesplit(filename):
