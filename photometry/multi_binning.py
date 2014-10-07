@@ -9,7 +9,9 @@ import matplotlib.cm as cmx
 import fitsio
 from scipy.optimize import leastsq
 import argparse
+from collections import namedtuple
 
+NoiseResult = namedtuple('NoiseResult', ['x', 'y', 'yerr', 'white'])
 
 def main(args):
     filename = args.filename
@@ -29,11 +31,12 @@ def main(args):
     fig, axis = plt.subplots()
     for i in range(0, len(left_edges)):
         colorVal = scalarMap.to_rgba(values[i])
-        x, y, yerr, white = noisecharacterise(
+        r = noisecharacterise(
             data_dict, fluxrange=[left_edges[i], right_edges[i]],
             model=False, ax=axis)
-        axis.errorbar(x, y, yerr, color=colorVal, linewidth=2.0)
-        axis.plot(x, white, '--', color='grey', alpha=0.8)
+        axis.errorbar(r.x, r.y, r.yerr, color=colorVal, linewidth=2.0)
+        axis.plot(r.x, r.white, '--', color='grey', alpha=0.8)
+        break
 
     cbar = create_colourbar(fig, values, mymap, cNorm)
     nicelist = [int(left_edges[0])] + [int(x) for x in right_edges]
@@ -197,7 +200,7 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b',
     white_curve = noisemodel([final[0], 0], N_bin_list)
     red_curve = noisemodel([0, final[1]], N_bin_list)
 
-    return (
+    return NoiseResult(
         cadence * N_bin_list,
         median_list,
         rms_error,
