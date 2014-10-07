@@ -96,14 +96,24 @@ plot_rms_vs_time() {
 
 }
 
-plot_photometric_time_series() {
+plot_rms_with_binning() {
     local readonly rootdir="$1"
+    local readonly plotsdir="${2}"
+    local readonly plot_number="$3"
+
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-rms-with-binning.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
+plot_photometric_time_series() {
+            python photometry/multi_binning.py ${presysrem} -o ${OUTPUTFILE} --serial
     local readonly plotsdir="$2"
     local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-photometry-time-series.${EXT}"
-    if [[ ! -f ${OUTPUTFILE} ]]; then
-        local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
+    else
+        echo "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+}
+
         python photometry/plot_photometry_time_series.py ${presysrem} -o ${OUTPUTFILE}
     else
         echo "Output file ${OUTPUTFILE} exists, skipping"
@@ -153,7 +163,8 @@ make_images() {
     plot_dark_correlation "${rootdir}" "${plotsdir}" 2
     plot_flux_vs_rms "${rootdir}" "${plotsdir}" 4
     plot_rms_vs_time "${rootdir}" "${plotsdir}" 5
-    plot_photometric_time_series "${rootdir}" "${plotsdir}" 6
+    plot_rms_with_binning "${rootdir}" "${plotsdir}" 6
+    plot_photometric_time_series "${rootdir}" "${plotsdir}" 7
     plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  9
     plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 10
 
