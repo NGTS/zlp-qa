@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 import os
 from pylab import *
 import matplotlib.colors as colors
@@ -58,7 +59,6 @@ def load_data(filename, mask=[]):
 
         catalogue = infile['catalogue']
         mean_fluxes = catalogue['flux_mean'].read()
-
 
     print 'all nights in data: ', dateclip[:, 0]
     if len(mask) > 0:
