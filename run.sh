@@ -118,7 +118,7 @@ plot_extracted_astrometic_parameters() {
 
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-extracted-astrometric-parameters.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        find -L ${rootdir}/Reduction/output/ -name 'proc*.fits' | grep image > ${TMPDIR}/science-images-list.txt
+        find -L ${rootdir}/Reduction/output/ -name 'proc*.fits' | grep -v 'skybkg' | grep image > ${TMPDIR}/science-images-list.txt
         python astrometry/extract_wcs_parameters.py ${TMPDIR}/science-images-list.txt -o ${TMPDIR}/astrometric-extraction.csv
         python astrometry/plot_astrometric_parameters.py ${TMPDIR}/astrometric-extraction.csv -o ${OUTPUTFILE}
     else
