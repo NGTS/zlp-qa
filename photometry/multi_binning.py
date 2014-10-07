@@ -48,8 +48,17 @@ def main(args):
 def load_data(filename, mask=[]):
     dateclip = datesplit(filename)
 
-    tmid = fitsio.read(filename, 'imagelist')['TMID']
-    flux = fitsio.read(filename, 'flux')
+    with fitsio.FITS(filename) as infile:
+        imagelist = infile['imagelist']
+        tmid = imagelist['tmid'].read()
+        meanbias = imagelist['meanbias'].read()
+        T = imagelist['T'].read()
+
+        flux = infile['flux'].read()
+
+        catalogue = infile['catalogue']
+        mean_fluxes = catalogue['flux_mean'].read()
+
 
     print 'all nights in data: ', dateclip[:, 0]
     if len(mask) > 0:
@@ -64,12 +73,6 @@ def load_data(filename, mask=[]):
 
     tmid = tmid[cut]
     flux = flux[:, cut]
-
-    mean_fluxes = fitsio.read(filename, 'CATALOGUE')['FLUX_MEAN']
-
-    meanbias = fitsio.read(filename, 'IMAGELIST')['MEANBIAS']
-
-    T = fitsio.read(filename, 'IMAGELIST')['T']
 
     outdict = {'time': tmid, 'flux': flux, 'mean_fluxes': mean_fluxes[
         cut], 'meanbias': meanbias[cut], 'T': T[cut]}
