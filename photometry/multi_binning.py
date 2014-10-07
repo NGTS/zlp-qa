@@ -225,8 +225,8 @@ def binning(series,bin):
 
   binned = np.zeros((length,bins))
 
-  for i in range(0,length):
-    for x in range(0,bins):
+  for i in np.arange(0,length):
+    for x in np.arange(0,bins):
       place = x*bin
 
       summ = 0
