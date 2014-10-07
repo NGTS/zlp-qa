@@ -2,6 +2,8 @@
 
 set -e
 
+[[ ${TESTQA} ]] && echo "Testing"
+
 if [[ -z "${TMPDIR}" ]]; then
     TMPDIR=/tmp
 fi
@@ -104,16 +106,24 @@ plot_rms_with_binning() {
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-rms-with-binning.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
-plot_photometric_time_series() {
+        if [[ -z ${TESTQA} ]]; then
             python photometry/multi_binning.py ${presysrem} -o ${OUTPUTFILE} --serial
-    local readonly plotsdir="$2"
-    local readonly plot_number="$3"
-
+        else
+            echo "RMS with binning test disabled; it does not work with this data set"
+        fi
     else
         echo "Output file ${OUTPUTFILE} exists, skipping"
     fi
 }
 
+plot_photometric_time_series() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
+    local readonly plot_number="$3"
+
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-photometry-time-series.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         python photometry/plot_photometry_time_series.py ${presysrem} -o ${OUTPUTFILE}
     else
         echo "Output file ${OUTPUTFILE} exists, skipping"
