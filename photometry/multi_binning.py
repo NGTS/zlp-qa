@@ -10,15 +10,24 @@ import fitsio
 from scipy.optimize import leastsq
 import argparse
 from collections import namedtuple
+import multiprocessing as mp
+from functools import partial
+import logging
 
 NoiseResult = namedtuple('NoiseResult', ['x', 'y', 'yerr', 'white'])
 
+logger = mp.log_to_stderr()
+logger.setLevel(logging.DEBUG)
+
+
 class NullPool(object):
+
     def __init__(self, *args, **kwargs):
         pass
 
     def map(self, fn, l):
         return map(fn, l)
+
 
 def main(args):
     filename = args.filename
