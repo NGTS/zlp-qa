@@ -29,13 +29,25 @@ def main(args):
     fig, axis = plt.subplots()
     for i in range(0, len(left_edges)):
         colorVal = scalarMap.to_rgba(values[i])
-        noisecharacterise(
-            data_dict, fluxrange=[left_edges[i], right_edges[i]], c=colorVal,
+        x, y, yerr, white = noisecharacterise(
+            data_dict, fluxrange=[left_edges[i], right_edges[i]],
             model=False, ax=axis)
+        axis.errorbar(x, y, yerr, color=colorVal, linewidth=2.0)
+        axis.plot(x, white, '--', color='grey', alpha=0.8)
 
     cbar = create_colourbar(fig, values, mymap, cNorm)
     nicelist = [int(left_edges[0])] + [int(x) for x in right_edges]
     cbar.ax.set_yticklabels(nicelist[::-1])  # vertically oriented colorbar
+
+    axis.set_ylim(0.4, 21)
+    axis.set_yscale('log')
+    axis.set_xscale('log')
+    axis.set_xlabel("Bin size (Minutes)")
+    axis.set_ylabel("Fractional RMS (millimags)")
+    axis.set_yticks((0.5, 1, 2, 5, 10, 20, 50, 100))
+    axis.set_yticklabels(('0.5', '1', '2', '5', '10', '20', '50', '100'))
+    axis.set_xticks((1, 5, 10, 60))
+    axis.set_xticklabels(('1', '5', '10', '60'))
 
     fig.tight_layout()
     if args.output is not None:
@@ -185,31 +197,17 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b',
     white_curve = noisemodel([final[0], 0], N_bin_list)
     red_curve = noisemodel([0, final[1]], N_bin_list)
 
-    print final, 'noise results'
+    return (
+        cadence * N_bin_list,
+        median_list,
+        rms_error,
+        white_curve)
 
-    # cadence in minutes
-
-    ax.set_ylim(0.4, 21)
-    ax.set_xlim(cadence * N_bin_list[0] * 0.9, cadence * N_bin_list[-1] * 1.1)
-    ax.errorbar(cadence * N_bin_list, median_list,
-                 yerr=rms_error, color=c, linewidth=2.0)
-#  ax.plot(N_bin_list,median_list[0]/sqrt(N_bin_list), 'r-')
-    ax.plot(cadence * N_bin_list, white_curve, '--', color='grey', alpha=0.8)
     if model == True:
         ax.plot(cadence * N_bin_list, low_quart, 'b-')
         ax.plot(cadence * N_bin_list, high_quart, 'b-')
         ax.plot(cadence * N_bin_list, noise_curve, 'r-')
         ax.plot(cadence * N_bin_list, red_curve, 'r--')
-    ax.set_yscale('log')
-    ax.set_xscale('log')
-#  ax.set_xlabel("Bin length (minutes)")
-    ax.set_xlabel("Bin size (Minutes)")
-    ax.set_ylabel("Fractional RMS (millimags)")
-    ax.set_yticks((0.5, 1, 2, 5, 10, 20, 50, 100))
-    ax.set_yticklabels(('0.5', '1', '2', '5', '10', '20', '50', '100'))
-    ax.set_xticks((1, 5, 10, 60))
-    ax.set_xticklabels(('1', '5', '10', '60'))
-
 
 def datesplit(filename):
     '''returns an array index that can be used a cut an output file in desired
