@@ -50,14 +50,20 @@ def main(args):
         pool_class = mp.Pool
 
     fig, axis = plt.subplots()
-    for i in range(0, len(left_edges)):
+
+    flux_limits = [(left_edges[i], right_edges[i]) for i in
+                   xrange(len(left_edges))]
+    fn = partial(noisecharacterise, datadict=data_dict,
+                 flux_limits=flux_limits,
+                 ax=axis)
+
+    pool = pool_class()
+    plot_data = pool.map(fn, range(0, len(left_edges)))
+
+    for i, r in enumerate(plot_data):
         colorVal = scalarMap.to_rgba(values[i])
-        r = noisecharacterise(
-            data_dict, fluxrange=[left_edges[i], right_edges[i]],
-            model=False, ax=axis)
         axis.errorbar(r.x, r.y, r.yerr, color=colorVal, linewidth=2.0)
         axis.plot(r.x, r.white, '--', color='grey', alpha=0.8)
-        break
 
     cbar = create_colourbar(fig, values, mymap, cNorm)
     nicelist = [int(left_edges[0])] + [int(x) for x in right_edges]
@@ -102,10 +108,11 @@ def load_data(filename, mask=[]):
         catalogue = infile['catalogue']
         mean_fluxes = catalogue['flux_mean'].read()
 
-    print 'all nights in data: ', dateclip[:, 0]
+    logger.info('all nights in data: %s', dateclip[:, 0])
+
     if len(mask) > 0:
         dateclip = dateclip[mask]
-    print "Nights we're using: ", dateclip[:, 0]
+    logger.info("Nights we're using: %s", dateclip[:, 0])
 
     cut = []
     for time in tmid:
@@ -122,8 +129,7 @@ def load_data(filename, mask=[]):
     return outdict
 
 
-def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b',
-                      model=True, ax=None):
+def noisecharacterise(i, flux_limits, datadict, c='b', model=True, ax=None):
     '''Characterises the noise level of bright, non saturated stars from the 
     output of sysrem as a function of number of bins'''
     ax = ax if ax is not None else plt.gca()
@@ -146,8 +152,7 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b',
 
     binrange = binrange[binrange < len(flux[0]) / 3]
 
-    maxflux = fluxrange[1]
-    minflux = fluxrange[0]
+    minflux, maxflux = flux_limits[i]
 
     zero = 21.18135675
 
@@ -159,20 +164,21 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b',
     stdflux = np.std(flux, axis=1)
     rms = stdflux
     rms = abs(1.0857 * 1000.0 * stdflux / avflux)
-    print avflux
-    print stdflux
-    print rms
+    logger.debug(avflux)
+    logger.debug(stdflux)
+    logger.debug(rms)
 
     sane_keys = [((rms != np.inf) & (avflux != np.inf) & (rms != 0) & (rms < rms_lim) & (
         avflux != 0) & (rms != np.NaN) & (avflux != np.NaN) & (avflux < maxflux) & (avflux > minflux))]
 
     flux_sane = flux[sane_keys].copy()
 
-    print 'Using ', len(flux_sane), ' stars between ', mag_min, ' and ', mag_max, ' kepler mag'
-    print 'Using ', len(flux_sane[0]), ' time points'
+    logger.info('Using %s stars between %s and %s kepler mag',
+                 len(flux_sane), mag_min, mag_max)
+    logger.info('Using %s time points', len(flux_sane[0]))
 
-    print max(np.median(flux_sane, axis=1))
-    print min(np.median(flux_sane, axis=1))
+    logger.debug(max(np.median(flux_sane, axis=1)))
+    logger.debug(min(np.median(flux_sane, axis=1)))
 
     median_list = [np.median(rms[sane_keys])]
     N_bin_list = [1]
@@ -183,7 +189,7 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b',
 
     for N in binrange:
 
-        print 'Working with bin size', N
+        logger.debug('Working with bin size %s', N)
 
         binned = binning(flux_sane, N)
 
@@ -227,11 +233,6 @@ def noisecharacterise(datadict, fname=[], fluxrange=[5000, 20000], c='b',
         rms_error,
         white_curve)
 
-    if model == True:
-        ax.plot(cadence * N_bin_list, low_quart, 'b-')
-        ax.plot(cadence * N_bin_list, high_quart, 'b-')
-        ax.plot(cadence * N_bin_list, noise_curve, 'r-')
-        ax.plot(cadence * N_bin_list, red_curve, 'r--')
 
 def datesplit(filename):
     '''returns an array index that can be used a cut an output file in desired
