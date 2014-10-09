@@ -107,7 +107,7 @@ plot_rms_with_binning() {
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         if [[ -z ${TESTQA} ]]; then
-            python photometry/multi_binning.py ${presysrem} -o ${OUTPUTFILE} --serial
+            python photometry/multi_binning.py ${presysrem} -o ${OUTPUTFILE}
         else
             echo "RMS with binning test disabled; it does not work with this data set"
         fi
