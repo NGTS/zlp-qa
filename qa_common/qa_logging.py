@@ -1,6 +1,6 @@
 import logging
 
-fmt = '%(asctime)s|%(name)s|%(levelname)8s: %(message)s'
+fmt = '%(asctime)s|%(name)s|%(levelname)s: %(message)s'
 logging.basicConfig(level=logging.DEBUG, format=fmt)
 
 def get_logger(name):
