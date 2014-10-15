@@ -27,7 +27,7 @@ def main(args):
 
     normalised = histogram_equalise(image, nbins=nbins)
 
-    suffixes = ['.png', '_smoothed.png']
+    suffixes = ['.{}'.format(args.ext), '_smoothed.{}'.format(args.ext)]
     interpolation_methods = ['none', 'gaussian']
 
     for (suffix, interpolation_method) in zip(suffixes, interpolation_methods):
@@ -44,8 +44,11 @@ def main(args):
 
 if __name__ == '__main__':
     description = '''Plot an histogram equalised frame'''
-    epilog = 'The output image is saved as <stub>.png and <stub>_smoothed.png'
+    epilog = '''The output image is saved as <stub>.<ext> and
+ <stub>_smoothed.<ext>'''
     parser = argparse.ArgumentParser(description=description, epilog=epilog)
     parser.add_argument('filename')
     parser.add_argument('-s', '--stub', help='Stub output file', required=True)
+    parser.add_argument('-e', '--ext', help='Extension [default: png]',
+                        required=False, default='png')
     main(parser.parse_args())
