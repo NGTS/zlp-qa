@@ -77,6 +77,24 @@ plot_hist_equalised_master() {
     fi
 }
 
+plot_total_flat_adu() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
+    local readonly plot_number="$3"
+
+    INFILE=$(find ${rootdir}/Reduction/output -name 'flat_total.fits' | head -n 1)
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-flat-total-adu.${EXT}"
+    if [[ ! -z "${INFILE}" ]]; then
+        if [[ ! -f "${OUTPUTFILE}" ]]; then
+            python reduction/plot_total_flat_adu.py "${INFILE}" -o "${OUTPUTFILE}"
+        else
+            echo "Output file ${OUTPUTFILE} exists, skipping"
+        fi
+    else
+        echo "Cannot find flat totals file flat_total.fits" >2
+    fi
+}
+
 plot_flux_vs_rms() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
@@ -194,12 +212,13 @@ make_images() {
     plot_hist_equalised_master "${rootdir}" "${plotsdir}" "bias" 3
     plot_hist_equalised_master "${rootdir}" "${plotsdir}" "dark" 4
     plot_hist_equalised_master "${rootdir}" "${plotsdir}" "flat" 5
-    plot_flux_vs_rms "${rootdir}" "${plotsdir}" 6
-    plot_rms_vs_time "${rootdir}" "${plotsdir}" 7
-    plot_rms_with_binning "${rootdir}" "${plotsdir}" 8
-    plot_photometric_time_series "${rootdir}" "${plotsdir}" 9
-    plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  11
-    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 12
+    plot_total_flat_adu "${rootdir}" "${plotsdir}" 6
+    plot_flux_vs_rms "${rootdir}" "${plotsdir}" 7
+    plot_rms_vs_time "${rootdir}" "${plotsdir}" 8
+    plot_rms_with_binning "${rootdir}" "${plotsdir}" 9
+    plot_photometric_time_series "${rootdir}" "${plotsdir}" 10
+    plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  12
+    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 13
 
     make_astrometric_summary "${rootdir}" "${plotsdir}"
     make_psf_summary "${rootdir}" "${plotsdir}"
