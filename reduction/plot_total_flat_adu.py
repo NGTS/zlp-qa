@@ -5,15 +5,21 @@ import argparse
 import numpy as np
 import fitsio
 from qa_common import plt
+from qa_common import get_logger
 
 
 def main(args):
     if not args.width % 2 == 0:
         raise RuntimeError("Width must be a multiple of 2")
 
+    logger = get_logger('total_flat_adu')
+
+    logger.debug('Reading data')
     with fitsio.FITS(args.filename) as infile:
         image_data = infile[0].read()
 
+    logger.debug('Choosing region at %s,%s of width %s',
+                 args.x, args.y, args.width)
     region = image_data[
         args.y - args.width / 2: args.y + args.width / 2,
         args.x - args.width / 2: args.x + args.width / 2
@@ -21,7 +27,10 @@ def main(args):
 
     med_region = np.median(region)
     std_region = np.std(region)
+    logger.info('Region values - median: %s, std: %s',
+                med_region, std_region)
 
+    logger.info('Plotting')
     fig, axis = plt.subplots()
     colour_cycle = axis._get_lines.color_cycle
     axis.hist(region.flatten(), bins=args.nbins, histtype='step', normed=True)
@@ -33,6 +42,7 @@ def main(args):
         med_region, std_region))
 
     fig.tight_layout()
+    logger.debug('Saving image')
     fig.savefig(args.output)
 
 
