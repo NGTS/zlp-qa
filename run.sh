@@ -91,7 +91,7 @@ plot_total_flat_adu() {
             echo "Output file ${OUTPUTFILE} exists, skipping"
         fi
     else
-        echo "Cannot find flat totals file flat_total.fits" >2
+        echo "Cannot find flat totals file flat_total.fits" >&2
     fi
 }
 
