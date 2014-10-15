@@ -17,6 +17,10 @@ def main(args):
     logger.debug('Reading data')
     with fitsio.FITS(args.filename) as infile:
         image_data = infile[0].read()
+        header = infile[0].read_header()
+
+    nfiles = header['nfiles']
+    logger.info('%s files went into the master flat', nfiles)
 
     logger.debug('Choosing region at %s,%s of width %s',
                  args.x, args.y, args.width)
@@ -38,8 +42,8 @@ def main(args):
 
     axis.set_xlabel(r'Total counts / ADU')
     axis.set_ylabel(r'Probability density')
-    axis.set_title('Median: {:.1f}, std: {:.3f}'.format(
-        med_region, std_region))
+    axis.set_title('Median: {:.1f}, std: {:.3f}, nfiles: {}'.format(
+        med_region, std_region, nfiles))
 
     fig.tight_layout()
     logger.debug('Saving image')
