@@ -9,9 +9,12 @@ import fitsio
 import argparse
 import numpy as np
 
-from qa_common import plt, plot_night_breaks
+from qa_common import plt, plot_night_breaks, get_logger
+
+logger = get_logger(__file__)
 
 def main(args):
+    logger.info('Reading data from {}'.format(args.fname))
     with fitsio.FITS(args.fname) as infile:
         ccdx = infile['ccdx'].read()
         ccdy = infile['ccdy'].read()
@@ -20,6 +23,8 @@ def main(args):
     frames = np.arange(mjd.size)
 
     fn = np.median
+
+    logger.info('Plotting')
     fig, axis = plt.subplots()
     mappable_x = axis.plot(frames, fn(ccdx, axis=0), 'b.')[0]
     axis2 = axis.twinx()
@@ -32,6 +37,7 @@ def main(args):
 
     plot_night_breaks(axis, mjd)
 
+    logger.info('Rendering to {}'.format(args.output))
     fig.tight_layout()
     fig.savefig(args.output, bbox_inches='tight')
 

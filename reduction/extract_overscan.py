@@ -85,6 +85,7 @@ def main(args):
     pool = Pool()
     data = pool.map(extract_from_file, files)
 
+    logger.info('Rendering to %s', args.output)
     with open(args.output, 'w') as outfile:
         writer = csv.DictWriter(outfile, fieldnames=data[0].keys())
         writer.writeheader()

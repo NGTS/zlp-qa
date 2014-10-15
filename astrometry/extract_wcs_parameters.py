@@ -6,6 +6,10 @@ import csv
 import fitsio
 from astropy import wcs
 
+from qa_common import get_logger
+
+logger = get_logger(__file__)
+
 class Extracted(object):
     keys = ['fname', 'mjd', 'cmd_ra', 'cmd_dec',
             'tel_ra', 'tel_dec', 'crval1', 'crval2', 'cd1_1', 'cd1_2',
@@ -44,9 +48,12 @@ class Extracted(object):
 
 def main(args):
     with open(args.output, 'w') as outfile:
+        logger.debug('Output file %s open', args.output)
         writer = csv.DictWriter(outfile, fieldnames=Extracted.all_keys)
+        logger.debug('Header written')
         writer.writeheader()
 
+        logger.info('Parsing filelist')
         with open(args.filelist) as infile:
             for line in infile:
                 fname = line.strip('\n')

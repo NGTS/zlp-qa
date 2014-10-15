@@ -50,10 +50,15 @@ def plot_summary(s, colour, label, ax=None):
 
 def main(args):
     if args.pre_sysrem:
+        logger.info("Loading pre-sysrem data from %s", args.pre_sysrem)
         pre = extract_flux_data(args.pre_sysrem, clouds=args.clouds)
     if args.post_sysrem:
+        logger.info("Loading post-sysrem data from %s", args.post_sysrem)
         post = extract_flux_data(args.post_sysrem, clouds=args.clouds)
 
+    logger.debug('Cloud rejection level: %s', args.clouds)
+
+    logger.info('Plotting')
     fig, ax = plt.subplots(figsize=(11, 8))
     if args.pre_sysrem:
         plot_summary(pre, 'b', 'Pre', ax=ax)
@@ -70,6 +75,7 @@ def main(args):
     ax.set_ylim(1E-3, 10)
     fig.tight_layout()
 
+    logger.info('Saving to %s', args.output)
     if args.output.strip() == '-':
         fig.savefig(sys.stdout, bbox_inches='tight')
     else:

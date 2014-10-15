@@ -4,17 +4,26 @@
 import argparse
 import os
 import shutil
+from qa_common import get_logger
+
+logger = get_logger(__file__)
 
 def copy_file(i, fname, outputdir, stub):
     output_filename = os.path.join(outputdir, '{:02d}-{}.png'.format(i, stub))
     if not os.path.isfile(output_filename):
+        logger.debug('Copying file %s => %s', fname, output_filename)
         shutil.copyfile(fname, output_filename)
+    else:
+        logger.debug('File %s exists, skipping', output_filename)
 
 def main(args):
     with open(args.filelist) as infile:
         files = [line.strip() for line in infile]
 
     nfiles = len(files)
+    logger.info('Copying %s files', nfiles)
+    logger.debug('Files: %s', files)
+
     for i, file_index in enumerate(xrange(0, nfiles, nfiles / args.nfiles)):
         copy_file(args.offset + i, files[file_index], args.outputdir, args.stub)
 

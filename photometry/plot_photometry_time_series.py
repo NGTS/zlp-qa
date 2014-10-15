@@ -5,9 +5,12 @@ import fitsio
 import argparse
 import numpy as np
 
-from qa_common import plt, plot_night_breaks
+from qa_common import plt, plot_night_breaks, get_logger
+
+logger = get_logger(__file__)
 
 def main(args):
+    logger.info('Reading data')
     with fitsio.FITS(args.filename) as infile:
         imagelist_hdu = infile['imagelist']
         mjd = imagelist_hdu['tmid'].read()
@@ -20,6 +23,7 @@ def main(args):
 
     frames = np.arange(mjd.size)
 
+    logger.info('Plotting')
     fig, axes = plt.subplots(3, 1, sharex=True)
     labels = ['FWHM / pixels', 'Seeing', 'Clouds']
     for ax, data, label in zip(axes, [fwhm, seeing, clouds], labels):
@@ -30,6 +34,7 @@ def main(args):
 
     axes[-1].set_xlabel('Frame')
 
+    logger.info('Rendering to {}'.format(args.output))
     fig.tight_layout()
     fig.savefig(args.output, bbox_inches='tight')
 

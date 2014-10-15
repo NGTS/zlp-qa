@@ -6,7 +6,9 @@ import argparse
 import csv
 import sys
 
-from qa_common import plt, plot_night_breaks
+from qa_common import plt, plot_night_breaks, get_logger
+
+logger = get_logger(__file__)
 
 class Extracted(object):
     def __init__(self, fname):
@@ -26,6 +28,7 @@ class Extracted(object):
 
 
 def main(args):
+    logger.info('Reading data from %s', args.extracted)
     e = Extracted(args.extracted)
 
     mjd = e.mjd
@@ -34,6 +37,7 @@ def main(args):
 
     frames = np.arange(mjd.size)
 
+    logger.info('Plotting')
     fig, axes = plt.subplots(5, 1, sharex=True, figsize=(11, 11))
 
     axes[0].plot(frames, e.cmd_ra, marker='.', ls='None', label='cmd')
@@ -66,6 +70,7 @@ def main(args):
 
 
     fig.tight_layout()
+    logger.info('Saving to %s', args.output)
     if args.output.strip() == '-':
         fig.savefig(sys.stdout, bbox_inches='tight')
     else:

@@ -3,7 +3,7 @@
 
 import os
 import numpy as np
-from qa_common import plt
+from qa_common import plt, get_logger
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import fitsio
@@ -16,8 +16,7 @@ import logging
 
 NoiseResult = namedtuple('NoiseResult', ['x', 'y', 'yerr', 'white'])
 
-logger = mp.log_to_stderr()
-logger.setLevel(logging.INFO)
+logger = get_logger(__file__)
 
 
 class NullPool(object):

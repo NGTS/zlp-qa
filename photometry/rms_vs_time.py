@@ -26,6 +26,7 @@ def extract_flux_data(fname, chosen_exptime=None):
             exptime = imagelist['exposure'].read()
 
     if chosen_exptime is not None:
+        logger.debug('Choosing exptime %s', chosen_exptime)
         ind = exptime == chosen_exptime
         mjd = mjd[ind]
         flux = flux[:, ind]
@@ -102,6 +103,7 @@ def main(args):
 
     fig.tight_layout()
 
+    logger.info('Rendering to {}'.format(args.output))
     if args.output.strip() == '-':
         fig.savefig(sys.stdout, bbox_inches='tight')
     else:

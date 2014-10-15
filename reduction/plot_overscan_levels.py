@@ -66,6 +66,7 @@ def compute_limits(data, nsigma=3, precomputed_median=None):
     return ll, ul
 
 def main(args):
+    logger.info('Reading data from %s', args.extracted)
     data = qa_common.CSVContainer(args.extracted)
 
     mjd0 = int(data.mjd.min())
@@ -73,6 +74,7 @@ def main(args):
 
     frames = np.arange(data.mjd.size)
 
+    logger.info('Plotting')
     fig, axes = plt.subplots(5, 1, figsize=(11, 8), sharex=True)
     axes[0].plot(frames, data.right - data.left, 'k.')
     axes[0].set_ylabel(r'Left - Right')
@@ -103,6 +105,7 @@ def main(args):
         ax.grid(True, axis='y')
         plot_night_breaks(ax, data.mjd)
 
+    logger.info('Rendering to {}'.format(args.output))
     fig.tight_layout()
     if args.output.strip() == '-':
         fig.savefig(sys.stdout, bbox_inches='tight')
