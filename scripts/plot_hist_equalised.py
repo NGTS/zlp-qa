@@ -3,11 +3,12 @@
 
 import numpy as np
 import fitsio
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 import argparse
 import os
+
+from qa_common import plt, get_logger
+
+logger = get_logger(__file__)
 
 
 def histogram_equalise(image, nbins=256):
@@ -22,15 +23,20 @@ def histogram_equalise(image, nbins=256):
 
 def main(args):
     nbins = 256
+    logger.debug('Using %s bins', nbins)
+    logger.info('Reading data from %s', args.filename)
     with fitsio.FITS(args.filename) as infile:
         image = infile[0].read()
 
+    logger.info('Normalising data')
     normalised = histogram_equalise(image, nbins=nbins)
 
     suffixes = ['.{}'.format(args.ext), '_smoothed.{}'.format(args.ext)]
     interpolation_methods = ['none', 'gaussian']
 
     for (suffix, interpolation_method) in zip(suffixes, interpolation_methods):
+        output_filename = '{}{}'.format(args.stub, suffix)
+        logger.info('Plotting to %s', output_filename)
         fig, axis = plt.subplots()
         mappable = axis.imshow(normalised, origin='lower', cmap=plt.cm.afmhot,
                                interpolation=interpolation_method)
@@ -39,8 +45,9 @@ def main(args):
             getattr(axis, dimension).set_visible(False)
         axis.set_title(os.path.basename(args.filename))
         fig.tight_layout()
-        fig.savefig('{}{}'.format(args.stub, suffix), bbox_inches='tight')
+        fig.savefig(output_filename, bbox_inches='tight')
         plt.close(fig)
+        logger.debug('Image saved')
 
 if __name__ == '__main__':
     description = '''Plot an histogram equalised frame'''
