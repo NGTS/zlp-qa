@@ -4,8 +4,8 @@
 import fitsio
 import numpy as np
 import argparse
-import logging
 import sys
+from qa_common import get_logger
 
 def main(logger, args):
     logger.debug(args)
@@ -37,14 +37,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--output', help='Output file',
             type=str, required=True)
     parser.add_argument('file', nargs='+', type=str, help='Input file')
-    parser.add_argument('-v', '--verbose', action='store_true', required=False,
-            help='Verbose output')
     args = parser.parse_args()
 
-    if args.verbose:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.INFO)
-
-    logger = logging.getLogger(sys.argv[0])
+    logger = get_logger(__file__)
     main(logger, args)

@@ -2,20 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import logging
 import os
 import subprocess as sp
 import fitsio
 import numpy as np
 import tempfile
 import csv
+from qa_common import get_logger
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__file__)
+logger = get_logger(__file__)
 
 class Catalogue(object):
     def __init__(self, ra, dec, box_width=3, max_objects=1E6):
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = get_logger(self.__class__.__name__)
         self.ra = ra
         self.dec = dec
         self.box_width = box_width

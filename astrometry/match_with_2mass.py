@@ -4,9 +4,9 @@
 import argparse
 import os
 import subprocess as sp
-import logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__file__)
+from qa_common import get_logger
+
+logger = get_logger(__file__)
 
 class Stilts(object):
     stilts_file = os.path.join(os.path.dirname(__file__),

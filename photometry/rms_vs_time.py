@@ -7,13 +7,11 @@ import fitsio
 import numpy as np
 import argparse
 from collections import namedtuple
-import logging
 from scipy.stats import scoreatpercentile
 
-from qa_common import plt
+from qa_common import plt, get_logger
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = get_logger(__file__)
 
 summary = namedtuple('Summary', ['frames', 'flux', 'breaks', 'lq', 'uq', 'std'])
 

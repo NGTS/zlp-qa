@@ -3,18 +3,16 @@
 
 from __future__ import division, print_function, absolute_import
 import argparse
-import logging
 import fitsio
 import numpy as np
 from multiprocessing.pool import ThreadPool as Pool
 import csv
 import re
 
-from qa_common import plt
+from qa_common import plt, get_logger
 
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
+logger = get_logger(__file__)
 
 overscan_regex = re.compile(r'\[(\d+):(\d+),(\d+):(\d+)\]')
 

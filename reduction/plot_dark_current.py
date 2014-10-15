@@ -3,7 +3,6 @@
 
 from __future__ import division, print_function, absolute_import
 import argparse
-import logging
 import fitsio
 import numpy as np
 from multiprocessing.pool import ThreadPool as Pool
@@ -13,12 +12,11 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import qa_common
-from qa_common import plt, plot_night_breaks
+from qa_common import plt, plot_night_breaks, get_logger
 from plot_overscan_levels import sigma_clipped_mean, NullPool, compute_limits
 
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger()
+logger = get_logger(__file__)
 
 def main(args):
     data = qa_common.CSVContainer(args.extracted)

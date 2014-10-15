@@ -3,7 +3,6 @@
 
 from __future__ import division, print_function, absolute_import
 import argparse
-import logging
 import fitsio
 import numpy as np
 from multiprocessing.pool import ThreadPool as Pool
@@ -12,10 +11,9 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import qa_common
-from qa_common import plt, plot_night_breaks
+from qa_common import plt, plot_night_breaks, get_logger
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger()
+logger = get_logger(__file__)
 
 def sigma_clipped_mean(values, nsigma=3):
     median_value = np.median(values)

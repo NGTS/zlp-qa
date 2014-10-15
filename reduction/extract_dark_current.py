@@ -3,17 +3,16 @@
 
 from __future__ import division, print_function, absolute_import
 import argparse
-import logging
 import fitsio
 import numpy as np
 from multiprocessing.pool import ThreadPool as Pool
 import csv
 
+from qa_common import get_logger
 from plot_overscan_levels import sigma_clipped_mean, NullPool, compute_limits
 
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
+logger = get_logger(__file__)
 
 def compute_bias_signal(image, left, right):
     x = np.arange(2048)
