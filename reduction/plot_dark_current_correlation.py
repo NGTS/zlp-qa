@@ -19,8 +19,8 @@ def main(args):
     offset_value = 0.1
     offset = np.random.uniform(-offset_value, offset_value, data.chstemp.size)
     
-    fig, axis = plt.subplots(figsize=(11, 8))
     logger.info('Plotting')
+    fig, axis = plt.subplots()
 
     axis.plot(data.chstemp + offset, data.dark, 'k.')
     axis.set_ylim(1, 7)
