@@ -57,6 +57,26 @@ plot_dark_correlation() {
 
 }
 
+plot_hist_equalised_master() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
+    local readonly frame_type="${3}"
+    local readonly plot_number="$4"
+
+    MASTERFILE=$(find ${rootdir}/Reduction/output -iname "*master${frame_type}*.fits" | head -n 1)
+    if [[ ! -z "${MASTERFILE}" ]]; then
+        OUTPUTSTUB="${plotsdir}/$(compute_plot_number ${plot_number})-m${frame_type}"
+        OUTPUTFILE="${OUTPUTSTUB}.png"
+        if [[ ! -f "${OUTPUTFILE}" ]]; then
+            python scripts/plot_hist_equalised.py ${MASTERFILE} --stub ${OUTPUTSTUB} --ext ${EXT}
+        else
+            echo "Output file ${OUTPUTFILE} exists, skipping"
+        fi
+    else
+        echo "Cannot find master ${frame_type} file" >&2
+    fi
+}
+
 plot_flux_vs_rms() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
@@ -171,12 +191,15 @@ make_images() {
     plot_overscan_levels "${rootdir}" "${plotsdir}" 0
     plot_dark_levels "${rootdir}" "${plotsdir}" 1
     plot_dark_correlation "${rootdir}" "${plotsdir}" 2
-    plot_flux_vs_rms "${rootdir}" "${plotsdir}" 4
-    plot_rms_vs_time "${rootdir}" "${plotsdir}" 5
-    plot_rms_with_binning "${rootdir}" "${plotsdir}" 6
-    plot_photometric_time_series "${rootdir}" "${plotsdir}" 7
-    plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  9
-    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 10
+    plot_hist_equalised_master "${rootdir}" "${plotsdir}" "bias" 3
+    plot_hist_equalised_master "${rootdir}" "${plotsdir}" "dark" 4
+    plot_hist_equalised_master "${rootdir}" "${plotsdir}" "flat" 5
+    plot_flux_vs_rms "${rootdir}" "${plotsdir}" 6
+    plot_rms_vs_time "${rootdir}" "${plotsdir}" 7
+    plot_rms_with_binning "${rootdir}" "${plotsdir}" 8
+    plot_photometric_time_series "${rootdir}" "${plotsdir}" 9
+    plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  11
+    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 12
 
     make_astrometric_summary "${rootdir}" "${plotsdir}"
     make_psf_summary "${rootdir}" "${plotsdir}"
