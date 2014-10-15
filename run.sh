@@ -264,6 +264,8 @@ main() {
     validate_arguments "$@"
     setup_environment
     # ensure_stilts
+    echo "Starting QA"
+    printf '%80s\n' | tr ' ' -
 
     local readonly script_dir="$(dirname $(abspath $0))"
     echo "Running scripts from directory ${script_dir}"
