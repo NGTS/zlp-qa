@@ -4,6 +4,8 @@
 import os
 import numpy as np
 from qa_common import plt, get_logger
+from qa_common.airmass_correct import (remove_extinction,
+                                       good_measurement_indices)
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import fitsio
@@ -99,12 +101,35 @@ def load_data(filename, mask=[]):
         imagelist = infile['imagelist']
         tmid = imagelist['tmid'].read()
         meanbias = imagelist['meanbias'].read()
+        airmass = imagelist['airmass'].read()
+        shift = imagelist['shift'].read()
+        clouds = imagelist['clouds'].read()
         T = imagelist['T'].read()
 
         flux = infile['flux'].read()
 
         catalogue = infile['catalogue']
         mean_fluxes = catalogue['flux_mean'].read()
+
+        ccdx = infile['ccdx'][:, :1].flatten()
+        ccdy = infile['ccdy'][:, :1].flatten()
+
+    # Filter out bad points
+    per_object_ind, per_image_ind = good_measurement_indices(shift, clouds,
+                                                             airmass,
+                                                             ccdx, ccdy)
+    initial_shape = flux.shape
+    flux = flux[per_object_ind][:, per_image_ind]
+    mean_fluxes = mean_fluxes[per_object_ind]
+    airmass = airmass[per_image_ind]
+    tmid = tmid[per_image_ind]
+
+    logger.info('Flux array shape', initial=initial_shape,
+                final=flux.shape)
+    logger.debug('Removing extinction')
+    flux = remove_extinction(flux, airmass,
+                             flux_min=1E4,
+                             flux_max=6E5)
 
     logger.info('Nights in data', nights=dateclip[:, 0])
 
