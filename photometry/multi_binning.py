@@ -106,11 +106,11 @@ def load_data(filename, mask=[]):
         catalogue = infile['catalogue']
         mean_fluxes = catalogue['flux_mean'].read()
 
-    logger.info('all nights in data: %s', dateclip[:, 0])
+    logger.info('Nights in data', nights=dateclip[:, 0])
 
     if len(mask) > 0:
         dateclip = dateclip[mask]
-    logger.info("Nights we're using: %s", dateclip[:, 0])
+    logger.info("Number of nights used", nights=dateclip[:, 0])
 
     cut = []
     for time in tmid:
@@ -162,21 +162,21 @@ def noisecharacterise(i, flux_limits, datadict, c='b', model=True, ax=None):
     stdflux = np.std(flux, axis=1)
     rms = stdflux
     rms = abs(1.0857 * 1000.0 * stdflux / avflux)
-    logger.debug(avflux)
-    logger.debug(stdflux)
-    logger.debug(rms)
+    new_logger = logger.bind(average=avflux, std=stdflux, rms=rms)
 
     sane_keys = [((rms != np.inf) & (avflux != np.inf) & (rms != 0) & (rms < rms_lim) & (
         avflux != 0) & (rms != np.NaN) & (avflux != np.NaN) & (avflux < maxflux) & (avflux > minflux))]
 
     flux_sane = flux[sane_keys].copy()
 
-    logger.info('Using %s stars between %s and %s kepler mag',
-                 len(flux_sane), mag_min, mag_max)
-    logger.info('Using %s time points', len(flux_sane[0]))
+    new_logger = new_logger.bind(nstars=len(flux_sane),
+                                 mag_min=mag_min, mag_max=mag_max,
+                                 npoints=len(flux_sane[0]))
+    new_logger.info('Stats')
 
-    logger.debug(max(np.median(flux_sane, axis=1)))
-    logger.debug(min(np.median(flux_sane, axis=1)))
+    logger.debug('median flux range',
+                 min_value=min(np.median(flux_sane, axis=1)),
+                 max_value=max(np.median(flux_sane, axis=1)))
 
     median_list = [np.median(rms[sane_keys])]
     N_bin_list = [1]
@@ -187,7 +187,7 @@ def noisecharacterise(i, flux_limits, datadict, c='b', model=True, ax=None):
 
     for N in binrange:
 
-        logger.debug('Working with bin size %s', N)
+        logger.debug('bin size', value=N)
 
         binned = binning(flux_sane, N)
 
