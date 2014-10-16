@@ -15,6 +15,30 @@ def low_shift_index(shift, initial_bad_shift_point=3, nsigma=5):
     return shift <= med_shift + nsigma * std_shift
 
 
+def good_measurement_indices(shift, clouds, airmass, ccdx, ccdy,
+                         ccd_margin=4, max_airmass=2.):
+    '''
+    Remove some known reasons why lightcurve(s) may be bad. These are:
+        * high shift value suggesting large jumps in the frame
+        * measurable cloudy data
+        * high airmass measurements
+        * aperture positions near the edge of the chip
+
+    This is temporary until proper flagging takes place.
+    '''
+    good_shift_ind = low_shift_index(shift)
+    ccd_ind = ((ccdx > ccd_margin) &
+               (ccdx < 2048 - ccd_margin) &
+               (ccdy > ccd_margin) &
+               (ccdy < 2048 - ccd_margin))
+    airmass_ind = airmass <= max_airmass
+
+    per_object_ind = ccd_ind
+    per_image_ind = good_shift_ind & airmass_ind
+
+    return per_object_ind, per_image_ind
+
+
 def masked_log10(data, *args, **kwargs):
     '''
     Given an array of data with possible bad values, e.g. < 0 or nans build
@@ -49,8 +73,10 @@ def fit_airmass_trend(airmass, standard):
     good_ind = np.isfinite(standard)
     return np.poly1d(np.polyfit(airmass[good_ind], standard[good_ind], 1))
 
+
 def mags_to_flux(mags, zp=0.):
     return 10 ** ((zp - mags) / 2.5)
+
 
 def remove_extinction(data, airmass, flux_min=None, flux_max=None):
     '''
