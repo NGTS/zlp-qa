@@ -2,6 +2,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+def low_shift_index(shift, initial_bad_shift_point=3, nsigma=5):
+    '''
+    Iteratively remove outliers
+    '''
+    ind = shift <= initial_bad_shift_point
+    initial_good_shift = shift[ind]
+
+    med_shift = np.median(initial_good_shift)
+    std_shift = np.std(initial_good_shift)
+
+    return shift <= med_shift + nsigma * std_shift
+
+
 def masked_log10(data, *args, **kwargs):
     '''
     Given an array of data with possible bad values, e.g. < 0 or nans build
