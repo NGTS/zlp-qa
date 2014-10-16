@@ -2,7 +2,15 @@
 
 set -e
 
-[[ ${TESTQA} ]] && echo "Testing"
+print_status() {
+    echo "$@" >&2
+}
+
+print_warning() {
+    print_status "*** WARNING: $@"
+}
+
+[[ ${TESTQA} ]] && print_status "Testing"
 
 if [[ -z "${TMPDIR}" ]]; then
     TMPDIR=/tmp
@@ -22,7 +30,7 @@ plot_overscan_levels() {
         python reduction/extract_overscan.py ${TMPDIR}/bias-frames.list -o ${TMPDIR}/extracted-bias-levels.csv
         python reduction/plot_overscan_levels.py ${TMPDIR}/extracted-bias-levels.csv -o ${OUTPUTFILE}
     else
-        echo "Output file ${OUTPUTFILE} exists, skipping"
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
 
 }
@@ -38,7 +46,7 @@ plot_dark_levels() {
         python reduction/extract_dark_current.py ${TMPDIR}/dark-frames.list -o ${TMPDIR}/extracted-dark-levels.csv
         python reduction/plot_dark_current.py ${TMPDIR}/extracted-dark-levels.csv -o ${OUTPUTFILE}
     else
-        echo "Output file ${OUTPUTFILE} exists, skipping"
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
 
 }
@@ -52,7 +60,7 @@ plot_dark_correlation() {
     if [[ ! -f ${OUTPUTFILE} ]]; then
         python reduction/plot_dark_current_correlation.py ${TMPDIR}/extracted-dark-levels.csv -o ${OUTPUTFILE}
     else
-        echo "Output file ${OUTPUTFILE} exists, skipping"
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
 
 }
@@ -70,10 +78,10 @@ plot_hist_equalised_master() {
         if [[ ! -f "${OUTPUTFILE}" ]]; then
             python scripts/plot_hist_equalised.py ${MASTERFILE} --stub ${OUTPUTSTUB} --ext ${EXT}
         else
-            echo "Output file ${OUTPUTFILE} exists, skipping"
+            print_status "Output file ${OUTPUTFILE} exists, skipping"
         fi
     else
-        echo "Cannot find master ${frame_type} file" >&2
+        print_warning "Cannot find master ${frame_type} file"
     fi
 }
 
@@ -88,10 +96,10 @@ plot_total_flat_adu() {
         if [[ ! -f "${OUTPUTFILE}" ]]; then
             python reduction/plot_total_flat_adu.py "${INFILE}" -o "${OUTPUTFILE}"
         else
-            echo "Output file ${OUTPUTFILE} exists, skipping"
+            print_status "Output file ${OUTPUTFILE} exists, skipping"
         fi
     else
-        echo "Cannot find flat totals file flat_total.fits" >&2
+        print_warning "Cannot find flat totals file flat_total.fits"
     fi
 }
 
@@ -105,13 +113,13 @@ plot_flux_vs_rms() {
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         local readonly postsysrem=$(find -L ${rootdir}/AperturePhot/output -name 'tamout.fits')
         if [[ -z ${postsysrem} ]]; then
-            echo "No post-sysrem file found"
+            print_warning "No post-sysrem file found"
             python photometry/flux_vs_rms.py --pre-sysrem ${presysrem} -o ${OUTPUTFILE}
         else
             python photometry/flux_vs_rms.py --pre-sysrem ${presysrem} --post-sysrem ${postsysrem} -o ${OUTPUTFILE}
         fi
     else
-        echo "Output file ${OUTPUTFILE} exists, skipping"
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
 }
 
@@ -125,13 +133,13 @@ plot_rms_vs_time() {
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         local readonly postsysrem=$(find -L ${rootdir}/AperturePhot/output -name 'tamout.fits')
         if [[ -z ${postsysrem} ]]; then 
-            echo "No post-sysrem file found"
+            print_warning "No post-sysrem file found"
             python photometry/rms_vs_time.py --pre-sysrem ${presysrem} -o ${OUTPUTFILE}
         else
             python photometry/rms_vs_time.py --pre-sysrem ${presysrem} --post-sysrem ${postsysrem} -o ${OUTPUTFILE}
         fi
     else
-        echo "Output file ${OUTPUTFILE} exists, skipping"
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
 
 }
@@ -147,10 +155,10 @@ plot_rms_with_binning() {
         if [[ -z ${TESTQA} ]]; then
             python photometry/multi_binning.py ${presysrem} -o ${OUTPUTFILE}
         else
-            echo "RMS with binning test disabled; it does not work with this data set"
+            print_status "RMS with binning test disabled; it does not work with this data set"
         fi
     else
-        echo "Output file ${OUTPUTFILE} exists, skipping"
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
 }
 
@@ -164,7 +172,7 @@ plot_photometric_time_series() {
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         python photometry/plot_photometry_time_series.py ${presysrem} -o ${OUTPUTFILE}
     else
-        echo "Output file ${OUTPUTFILE} exists, skipping"
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
 
 }
@@ -180,7 +188,7 @@ plot_extracted_astrometic_parameters() {
         python astrometry/extract_wcs_parameters.py ${TMPDIR}/science-images-list.txt -o ${TMPDIR}/astrometric-extraction.csv
         python astrometry/plot_astrometric_parameters.py ${TMPDIR}/astrometric-extraction.csv -o ${OUTPUTFILE}
     else
-        echo "Output file ${OUTPUTFILE} exists, skipping"
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
 
 }
@@ -195,7 +203,7 @@ plot_pixel_centre_of_mass() {
         local readonly filename=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         python photometry/pixel-com.py "${filename}" -o "${OUTPUTFILE}"
     else
-        echo "Output file ${OUTPUTFILE} exists, skipping"
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
 }
 
@@ -264,11 +272,11 @@ main() {
     validate_arguments "$@"
     setup_environment
     # ensure_stilts
-    echo "Starting QA"
-    printf '%80s\n' | tr ' ' -
+    print_status "Starting QA"
+    print_status $(printf '%80s\n' | tr ' ' -)
 
     local readonly script_dir="$(dirname $(abspath $0))"
-    echo "Running scripts from directory ${script_dir}"
+    print_status "Running scripts from directory ${script_dir}"
 
     local readonly rootdir=$(abspath $1)
     local readonly outputdir=$(abspath $2)
@@ -295,7 +303,7 @@ validate_arguments() {
     local readonly outputdir=$2
 
     if [[ ! -d ${rootdir} ]]; then
-        echo "Cannot find directory ${rootdir}" >&2
+        print_warning "Cannot find directory ${rootdir}" >&2
         exit 1
     fi
 }
