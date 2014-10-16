@@ -26,4 +26,5 @@ structlog.configure(
 
 
 def get_logger(filename):
-    return structlog.get_logger().bind(source=filename)
+    return structlog.get_logger().bind(source=filename,
+                                       pipeline_stage='quality_assessment')
