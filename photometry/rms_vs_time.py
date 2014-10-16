@@ -16,7 +16,7 @@ logger = get_logger(__file__)
 summary = namedtuple('Summary', ['frames', 'flux', 'breaks', 'lq', 'uq', 'std'])
 
 def extract_flux_data(fname, chosen_exptime=None):
-    logger.info("Extracting from {}".format(fname))
+    logger.info("Extracting", filename=fname)
     with fitsio.FITS(fname) as infile:
         mjd = infile['hjd'][0:1, :][0]
         flux = infile['flux'].read()
@@ -26,7 +26,7 @@ def extract_flux_data(fname, chosen_exptime=None):
             exptime = imagelist['exposure'].read()
 
     if chosen_exptime is not None:
-        logger.debug('Choosing exptime %s', chosen_exptime)
+        logger.debug('Choosing exptime', exptime=chosen_exptime)
         ind = exptime == chosen_exptime
         mjd = mjd[ind]
         flux = flux[:, ind]
@@ -103,7 +103,7 @@ def main(args):
 
     fig.tight_layout()
 
-    logger.info('Rendering to {}'.format(args.output))
+    logger.info('Rendering', filename=args.output)
     if args.output.strip() == '-':
         fig.savefig(sys.stdout, bbox_inches='tight')
     else:

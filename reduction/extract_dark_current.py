@@ -22,7 +22,6 @@ def compute_bias_signal(image, left, right):
     return y
 
 def extract_from_file(fname):
-    logger.info('Analysing {0}'.format(fname))
     with fitsio.FITS(fname) as infile:
         header = infile[0].read_header()
         image = infile[0].read()
@@ -44,9 +43,8 @@ def extract_from_file(fname):
     chstemp = header['chstemp']
     ccdtemp = header['ccdtemp']
 
-    logger.debug('Gain: {}'.format(gain))
-    logger.debug('Exposure time: {}'.format(exptime))
-    logger.debug('CCD temp: {}'.format(ccdtemp))
+    logger.debug('Analysing file', filename=fname,
+                 gain=gain, exptime=exptime, ccdtemp=ccdtemp)
 
     central = image[:, 20:-20]
     bias_signal = compute_bias_signal(central, left_overscan, right_overscan)
@@ -66,7 +64,7 @@ def extract_from_file(fname):
 def main(args):
     with open(args.filelist) as infile:
         files = [line.strip('\n') for line in infile.readlines()]
-    logger.info("Analysing {0} files".format(len(files)))
+    logger.info('Number of files', nfiles=len(files))
 
     pool = NullPool()
     data = filter(None, pool.map(extract_from_file, files))

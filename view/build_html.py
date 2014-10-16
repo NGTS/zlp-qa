@@ -47,14 +47,14 @@ class Document(object):
 def main(args):
     files = sorted(glob.glob('{}/plots/*.{}'.format(args.sourcedir, args.extension)))
     files = (os.path.relpath(fname, args.sourcedir) for fname in files)
-    logger.debug('Building html file out of %s', files)
+    logger.debug('Building html file', nfiles=files)
     d = Document()
 
     for filename in files:
-        logger.debug('Adding image %s', filename)
+        logger.debug('Adding image', filename=filename)
         d.add_image(Image(filename))
 
-    logger.info('Rendering html file')
+    logger.info('Rendering html file', filename=args.output)
     with open(args.output, 'w') as outfile:
         outfile.write(d.render())
 

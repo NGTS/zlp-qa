@@ -14,17 +14,15 @@ logger = get_logger(__file__)
 
 class Catalogue(object):
     def __init__(self, ra, dec, box_width=3, max_objects=1E6):
-        self.logger = get_logger(self.__class__.__name__)
         self.ra = ra
         self.dec = dec
         self.box_width = box_width
         self.max_objects = int(max_objects)
 
-        self.logger.info("Searching in a box of {box_width} degrees "
-                "around position ({ra},{dec})".format(
-                    box_width=self.box_width,
+        logger.info('Searching in box',
                     ra=self.ra,
-                    dec=self.dec))
+                    dec=self.dec,
+                    box_width=self.box_width)
 
     def build(self, output_filename):
         ra = str(self.ra)
@@ -35,7 +33,8 @@ class Catalogue(object):
             '-m', self.max_objects,
             '-bd', self.box_width])
 
-        self.logger.debug("Running command [{}]".format(' '.join(cmd)))
+        logger.debug("Running command", command_string=' '.join(cmd),
+                          command=cmd)
         output = sp.check_output(cmd, stderr=sp.PIPE)
 
         with open(output_filename, 'w') as outfile:
@@ -91,8 +90,8 @@ def build_catalogue(input_filename, output_filename):
 
 
 def main(args):
-    logger.debug('Matching from {}'.format(args.catalogue))
-    logger.debug('Rendering to output file {}'.format(args.output))
+    logger.debug('Matching from catalogue', catalogue_name=args.catalogue)
+    logger.debug('Output file', filename=args.output)
     build_catalogue(args.catalogue, args.output)
 
 if __name__ == '__main__':

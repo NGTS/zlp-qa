@@ -23,7 +23,8 @@ def extract_flux_data(fname, zp=21.18, clouds=None):
     if clouds is not None:
         old_npts = flux.shape[1]
         flux = flux[:, cloud_data < clouds]
-        logger.info("Rejecting {} cloudy frames".format(old_npts - flux.shape[1]))
+        logger.info("Rejecting cloudy frames",
+                    nframes=old_npts - flux.shape[1])
 
     av_flux = np.average(flux, axis=1)
     std_flux = np.std(flux, axis=1)
@@ -36,7 +37,7 @@ def extract_flux_data(fname, zp=21.18, clouds=None):
             (std_flux == std_flux))
     av_flux, std_flux = [data[ind] for data in [av_flux, std_flux]]
 
-    logger.info("Rejecting {} objects".format(before_size - av_flux.size))
+    logger.info("Rejecting objects", nobjects=before_size - av_flux.size)
 
     mags = zp - 2.5 * np.log10(av_flux)
 
@@ -50,15 +51,14 @@ def plot_summary(s, colour, label, ax=None):
 
 def main(args):
     if args.pre_sysrem:
-        logger.info("Loading pre-sysrem data from %s", args.pre_sysrem)
+        logger.info("Loading pre-sysrem data", filename=args.pre_sysrem)
         pre = extract_flux_data(args.pre_sysrem, clouds=args.clouds)
     if args.post_sysrem:
-        logger.info("Loading post-sysrem data from %s", args.post_sysrem)
+        logger.info("Loading post-sysrem data", filename=args.post_sysrem)
         post = extract_flux_data(args.post_sysrem, clouds=args.clouds)
 
-    logger.debug('Cloud rejection level: %s', args.clouds)
+    logger.debug('Cloud rejection level', level=args.clouds)
 
-    logger.info('Plotting')
     fig, ax = plt.subplots(figsize=(11, 8))
     if args.pre_sysrem:
         plot_summary(pre, 'b', 'Pre', ax=ax)
@@ -75,7 +75,7 @@ def main(args):
     ax.set_ylim(1E-3, 10)
     fig.tight_layout()
 
-    logger.info('Saving to %s', args.output)
+    logger.info('Saving', filename=args.output)
     if args.output.strip() == '-':
         fig.savefig(sys.stdout, bbox_inches='tight')
     else:

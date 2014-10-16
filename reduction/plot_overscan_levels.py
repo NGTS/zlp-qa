@@ -24,7 +24,7 @@ def sigma_clipped_mean(values, nsigma=3):
 
 
 def extract_from_file(fname):
-    logger.debug('Analysing {0}'.format(fname))
+    logger.debug('Analysing file', filename=fname)
     with fitsio.FITS(fname) as infile:
         header = infile[0].read_header()
         image = infile[0].read()
@@ -66,7 +66,7 @@ def compute_limits(data, nsigma=3, precomputed_median=None):
     return ll, ul
 
 def main(args):
-    logger.info('Reading data from %s', args.extracted)
+    logger.info('Reading data', filename=args.extracted)
     data = qa_common.CSVContainer(args.extracted)
 
     mjd0 = int(data.mjd.min())
@@ -105,7 +105,7 @@ def main(args):
         ax.grid(True, axis='y')
         plot_night_breaks(ax, data.mjd)
 
-    logger.info('Rendering to {}'.format(args.output))
+    logger.info('Rendering', filename=args.output)
     fig.tight_layout()
     if args.output.strip() == '-':
         fig.savefig(sys.stdout, bbox_inches='tight')

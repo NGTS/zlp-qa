@@ -14,12 +14,11 @@ logger = get_logger(__file__)
 
 def main(args):
     data = qa_common.CSVContainer(args.extracted)
-    logger.info('Data read')
+    logger.info('Data read', filename=args.extracted)
 
     offset_value = 0.1
     offset = np.random.uniform(-offset_value, offset_value, data.chstemp.size)
     
-    logger.info('Plotting')
     fig, axis = plt.subplots()
 
     axis.plot(data.chstemp + offset, data.dark, 'k.')
@@ -29,7 +28,7 @@ def main(args):
     axis.set_ylabel(r'Dark current / $\mathrm{e}^- s^{-1}$')
     
     fig.tight_layout()
-    logger.info('Rendering file')
+    logger.info('Rendering file', filename=args.output)
     if args.output.strip() == '-':
         fig.savefig(sys.stdout, bbox_inches='tight')
     else:

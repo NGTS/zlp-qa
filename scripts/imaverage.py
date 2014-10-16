@@ -8,25 +8,23 @@ import sys
 from qa_common import get_logger
 
 def main(logger, args):
-    logger.debug(args)
+    logger.debug(args=args)
     nfiles = len(args.file)
-    logger.info('Averaging {nfiles} files, take that iraf!'.format(
-        nfiles=nfiles))
 
     first_file = args.file[0]
     image = fitsio.read(first_file)
     dimensions = image.shape
-    logger.info("Constructing image of size {}x{}".format(*dimensions))
+    logger.info("Constructing image", dimensions=dimensions)
 
     with fitsio.FITS(args.output, 'rw', clobber=True) as outfile:
         outfile.write(np.zeros(dimensions, dtype=float))
 
         for fname in args.file:
-            logger.debug('Analysing {}'.format(fname))
+            logger.debug('Analysing', filename=fname)
             data = fitsio.read(fname).astype(float)
 
             scaled_data = data / float(nfiles)
-            logger.debug(scaled_data)
+            logger.debug(scaled_data=scaled_data)
 
             new_total = outfile[0].read() + scaled_data
             outfile[0].write(new_total)

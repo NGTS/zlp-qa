@@ -7,23 +7,22 @@ import fitsio
 from qa_common import plt
 from qa_common import get_logger
 
+logger = get_logger(__file__)
 
 def main(args):
     if not args.width % 2 == 0:
         raise RuntimeError("Width must be a multiple of 2")
 
-    logger = get_logger('total_flat_adu')
 
-    logger.debug('Reading data')
+    logger.debug('Reading data', filename=args.filename)
     with fitsio.FITS(args.filename) as infile:
         image_data = infile[0].read()
         header = infile[0].read_header()
 
     nfiles = header['nfiles']
-    logger.info('%s files went into the master flat', nfiles)
+    logger.info('Number of files in master flat', nfiles=nfiles)
 
-    logger.debug('Choosing region at %s,%s of width %s',
-                 args.x, args.y, args.width)
+    logger.debug('Region', x=args.x, y=args.y, width=args.width)
     region = image_data[
         args.y - args.width / 2: args.y + args.width / 2,
         args.x - args.width / 2: args.x + args.width / 2
@@ -31,10 +30,8 @@ def main(args):
 
     med_region = np.median(region)
     std_region = np.std(region)
-    logger.info('Region values - median: %s, std: %s',
-                med_region, std_region)
+    logger.info('values', median=med_region, std=std_region)
 
-    logger.info('Plotting')
     fig, axis = plt.subplots()
     colour_cycle = axis._get_lines.color_cycle
     axis.hist(region.flatten(), bins=args.nbins, histtype='step', normed=True)
@@ -46,7 +43,7 @@ def main(args):
         med_region, std_region, nfiles))
 
     fig.tight_layout()
-    logger.debug('Saving image')
+    logger.debug('Saving image', filename=args.output)
     fig.savefig(args.output)
 
 
