@@ -6,18 +6,14 @@ import datetime
 fmt = '%(message)s'
 logging.basicConfig(level=logging.DEBUG, format=fmt, stream=sys.stdout)
 
+
 def add_timestamp(_, __, event_dict):
     event_dict['timestamp'] = str(datetime.datetime.utcnow())
     return event_dict
 
-def add_logging_level(_, method, event_dict):
-    if method == 'warn':
-        name = 'warning'
-    else:
-        name = method
 
-    event_dict['level'] = name
-    event_dict['method'] = method
+def add_logging_level(_, method, event_dict):
+    event_dict['level'] = method
     return event_dict
 
 structlog.configure(
