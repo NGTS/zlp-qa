@@ -10,10 +10,21 @@ def add_timestamp(_, __, event_dict):
     event_dict['timestamp'] = str(datetime.datetime.utcnow())
     return event_dict
 
+def add_logging_level(_, method, event_dict):
+    if method == 'warn':
+        name = 'warning'
+    else:
+        name = method
+
+    event_dict['level'] = name
+    event_dict['method'] = method
+    return event_dict
+
 structlog.configure(
     processors=[
         structlog.stdlib.filter_by_level,
         add_timestamp,
+        add_logging_level,
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
         structlog.processors.JSONRenderer()
