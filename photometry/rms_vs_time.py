@@ -9,6 +9,8 @@ import argparse
 from collections import namedtuple
 from scipy.stats import scoreatpercentile
 
+from qa_common.airmass_correct import remove_extinction
+from qa_common.filter_objects import good_measurement_indices
 from qa_common import plt, get_logger
 
 logger = get_logger(__file__)
@@ -20,6 +22,13 @@ def extract_flux_data(fname, chosen_exptime=None):
     with fitsio.FITS(fname) as infile:
         mjd = infile['hjd'][0:1, :][0]
         flux = infile['flux'].read()
+        imagelist = infile['imagelist']
+        cloud_data = imagelist['clouds'].read()
+        airmass = imagelist['airmass'].read()
+        shift = imagelist['shift'].read()
+
+        ccdx = infile['ccdx'][:, :1].flatten()
+        ccdy = infile['ccdy'][:, :1].flatten()
 
         if chosen_exptime is not None:
             imagelist = infile['imagelist']
@@ -28,8 +37,27 @@ def extract_flux_data(fname, chosen_exptime=None):
     if chosen_exptime is not None:
         logger.debug('Choosing exptime', exptime=chosen_exptime)
         ind = exptime == chosen_exptime
-        mjd = mjd[ind]
+        mjd, cloud_data, airmass, shift = [data[ind] for data in [
+            mjd, cloud_data, airmass, shift]]
         flux = flux[:, ind]
+
+
+    # Filter out bad points
+    per_object_ind, per_image_ind = good_measurement_indices(shift, cloud_data,
+                                                             airmass,
+                                                             ccdx, ccdy)
+    initial_shape = flux.shape
+    flux = flux[per_object_ind][:, per_image_ind]
+    airmass, mjd = [data[per_image_ind] for data in [
+        airmass, mjd]]
+
+    logger.info('Flux array shape', initial=initial_shape,
+                final=flux.shape)
+    logger.debug('Removing extinction')
+    flux = remove_extinction(flux, airmass,
+                             flux_min=1E4,
+                             flux_max=6E5)
+
 
     per_ap_median = np.median(flux, axis=1)
     ind = (per_ap_median > 0)
