@@ -4,8 +4,8 @@
 import os
 import numpy as np
 from qa_common import plt, get_logger
-from qa_common.airmass_correct import (remove_extinction,
-                                       good_measurement_indices)
+from qa_common.airmass_correct import remove_extinction
+from qa_common.filter_objects import good_measurement_indices
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import fitsio
