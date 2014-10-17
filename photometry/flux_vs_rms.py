@@ -7,7 +7,8 @@ import numpy as np
 import argparse
 from collections import namedtuple
 import sys
-
+from qa_common.airmass_correct import remove_extinction
+from qa_common.filter_objects import good_measurement_indices
 from qa_common import plt, get_logger
 
 logger = get_logger(__file__)
@@ -19,12 +20,28 @@ def extract_flux_data(fname, zp=21.18, clouds=None):
         flux = infile['flux'].read()
         imagelist = infile['imagelist']
         cloud_data = imagelist['clouds'].read()
+        airmass = imagelist['airmass'].read()
+        shift = imagelist['shift'].read()
 
-    if clouds is not None:
-        old_npts = flux.shape[1]
-        flux = flux[:, cloud_data < clouds]
-        logger.info("Rejecting cloudy frames",
-                    nframes=old_npts - flux.shape[1])
+        ccdx = infile['ccdx'][:, :1].flatten()
+        ccdy = infile['ccdy'][:, :1].flatten()
+
+
+    # Filter out bad points
+    per_object_ind, per_image_ind = good_measurement_indices(shift, cloud_data,
+                                                             airmass,
+                                                             ccdx, ccdy)
+    initial_shape = flux.shape
+    flux = flux[per_object_ind][:, per_image_ind]
+    airmass = airmass[per_image_ind]
+
+    logger.info('Flux array shape', initial=initial_shape,
+                final=flux.shape)
+    logger.debug('Removing extinction')
+    flux = remove_extinction(flux, airmass,
+                             flux_min=1E4,
+                             flux_max=6E5)
+
 
     av_flux = np.average(flux, axis=1)
     std_flux = np.std(flux, axis=1)
