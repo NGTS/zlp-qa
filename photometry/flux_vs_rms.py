@@ -27,6 +27,7 @@ def extract_flux_data(fname, zp=21.18, clouds=None):
         ccdx = infile['ccdx'][:, :1].flatten()
         ccdy = infile['ccdy'][:, :1].flatten()
 
+    logger.info('Normalising by exposure time')
     flux /= exptime
 
     # Filter out bad points
