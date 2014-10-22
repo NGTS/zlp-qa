@@ -70,9 +70,13 @@ def extract_flux_data(fname, chosen_exptime=None):
 def plot_summary(s, colour, label, ax=None):
     ax = ax if ax else plt.gca()
 
-    ax.errorbar(s.frames, s.flux, s.std, ls='None', color=colour, alpha=0.5)
     ax.plot(s.frames, s.flux, ls='None', marker='.', color='k',
-            label=label)
+            label=label, zorder=2)
+    lims = (ax.get_xlim(), ax.get_ylim())
+    ax.errorbar(s.frames, s.flux, s.std, ls='None', color=colour, alpha=0.5,
+                zorder=1)
+    ax.set_xlim(*lims[0])
+    ax.set_ylim(*lims[1])
 
 
 def plot_breaks(s, ax=None):
