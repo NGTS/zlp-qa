@@ -22,10 +22,12 @@ def extract_flux_data(fname, zp=21.18, clouds=None):
         cloud_data = imagelist['clouds'].read()
         airmass = imagelist['airmass'].read()
         shift = imagelist['shift'].read()
+        exptime = imagelist['exposure'].read()
 
         ccdx = infile['ccdx'][:, :1].flatten()
         ccdy = infile['ccdy'][:, :1].flatten()
 
+    flux /= exptime
 
     # Filter out bad points
     per_object_ind, per_image_ind = good_measurement_indices(shift, cloud_data,
