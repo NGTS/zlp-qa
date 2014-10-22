@@ -26,26 +26,17 @@ def extract_flux_data(fname, chosen_exptime=None):
         cloud_data = imagelist['clouds'].read()
         airmass = imagelist['airmass'].read()
         shift = imagelist['shift'].read()
+        exptime = imagelist['exposure'].read()
 
         ccdx = infile['ccdx'][:, :1].flatten()
         ccdy = infile['ccdy'][:, :1].flatten()
 
-        if chosen_exptime is not None:
-            imagelist = infile['imagelist']
-            exptime = imagelist['exposure'].read()
-
-    if chosen_exptime is not None:
-        logger.debug('Choosing exptime', exptime=chosen_exptime)
-        ind = exptime == chosen_exptime
-        mjd, cloud_data, airmass, shift = [data[ind] for data in [
-            mjd, cloud_data, airmass, shift]]
-        flux = flux[:, ind]
-
+    # Normalise by exposure time
+    flux /= exptime
 
     # Filter out bad points
-    per_object_ind, per_image_ind = good_measurement_indices(shift, cloud_data,
-                                                             airmass,
-                                                             ccdx, ccdy)
+    per_object_ind, per_image_ind = good_measurement_indices(
+        shift, cloud_data, airmass, ccdx, ccdy)
     initial_shape = flux.shape
     flux = flux[per_object_ind][:, per_image_ind]
     airmass, mjd = [data[per_image_ind] for data in [
@@ -57,7 +48,6 @@ def extract_flux_data(fname, chosen_exptime=None):
     flux = remove_extinction(flux, airmass,
                              flux_min=1E4,
                              flux_max=6E5)
-
 
     per_ap_median = np.median(flux, axis=1)
     ind = (per_ap_median > 0)
