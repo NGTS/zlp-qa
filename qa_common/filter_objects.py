@@ -36,3 +36,23 @@ def good_measurement_indices(shift, clouds, airmass, ccdx, ccdy,
     per_image_ind = good_shift_ind & airmass_ind
 
     return per_object_ind, per_image_ind
+
+def good_measurement_indices_from_fits(infile, ccd_margin=4, max_airmass=2.):
+    '''
+    Get the good measurement indices from an open fits file
+    '''
+    flux = infile['flux'].read()
+
+    ccdx = infile['ccdx'][:, :1].flatten()
+    ccdy = infile['ccdy'][:, :1].flatten()
+
+    imagelist = infile['imagelist']
+    shift = imagelist['shift'].read()
+    clouds = imagelist['clouds'].read()
+    airmass = imagelist['airmass'].read()
+
+    per_object_ind, per_image_ind = good_measurement_indices(
+        shift, clouds, airmass, ccdx, ccdy,
+        ccd_margin=ccd_margin, max_airmass=max_airmass)
+
+    return per_object_ind, per_image_ind
