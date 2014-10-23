@@ -13,9 +13,13 @@ from qa_common.filter_objects import good_measurement_indices_from_fits
 from qa_common.photometry import build_bins
 
 
+logger = get_logger(__file__)
+
+
 def main(args):
     ledges, redges = build_bins()
 
+    logger.info('Reading data', filename=args.filename)
     with fitsio.FITS(args.filename) as infile:
         per_object_ind, per_image_ind = good_measurement_indices_from_fits(
             infile)
@@ -27,8 +31,10 @@ def main(args):
         exposure = imagelist['exposure'].read()[per_image_ind]
         tmid = imagelist['tmid'].read()[per_image_ind]
 
+    logger.info('Normalising by exposure time')
     flux /= exposure
     fluxerr /= exposure
+    logger.info('Removing extinction')
     corrected_flux = remove_extinction(flux, airmass,
                                        flux_min=ledges[2],
                                        flux_max=ledges[5])
@@ -58,10 +64,10 @@ def main(args):
         axis.set_xlim(tmid.min() - 0.005,
                       tmid.max() + 0.005)
 
-
     axes[-1].set_xlabel(r'MJD - {}'.format(tmid0))
 
     fig.tight_layout()
+    logger.info('Rendering', filename=args.output)
     plt.savefig(args.output, bbox_inches='tight')
 
 
