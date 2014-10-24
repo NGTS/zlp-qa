@@ -50,23 +50,21 @@ def main(args):
 
     fig, axes = plt.subplots(len(ledges), 1, sharex=True)
 
+    colours = ['r', 'g', 'b', 'c', 'm', 'k', 'y']
     plot_border = 0.02
     for (ledge, redge, axis) in zip(ledges, redges, axes):
-        for exptime in unique_exposure_times:
+        for exptime, colour in zip(unique_exposure_times, colours):
             ind = (flux_mean >= ledge) & (flux_mean < redge)
             exptime_ind = exposure == exptime
             chosen_flux = corrected_flux[ind][:, exptime_ind]
 
-            chosen_fluxerr = fluxerr[ind]
+            chosen_fluxerr = fluxerr[ind][:, exptime_ind]
             binned_lc = np.average(chosen_flux, axis=0,
                                 weights=1. / chosen_fluxerr ** 2)
             binned_lc_err = np.sqrt(1. / np.sum(chosen_fluxerr ** -2., axis=0))
-            axis.plot(tmid, binned_lc, '.', zorder=2)
-            axis.errorbar(tmid, binned_lc, binned_lc_err, ls='None', alpha=0.2,
-                        zorder=1, capsize=0.)
+            axis.plot(tmid[exptime_ind], binned_lc, '.', zorder=2,
+                      color=colour)
 
-        # med_binned = np.median(binned_lc)
-        # ylims = axis.get_ylim()
         axis.yaxis.set_major_locator(plt.MaxNLocator(5))
         axis.set_xlim(tmid.min() - 0.005,
                       tmid.max() + 0.005)
