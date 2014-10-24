@@ -9,7 +9,8 @@ from multiprocessing.pool import ThreadPool as Pool
 import csv
 
 from qa_common import get_logger
-from plot_overscan_levels import sigma_clipped_mean, NullPool, compute_limits
+from plot_overscan_levels import sigma_clipped_mean, compute_limits
+from qa_common.util import NullPool
 
 
 logger = get_logger(__file__)

@@ -13,7 +13,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import qa_common
 from qa_common import plt, plot_night_breaks, get_logger
-from plot_overscan_levels import sigma_clipped_mean, NullPool, compute_limits
+from qa_common.util import NullPool
+from plot_overscan_levels import sigma_clipped_mean, compute_limits
 
 
 logger = get_logger(__file__)

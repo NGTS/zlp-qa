@@ -10,6 +10,7 @@ import csv
 import re
 
 from qa_common import plt, get_logger
+from qa_common.util import NullPool
 
 
 logger = get_logger(__file__)
@@ -58,13 +59,6 @@ def extract_from_file(fname):
             'ccdtemp': ccdtemp,
             'chstemp': chstemp,
             }
-
-class NullPool(object):
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def map(self, fn, objects):
-        return map(fn, objects)
 
 def compute_limits(data, nsigma=3, precomputed_median=None):
     med = (precomputed_median if precomputed_median is not None

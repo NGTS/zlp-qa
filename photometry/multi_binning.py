@@ -6,6 +6,7 @@ import numpy as np
 from qa_common import plt, get_logger
 from qa_common.airmass_correct import remove_extinction
 from qa_common.filter_objects import good_measurement_indices
+from qa_common.util import NullPool
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import fitsio
@@ -20,14 +21,6 @@ NoiseResult = namedtuple('NoiseResult', ['x', 'y', 'yerr', 'white'])
 
 logger = get_logger(__file__)
 
-
-class NullPool(object):
-
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def map(self, fn, l):
-        return map(fn, l)
 
 
 def main(args):
