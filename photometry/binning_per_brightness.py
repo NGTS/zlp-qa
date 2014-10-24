@@ -31,6 +31,10 @@ def main(args):
         exposure = imagelist['exposure'].read()[per_image_ind]
         tmid = imagelist['tmid'].read()[per_image_ind]
 
+    unique_exposure_times = sorted(list(set(exposure)))
+    logger.info('Found exposure times', number=len(unique_exposure_times),
+                data=unique_exposure_times)
+
     logger.info('Normalising by exposure time')
     flux /= exposure
     fluxerr /= exposure
@@ -48,18 +52,21 @@ def main(args):
 
     plot_border = 0.02
     for (ledge, redge, axis) in zip(ledges, redges, axes):
-        ind = (flux_mean >= ledge) & (flux_mean < redge)
-        chosen_flux = corrected_flux[ind]
-        chosen_fluxerr = fluxerr[ind]
-        binned_lc = np.average(chosen_flux, axis=0,
-                               weights=1. / chosen_fluxerr ** 2)
-        binned_lc_err = np.sqrt(1. / np.sum(chosen_fluxerr ** -2., axis=0))
-        axis.plot(tmid, binned_lc, '.', zorder=2)
-        axis.errorbar(tmid, binned_lc, binned_lc_err, ls='None', alpha=0.2,
-                      zorder=1, capsize=0.)
+        for exptime in unique_exposure_times:
+            ind = (flux_mean >= ledge) & (flux_mean < redge)
+            exptime_ind = exposure == exptime
+            chosen_flux = corrected_flux[ind][:, exptime_ind]
 
-        med_binned = np.median(binned_lc)
-        ylims = axis.get_ylim()
+            chosen_fluxerr = fluxerr[ind]
+            binned_lc = np.average(chosen_flux, axis=0,
+                                weights=1. / chosen_fluxerr ** 2)
+            binned_lc_err = np.sqrt(1. / np.sum(chosen_fluxerr ** -2., axis=0))
+            axis.plot(tmid, binned_lc, '.', zorder=2)
+            axis.errorbar(tmid, binned_lc, binned_lc_err, ls='None', alpha=0.2,
+                        zorder=1, capsize=0.)
+
+        # med_binned = np.median(binned_lc)
+        # ylims = axis.get_ylim()
         axis.yaxis.set_major_locator(plt.MaxNLocator(5))
         axis.set_xlim(tmid.min() - 0.005,
                       tmid.max() + 0.005)
