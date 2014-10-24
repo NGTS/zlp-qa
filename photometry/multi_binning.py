@@ -105,6 +105,7 @@ def load_data(filename, mask=[]):
         shift = imagelist['shift'].read()
         clouds = imagelist['clouds'].read()
         T = imagelist['T'].read()
+        exposure = imagelist['exposure'].read()
 
         flux = infile['flux'].read()
 
@@ -113,6 +114,9 @@ def load_data(filename, mask=[]):
 
         ccdx = infile['ccdx'][:, :1].flatten()
         ccdy = infile['ccdy'][:, :1].flatten()
+
+    # Normalise by exposure time
+    flux /= exposure
 
     # Filter out bad points
     per_object_ind, per_image_ind = good_measurement_indices(shift, clouds,
