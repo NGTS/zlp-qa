@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 import numpy as np
 from qa_common import get_logger
 from qa_common.plotting import plt
@@ -25,6 +26,7 @@ logger = get_logger(__file__)
 
 
 def main(args):
+    raise RuntimeError('bad')
     filename = args.filename
     data_dict = load_data(filename)
 
@@ -322,4 +324,8 @@ if __name__ == '__main__':
                         required=False)
     parser.add_argument('--serial', help='Do not use parallel processing',
                         action='store_true', default=False)
-    main(parser.parse_args())
+    try:
+        main(parser.parse_args())
+    except Exception as e:
+        logger.error('Failure', exception=e)
+        sys.exit(0)
