@@ -9,7 +9,7 @@ from astropy import units as u
 from astropy.coordinates import ICRS
 from scipy import stats
 
-from qa_common import plt
+from qa_common.plotting import plt
 
 def compute_limits(data, nsigma=3, precomputed_median=None):
     med = (precomputed_median if precomputed_median is not None

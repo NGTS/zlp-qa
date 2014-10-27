@@ -6,7 +6,8 @@ import fitsio
 import argparse
 import os
 
-from qa_common import plt, get_logger
+from qa_common import get_logger
+from qa_common.plotting import plt
 
 logger = get_logger(__file__)
 

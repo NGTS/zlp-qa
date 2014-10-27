@@ -7,7 +7,8 @@ from __future__ import division, print_function, absolute_import
 import argparse
 import fitsio
 import numpy as np
-from qa_common import plt, get_logger
+from qa_common import get_logger
+from qa_common.plotting import plt
 from qa_common.airmass_correct import remove_extinction
 from qa_common.filter_objects import good_measurement_indices_from_fits
 from qa_common.photometry import build_bins

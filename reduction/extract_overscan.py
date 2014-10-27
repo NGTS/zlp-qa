@@ -9,7 +9,8 @@ from multiprocessing.pool import ThreadPool as Pool
 import csv
 import re
 
-from qa_common import plt, get_logger
+from qa_common import get_logger
+from qa_common.plotting import plt
 from qa_common.util import NullPool
 
 

@@ -5,7 +5,8 @@ import fitsio
 import argparse
 import numpy as np
 
-from qa_common import plt, plot_night_breaks, get_logger
+from qa_common.plotting import plt
+from qa_common import plot_night_breaks, get_logger
 
 logger = get_logger(__file__)
 

@@ -6,7 +6,8 @@ import numpy as np
 import sys
 import os
 
-from qa_common import plt, get_logger
+from qa_common import get_logger
+from qa_common.plotting import plt
 import qa_common
 from plot_overscan_levels import compute_limits
 

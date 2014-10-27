@@ -8,7 +8,7 @@ import sys
 import numpy as np
 import argparse
 
-from qa_common import plt
+from qa_common.plotting import plt
 
 
 def main(args):

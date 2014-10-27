@@ -7,7 +7,7 @@ import argparse
 import itertools
 import sys
 
-from qa_common import plt
+from qa_common.plotting import plt
 
 
 def hide_labels(axis):

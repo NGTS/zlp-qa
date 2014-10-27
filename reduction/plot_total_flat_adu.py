@@ -4,7 +4,7 @@
 import argparse
 import numpy as np
 import fitsio
-from qa_common import plt
+from qa_common.plotting import plt
 from qa_common import get_logger
 
 logger = get_logger(__file__)

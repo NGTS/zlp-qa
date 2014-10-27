@@ -9,7 +9,7 @@ from astropy.coordinates import ICRS
 from scipy import stats
 import sys
 
-from qa_common import plt
+from qa_common.plotting import plt
 
 def link_y_limits(ax1, ax2):
     ax1_y = ax1.get_ylim()

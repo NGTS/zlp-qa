@@ -9,7 +9,7 @@ from collections import namedtuple
 import csv
 import sys
 
-from qa_common import plt
+from qa_common.plotting import plt
 
 def missing_from_2mass(args):
     with fitsio.FITS(args.match) as infile:
