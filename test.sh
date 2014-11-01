@@ -8,7 +8,7 @@ main() {
 
     test -d ${plotdir} && rm -rf ${plotdir}
 
-    TESTQA=true bash ./run.sh ${rootdir} ${plotdir}
+    TESTQA=true bash ./run.sh ${rootdir} ${plotdir} | tee test.log
 }
 
 main
