@@ -185,7 +185,8 @@ plot_binned_lightcurves_with_brightness() {
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-binned-lightcurves-by-brightness.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
-        python photometry/binning_per_brightness.py ${presysrem} -o ${OUTPUTFILE}
+        local readonly rawfiles=$(find -L ${rootdir}/Reduction/output -name 'proc*.phot' | sed 's/.phot$//')
+        python photometry/binning_per_brightness.py ${presysrem} -o ${OUTPUTFILE} -r ${rawfiles}
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi

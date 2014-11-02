@@ -7,6 +7,7 @@ from __future__ import division, print_function, absolute_import
 import argparse
 import fitsio
 import numpy as np
+import os
 from qa_common import get_logger
 from qa_common.plotting import plt
 from qa_common.airmass_correct import remove_extinction
@@ -16,9 +17,41 @@ from qa_common.photometry import build_bins
 
 logger = get_logger(__file__)
 
+METADATA_KEYS = ['mjd', 'airmass', 'chstemp']
+PLOT_KEYS = ['airmass', 'chstemp', 'median_count_rate']
+MJD0 = None
+
+
+def _extract_metadata(fname):
+    header = fitsio.read_header(fname)
+    data = fitsio.read(fname)
+    initial = {key: header[key] for key in METADATA_KEYS}
+    initial.update({'median_count_rate': np.median(data) / header['exposure']})
+    return initial
+
+
+def extract_metadata(rawfiles):
+    values = map(_extract_metadata, rawfiles)
+    return sorted(values, key=lambda row: row['mjd'])
+
+
+def humanise_key(key):
+    return key.replace('_', ' ').capitalize()
+
+
+def plot_metadata_series(axis, metadata, key, x=None, *args, **kwargs):
+    y = np.array([row[key] for row in metadata])
+    x = x if x is not None else np.array([row['mjd'] for row in metadata]) - MJD0
+    axis.plot(x, y, label=humanise_key(key), *args, **kwargs)
+    axis.legend(loc='best')
+
 
 def main(args):
+    global MJD0
     ledges, redges = build_bins()
+
+    assert all(os.path.isfile(f) for f in args.reduced_files)
+    metadata = extract_metadata(args.reduced_files)
 
     logger.info('Reading data', filename=args.filename)
     with fitsio.FITS(args.filename) as infile:
@@ -44,16 +77,17 @@ def main(args):
                                        flux_min=ledges[2],
                                        flux_max=ledges[5])
 
-    tmid0 = int(tmid.min())
-    tmid -= tmid0
+    MJD0 = int(tmid.min())
+    tmid -= MJD0
 
     flux_mean = np.average(corrected_flux, axis=1, weights=1. / fluxerr ** 2)
 
-    fig, axes = plt.subplots(len(ledges), 1, sharex=True)
+    fig, axes = plt.subplots(len(ledges) + len(PLOT_KEYS), 1, sharex=True,
+                             figsize=(8, 15))
 
     colours = ['r', 'g', 'b', 'c', 'm', 'k', 'y']
     plot_border = 0.02
-    for (ledge, redge, axis) in zip(ledges, redges, axes):
+    for (ledge, redge, axis) in zip(ledges, redges, axes[len(PLOT_KEYS):]):
         for exptime, colour in zip(unique_exposure_times, colours):
             ind = (flux_mean >= ledge) & (flux_mean < redge)
             exptime_ind = exposure == exptime
@@ -61,7 +95,7 @@ def main(args):
 
             chosen_fluxerr = fluxerr[ind][:, exptime_ind]
             binned_lc = np.average(chosen_flux, axis=0,
-                                weights=1. / chosen_fluxerr ** 2)
+                                   weights=1. / chosen_fluxerr ** 2)
             binned_lc_err = np.sqrt(1. / np.sum(chosen_fluxerr ** -2., axis=0))
             axis.plot(tmid[exptime_ind], binned_lc, '.', zorder=2,
                       color=colour)
@@ -70,7 +104,10 @@ def main(args):
         axis.set_xlim(tmid.min() - 0.005,
                       tmid.max() + 0.005)
 
-    axes[-1].set_xlabel(r'MJD - {}'.format(tmid0))
+    for (key, axis) in zip(PLOT_KEYS, axes):
+        plot_metadata_series(axis, metadata, key, ls='None', marker='.')
+
+    axes[-1].set_xlabel(r'MJD - {}'.format(MJD0))
 
     fig.tight_layout()
     logger.info('Rendering', filename=args.output)
@@ -81,4 +118,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('filename')
     parser.add_argument('-o', '--output', required=True)
+    parser.add_argument('-r', '--reduced-files', nargs='+')
     main(parser.parse_args())
