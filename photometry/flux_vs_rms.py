@@ -16,7 +16,7 @@ logger = get_logger(__file__)
 
 summary = namedtuple('Summary', ['mags', 'frms'])
 
-def extract_flux_data(fname, zp=21.18, clouds=None):
+def extract_flux_data(fname, zp=21.18, clouds=None, airmass_correct=True):
     with fitsio.FITS(fname) as infile:
         flux = infile['flux'].read()
         imagelist = infile['imagelist']
@@ -41,10 +41,11 @@ def extract_flux_data(fname, zp=21.18, clouds=None):
 
     logger.info('Flux array shape', initial=initial_shape,
                 final=flux.shape)
-    logger.debug('Removing extinction')
-    flux = remove_extinction(flux, airmass,
-                             flux_min=1E4,
-                             flux_max=6E5)
+    if airmass_correct:
+        logger.debug('Removing extinction')
+        flux = remove_extinction(flux, airmass,
+                                flux_min=1E4,
+                                flux_max=6E5)
 
 
     av_flux = np.average(flux, axis=1)
@@ -73,10 +74,12 @@ def plot_summary(s, colour, label, ax=None):
 def main(args):
     if args.pre_sysrem:
         logger.info("Loading pre-sysrem data", filename=args.pre_sysrem)
-        pre = extract_flux_data(args.pre_sysrem, clouds=args.clouds)
+        pre = extract_flux_data(args.pre_sysrem, clouds=args.clouds,
+                                airmass_correct=not args.no_pre_airmass_correct)
     if args.post_sysrem:
         logger.info("Loading post-sysrem data", filename=args.post_sysrem)
-        post = extract_flux_data(args.post_sysrem, clouds=args.clouds)
+        post = extract_flux_data(args.post_sysrem, clouds=args.clouds,
+                                 airmass_correct=args.post_airmass_correct)
 
     logger.debug('Cloud rejection level', level=args.clouds)
 
@@ -111,6 +114,10 @@ if __name__ == '__main__':
             type=str)
     parser.add_argument('--post-sysrem', help='Input filename',
             type=str)
+    parser.add_argument('--no-pre-airmass-correct', help='Airmass correct pre-sysrem data',
+                        action='store_true', default=False)
+    parser.add_argument('--post-airmass-correct', help='Airmass correct post-sysrem data',
+                        action='store_true', default=False)
     parser.add_argument('--clouds', help='Cloud rejection max',
                         required=False, type=float)
 
