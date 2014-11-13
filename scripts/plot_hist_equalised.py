@@ -24,7 +24,7 @@ def histogram_equalise(image, nbins=256):
 
 def main(args):
     nbins = 256
-    logger.debug('Reading data', filename=args.filename, nbins=nbins)
+    logger.debug('Reading data from %s, nbins: %s', args.filename, nbins)
     with fitsio.FITS(args.filename) as infile:
         image = infile[0].read()
 
@@ -35,7 +35,7 @@ def main(args):
 
     for (suffix, interpolation_method) in zip(suffixes, interpolation_methods):
         output_filename = '{}{}'.format(args.stub, suffix)
-        logger.info('Plotting', filename=output_filename)
+        logger.info('Plotting to %s', output_filename)
         fig, axis = plt.subplots()
         mappable = axis.imshow(normalised, origin='lower', cmap=plt.cm.afmhot,
                                interpolation=interpolation_method)

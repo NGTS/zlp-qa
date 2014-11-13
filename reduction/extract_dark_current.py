@@ -44,8 +44,8 @@ def extract_from_file(fname):
     chstemp = header['chstemp']
     ccdtemp = header['ccdtemp']
 
-    logger.debug('Analysing file', filename=fname,
-                 gain=gain, exptime=exptime, ccdtemp=ccdtemp)
+    logger.debug('Analysing file %s, gain: %s, exptime: %s, ccdtemp: %s',
+                 fname, gain, exptime, ccdtemp)
 
     central = image[:, 20:-20]
     bias_signal = compute_bias_signal(central, left_overscan, right_overscan)
@@ -65,7 +65,7 @@ def extract_from_file(fname):
 def main(args):
     with open(args.filelist) as infile:
         files = [line.strip('\n') for line in infile.readlines()]
-    logger.info('Number of files', nfiles=len(files))
+    logger.info('Number of files: %s', len(files))
 
     pool = NullPool()
     data = filter(None, pool.map(extract_from_file, files))

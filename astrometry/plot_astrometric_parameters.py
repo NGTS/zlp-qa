@@ -29,7 +29,7 @@ class Extracted(object):
 
 
 def main(args):
-    logger.info('Reading data', filename=args.extracted)
+    logger.info('Reading data from %s', args.extracted)
     e = Extracted(args.extracted)
 
     mjd = e.mjd
@@ -71,7 +71,7 @@ def main(args):
 
 
     fig.tight_layout()
-    logger.info('Saving', filename=args.output)
+    logger.info('Saving to %s', args.output)
     if args.output.strip() == '-':
         fig.savefig(sys.stdout, bbox_inches='tight')
     else:

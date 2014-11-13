@@ -14,17 +14,17 @@ def main(logger, args):
     first_file = args.file[0]
     image = fitsio.read(first_file)
     dimensions = image.shape
-    logger.info("Constructing image", dimensions=dimensions)
+    logger.info("Constructing image of shape %s", dimensions)
 
     with fitsio.FITS(args.output, 'rw', clobber=True) as outfile:
         outfile.write(np.zeros(dimensions, dtype=float))
 
         for fname in args.file:
-            logger.debug('Analysing', filename=fname)
+            logger.debug('Analysing %s', fname)
             data = fitsio.read(fname).astype(float)
 
             scaled_data = data / float(nfiles)
-            logger.debug(scaled_data=scaled_data)
+            logger.debug('Scaled data: %s', scaled_data)
 
             new_total = outfile[0].read() + scaled_data
             outfile[0].write(new_total)

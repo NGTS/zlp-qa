@@ -30,8 +30,7 @@ class CSVContainer(object):
         try:
             self.data.sort(key=lambda row: row[self.sort_key])
         except KeyError as err:
-            logger.warn('Cannot find key in data, no sorting',
-                        key=self.sort_key)
+            logger.warn('Cannot find key %s in data, no sorting', self.sort_key)
 
     def __setitem__(self, name, value):
         return setattr(self, name, value)

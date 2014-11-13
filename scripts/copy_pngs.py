@@ -11,17 +11,17 @@ logger = get_logger(__file__)
 def copy_file(i, fname, outputdir, stub):
     output_filename = os.path.join(outputdir, '{:02d}-{}.png'.format(i, stub))
     if not os.path.isfile(output_filename):
-        logger.debug('Copying file', source=fname, dest=output_filename)
+        logger.debug('Copying file %s to %s', fname, output_filename)
         shutil.copyfile(fname, output_filename)
     else:
-        logger.debug('File exists, skipping', filename=output_filename)
+        logger.debug('File %s exists, skipping', output_filename)
 
 def main(args):
     with open(args.filelist) as infile:
         files = [line.strip() for line in infile]
 
     nfiles = len(files)
-    logger.info('Copying files', nfiles=nfiles)
+    logger.info('Copying %s files', nfiles)
 
     for i, file_index in enumerate(xrange(0, nfiles, nfiles / args.nfiles)):
         copy_file(args.offset + i, files[file_index], args.outputdir, args.stub)

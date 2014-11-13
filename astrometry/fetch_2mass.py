@@ -33,8 +33,7 @@ class Catalogue(object):
             '-m', self.max_objects,
             '-bd', self.box_width])
 
-        logger.debug("Running command", command_string=' '.join(cmd),
-                          command=cmd)
+        logger.debug("Running command: %s", ' '.join(cmd)
         output = sp.check_output(cmd, stderr=sp.PIPE)
 
         with open(output_filename, 'w') as outfile:
@@ -90,8 +89,8 @@ def build_catalogue(input_filename, output_filename):
 
 
 def main(args):
-    logger.debug('Matching from catalogue', catalogue_name=args.catalogue)
-    logger.debug('Output file', filename=args.output)
+    logger.debug('Matching from catalogue %s', args.catalogue)
+    logger.debug('Output file: %s', output)
     build_catalogue(args.catalogue, args.output)
 
 if __name__ == '__main__':

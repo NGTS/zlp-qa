@@ -35,7 +35,7 @@ def main(args):
 
     axes[-1].set_xlabel('Frame')
 
-    logger.info('Rendering', filename=args.output)
+    logger.info('Rendering to %s', args.output)
     fig.tight_layout()
     fig.savefig(args.output, bbox_inches='tight')
 

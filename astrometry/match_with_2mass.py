@@ -24,8 +24,7 @@ class Stilts(object):
 
         cmd = map(str, cmd)
 
-        logger.debug('Running command', command_string=' '.join(cmd),
-                     command=cmd)
+        logger.debug('Running command: %s', ' '.join(cmd)
 
         return cmd
 

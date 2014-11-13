@@ -48,7 +48,7 @@ class Extracted(object):
 
 def main(args):
     with open(args.output, 'w') as outfile:
-        logger.info('Output file', filename=args.output)
+        logger.info('Output file: %s', args.output)
         writer = csv.DictWriter(outfile, fieldnames=Extracted.all_keys)
         writer.writeheader()
 

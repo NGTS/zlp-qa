@@ -39,8 +39,7 @@ def extract_flux_data(fname, zp=21.18, clouds=None, airmass_correct=True):
     flux = flux[per_object_ind][:, per_image_ind]
     airmass = airmass[per_image_ind]
 
-    logger.info('Flux array shape', initial=initial_shape,
-                final=flux.shape)
+    logger.info('Flux array shape initial: %s, final: %s', initial_shape, flux.shape)
     if airmass_correct:
         logger.debug('Removing extinction')
         flux = remove_extinction(flux, airmass,
@@ -59,7 +58,7 @@ def extract_flux_data(fname, zp=21.18, clouds=None, airmass_correct=True):
             (std_flux == std_flux))
     av_flux, std_flux = [data[ind] for data in [av_flux, std_flux]]
 
-    logger.info("Rejecting objects", nobjects=before_size - av_flux.size)
+    logger.info("Rejecting %s objects", before_size - av_flux.size)
 
     mags = zp - 2.5 * np.log10(av_flux)
 
@@ -73,15 +72,15 @@ def plot_summary(s, colour, label, ax=None):
 
 def main(args):
     if args.pre_sysrem:
-        logger.info("Loading pre-sysrem data", filename=args.pre_sysrem)
+        logger.info("Loading pre-sysrem data from %s", args.pre_sysrem)
         pre = extract_flux_data(args.pre_sysrem, clouds=args.clouds,
                                 airmass_correct=not args.no_pre_airmass_correct)
     if args.post_sysrem:
-        logger.info("Loading post-sysrem data", filename=args.post_sysrem)
+        logger.info("Loading post-sysrem data from %s", args.post_sysrem)
         post = extract_flux_data(args.post_sysrem, clouds=args.clouds,
                                  airmass_correct=args.post_airmass_correct)
 
-    logger.debug('Cloud rejection level', level=args.clouds)
+    logger.debug('Cloud rejection level: %s', args.clouds)
 
     fig, ax = plt.subplots(figsize=(11, 8))
     if args.pre_sysrem:
@@ -99,7 +98,7 @@ def main(args):
     ax.set_ylim(1E-3, 10)
     fig.tight_layout()
 
-    logger.info('Saving', filename=args.output)
+    logger.info('Saving to %s', args.output)
     if args.output.strip() == '-':
         fig.savefig(sys.stdout, bbox_inches='tight')
     else:

@@ -19,7 +19,7 @@ logger = get_logger(__file__)
 summary = namedtuple('Summary', ['frames', 'flux', 'breaks', 'lq', 'uq', 'std'])
 
 def extract_flux_data(fname, chosen_exptime=None):
-    logger.info("Extracting", filename=fname)
+    logger.info("Extracting from %s", fname)
     with fitsio.FITS(fname) as infile:
         mjd = infile['hjd'][0:1, :][0]
         flux = infile['flux'].read()
@@ -43,8 +43,7 @@ def extract_flux_data(fname, chosen_exptime=None):
     airmass, mjd = [data[per_image_ind] for data in [
         airmass, mjd]]
 
-    logger.info('Flux array shape', initial=initial_shape,
-                final=flux.shape)
+    logger.info('Flux array shape initial: %s, final: %s', initial_shape, flux.shape)
     logger.debug('Removing extinction')
     flux = remove_extinction(flux, airmass,
                              flux_min=1E4,
@@ -126,7 +125,7 @@ def main(args):
 
     fig.tight_layout()
 
-    logger.info('Rendering', filename=args.output)
+    logger.info('Rendering to %s', args.output)
     if args.output.strip() == '-':
         fig.savefig(sys.stdout, bbox_inches='tight')
     else:

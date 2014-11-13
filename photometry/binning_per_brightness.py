@@ -53,7 +53,7 @@ def main(args):
     assert all(os.path.isfile(f) for f in args.reduced_files)
     metadata = extract_metadata(args.reduced_files)
 
-    logger.info('Reading data', filename=args.filename)
+    logger.info('Reading data from %s', args.filename)
     with fitsio.FITS(args.filename) as infile:
         per_object_ind, per_image_ind = good_measurement_indices_from_fits(
             infile)
@@ -66,8 +66,8 @@ def main(args):
         tmid = imagelist['tmid'].read()[per_image_ind]
 
     unique_exposure_times = sorted(list(set(exposure)))
-    logger.info('Found exposure times', number=len(unique_exposure_times),
-                data=unique_exposure_times)
+    logger.info('Found %s exposure times: %s', len(unique_exposure_times),
+                unique_exposure_times)
 
     logger.info('Normalising by exposure time')
     flux /= exposure
@@ -110,7 +110,7 @@ def main(args):
     axes[-1].set_xlabel(r'MJD - {}'.format(MJD0))
 
     fig.tight_layout()
-    logger.info('Rendering', filename=args.output)
+    logger.info('Rendering to %s', args.output)
     plt.savefig(args.output, bbox_inches='tight')
 
 

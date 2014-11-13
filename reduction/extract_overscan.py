@@ -35,7 +35,7 @@ def sigma_clipped_mean(values, nsigma=3):
 
 
 def extract_from_file(fname):
-    logger.info('Analysing file', filename=fname)
+    logger.info('Analysing file %s', fname)
     with fitsio.FITS(fname) as infile:
         header = infile[0].read_header()
         image = infile[0].read()
@@ -75,12 +75,12 @@ def compute_limits(data, nsigma=3, precomputed_median=None):
 def main(args):
     with open(args.filelist) as infile:
         files = [line.strip('\n') for line in infile.readlines()]
-    logger.info('Number of files', nfiles=len(files))
+    logger.info('Number of files: %s', len(files))
 
     pool = Pool()
     data = pool.map(extract_from_file, files)
 
-    logger.info('Rendering output file', output_file=args.output)
+    logger.info('Rendering output file to %s', args.output)
     with open(args.output, 'w') as outfile:
         writer = csv.DictWriter(outfile, fieldnames=data[0].keys())
         writer.writeheader()

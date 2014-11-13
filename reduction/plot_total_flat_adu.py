@@ -14,15 +14,15 @@ def main(args):
         raise RuntimeError("Width must be a multiple of 2")
 
 
-    logger.debug('Reading data', filename=args.filename)
+    logger.debug('Reading data from %s', args.filename)
     with fitsio.FITS(args.filename) as infile:
         image_data = infile[0].read()
         header = infile[0].read_header()
 
     nfiles = header['nfiles']
-    logger.info('Number of files in master flat', nfiles=nfiles)
+    logger.info('Number of files in master flat: %s', nfiles)
 
-    logger.debug('Region', x=args.x, y=args.y, width=args.width)
+    logger.debug('Region: %s', dict(x=args.x, y=args.y, width=args.width))
     region = image_data[
         args.y - args.width / 2: args.y + args.width / 2,
         args.x - args.width / 2: args.x + args.width / 2
@@ -30,7 +30,7 @@ def main(args):
 
     med_region = np.median(region)
     std_region = np.std(region)
-    logger.info('values', median=med_region, std=std_region)
+    logger.info('values: %s', dict(median=med_region, std=std_region))
 
     fig, axis = plt.subplots()
     colour_cycle = axis._get_lines.color_cycle
@@ -43,7 +43,7 @@ def main(args):
         med_region, std_region, nfiles))
 
     fig.tight_layout()
-    logger.debug('Saving image', filename=args.output)
+    logger.debug('Saving image to %s', args.output)
     fig.savefig(args.output)
 
 
