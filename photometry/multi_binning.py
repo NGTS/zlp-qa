@@ -26,7 +26,6 @@ logger = get_logger(__file__)
 
 
 def main(args):
-    raise RuntimeError('bad')
     filename = args.filename
     data_dict = load_data(filename)
 
