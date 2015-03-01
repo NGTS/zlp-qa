@@ -100,10 +100,10 @@ def main(args):
         ax.grid(True, axis='y')
         plot_night_breaks(ax, data.mjd)
 
-    logger.info('Rendering to %s', args.output)
     fig.tight_layout()
 
     if args.output is not None:
+        logger.info('Rendering to %s', args.output)
         fig.savefig(args.output, bbox_inches='tight')
     else:
         plt.show()

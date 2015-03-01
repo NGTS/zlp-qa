@@ -39,8 +39,8 @@ def main(args):
     plot_night_breaks(axis, mjd)
 
     fig.tight_layout()
-    logger.info('Rendering to %s', args.output)
     if args.output is not None:
+        logger.info('Rendering to %s', args.output)
         fig.savefig(args.output, bbox_inches='tight')
     else:
         plt.show()

@@ -71,9 +71,9 @@ def main(args):
 
 
     fig.tight_layout()
-    logger.info('Saving to %s', args.output)
 
     if args.output is not None:
+        logger.info('Saving to %s', args.output)
         fig.savefig(args.output, bbox_inches='tight')
     else:
         plt.show()

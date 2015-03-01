@@ -29,9 +29,9 @@ def main(args):
     axis.set_ylabel(r'Dark current / $\mathrm{e}^- s^{-1}$')
     
     fig.tight_layout()
-    logger.info('Rendering file to %s', args.output)
 
     if args.output is not None:
+        logger.info('Rendering file to %s', args.output)
         fig.savefig(args.output, bbox_inches='tight')
     else:
         plt.show()

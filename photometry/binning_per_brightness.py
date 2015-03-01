@@ -110,9 +110,9 @@ def main(args):
     axes[-1].set_xlabel(r'MJD - {}'.format(MJD0))
 
     fig.tight_layout()
-    logger.info('Rendering to %s', args.output)
 
     if args.output is not None:
+        logger.info('Rendering to %s', args.output)
         fig.savefig(args.output, bbox_inches='tight')
     else:
         plt.show()
