@@ -47,16 +47,15 @@ class Extracted(object):
         return {'solved_ra': solved_ra, 'solved_dec': solved_dec}
 
 def main(args):
-    with open(args.output, 'w') as outfile:
-        logger.info('Output file: %s', args.output)
-        writer = csv.DictWriter(outfile, fieldnames=Extracted.all_keys)
-        writer.writeheader()
+    logger.info('Output file: %s', args.output)
+    writer = csv.DictWriter(args.output, fieldnames=Extracted.all_keys)
+    writer.writeheader()
 
-        logger.info('Parsing filelist')
-        with open(args.filelist) as infile:
-            for line in infile:
-                fname = line.strip('\n')
-                Extracted(fname).writerow(writer)
+    logger.info('Parsing filelist')
+    with open(args.filelist) as infile:
+        for line in infile:
+            fname = line.strip('\n')
+            Extracted(fname).writerow(writer)
 
 
 
@@ -64,5 +63,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('filelist')
     parser.add_argument('-o', '--output', help='Output image',
-            required=True, type=str)
+            required=False, default='-', type=argparse.FileType(mode='w'))
     main(parser.parse_args())
