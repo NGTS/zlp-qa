@@ -110,13 +110,17 @@ def main(args):
     axes[-1].set_xlabel(r'MJD - {}'.format(MJD0))
 
     fig.tight_layout()
-    logger.info('Rendering to %s', args.output)
-    plt.savefig(args.output, bbox_inches='tight')
 
+    if args.output is not None:
+        logger.info('Rendering to %s', args.output)
+        fig.savefig(args.output, bbox_inches='tight')
+    else:
+        plt.show()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('filename')
-    parser.add_argument('-o', '--output', required=True)
+    parser.add_argument('-o', '--output', required=False,
+            type=argparse.FileType(mode='w'))
     parser.add_argument('-r', '--reduced-files', nargs='+')
     main(parser.parse_args())

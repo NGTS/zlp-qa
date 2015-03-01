@@ -44,14 +44,18 @@ def main(args):
 
     fig.tight_layout()
     logger.debug('Saving image to %s', args.output)
-    fig.savefig(args.output)
+    if args.output is not None:
+        fig.savefig(args.output, bbox_inches='tight')
+    else:
+        plt.show()
 
 
 if __name__ == '__main__':
     default_width = 256
     parser = argparse.ArgumentParser()
     parser.add_argument('filename')
-    parser.add_argument('-o', '--output', required=True)
+    parser.add_argument('-o', '--output', required=False,
+            type=argparse.FileType(mode='w'))
     parser.add_argument('--width',
                         help='Region width [default: {}]'.format(default_width),
                         default=default_width, required=False, type=int)

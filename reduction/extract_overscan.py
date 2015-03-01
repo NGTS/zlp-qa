@@ -73,20 +73,18 @@ def compute_limits(data, nsigma=3, precomputed_median=None):
     return ll, ul
 
 def main(args):
-    with open(args.filelist) as infile:
-        files = [line.strip('\n') for line in infile.readlines()]
+    files = [line.strip('\n') for line in args.filelist.readlines()]
     logger.info('Number of files: %s', len(files))
 
     pool = Pool()
     data = pool.map(extract_from_file, files)
 
     logger.info('Rendering output file to %s', args.output)
-    with open(args.output, 'w') as outfile:
-        writer = csv.DictWriter(outfile, fieldnames=data[0].keys())
-        writer.writeheader()
+    writer = csv.DictWriter(args.output, fieldnames=data[0].keys())
+    writer.writeheader()
 
-        for row in data:
-            writer.writerow(row)
+    for row in data:
+        writer.writerow(row)
 
 
 
@@ -94,7 +92,8 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--output', help='Output image',
-            required=True, type=str)
-    parser.add_argument('filelist', type=str, help='List of files')
+            required=True, type=argparse.FileType(mode='w'))
+    parser.add_argument('filelist', type=argparse.FileType(mode='r'),
+            help='List of files')
     main(parser.parse_args())
 
