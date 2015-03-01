@@ -12,10 +12,10 @@ from qa_common import plot_night_breaks, get_logger
 logger = get_logger(__file__)
 
 class Extracted(object):
-    def __init__(self, fname):
-        with open(fname) as infile:
-            reader = csv.DictReader(infile)
-            self.data = [row for row in reader]
+    def __init__(self, infile):
+        self.infile = infile
+        reader = csv.DictReader(infile)
+        self.data = [row for row in reader]
         keys = self.data[0].keys()
 
         for key in keys:
@@ -26,6 +26,10 @@ class Extracted(object):
                 setattr(self, key, np.array([row[key]
                     for row in self.data]))
 
+    @classmethod
+    def from_file(cls, filename):
+        with open(filename) as infile:
+            return cls(filename)
 
 
 def main(args):
@@ -80,7 +84,8 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('extracted', help='Input catalogue')
+    parser.add_argument('extracted', help='Input catalogue',
+            type=argparse.FileType(mode='r'))
     parser.add_argument('-o', '--output', required=False,
             type=argparse.FileType(mode='w'), help='Output image name')
     main(parser.parse_args())

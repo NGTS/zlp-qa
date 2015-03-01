@@ -67,22 +67,21 @@ def main(args):
         files = [line.strip('\n') for line in infile.readlines()]
     logger.info('Number of files: %s', len(files))
 
-    pool = NullPool()
+    pool = Pool()
     data = filter(None, pool.map(extract_from_file, files))
 
-    with open(args.output, 'w') as outfile:
-        writer = csv.DictWriter(outfile, fieldnames=data[0].keys())
-        writer.writeheader()
+    writer = csv.DictWriter(args.output, fieldnames=data[0].keys())
+    writer.writeheader()
 
-        for row in data:
-            writer.writerow(row)
+    for row in data:
+        writer.writerow(row)
 
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--output', help='Output image',
-            required=True, type=str)
+            required=True, type=argparse.FileType(mode='w'))
     parser.add_argument('filelist', type=str, help='List of files')
     main(parser.parse_args())
 
