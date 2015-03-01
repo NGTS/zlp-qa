@@ -38,13 +38,17 @@ def main(args):
 
     plot_night_breaks(axis, mjd)
 
-    logger.info('Rendering to %s', args.output)
     fig.tight_layout()
-    fig.savefig(args.output, bbox_inches='tight')
+    logger.info('Rendering to %s', args.output)
+    if args.output is not None:
+        fig.savefig(args.output, bbox_inches='tight')
+    else:
+        plt.show()
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('fname')
-    parser.add_argument('-o', '--output', required=True, type=str)
+    parser.add_argument('-o', '--output', required=False,
+            type=argparse.FileType(mode='w'))
     main(parser.parse_args())

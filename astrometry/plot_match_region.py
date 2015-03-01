@@ -51,12 +51,11 @@ def main(args):
 
     padding = 0.5
     fig.tight_layout(h_pad=padding, w_pad=padding)
-    if args.output.strip() == '-':
-        fig.savefig(sys.stdout, bbox_inches='tight')
-    else:
+
+    if args.output is not None:
         fig.savefig(args.output, bbox_inches='tight')
-
-
+    else:
+        plt.show()
 
 
 
@@ -65,6 +64,6 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('catalogue', help='Input catalogue')
-    parser.add_argument('-o', '--output', required=True,
-            type=str, help='Output image name')
+    parser.add_argument('-o', '--output', required=False,
+            type=argparse.FileType(mode='w'), help='Output image name')
     main(parser.parse_args())

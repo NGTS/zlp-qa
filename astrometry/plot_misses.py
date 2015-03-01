@@ -87,17 +87,17 @@ def main(args):
         len(ngts_mag), len(mag_2mass)))
 
     fig.tight_layout()
-    if args.output.strip() == '-':
-        fig.savefig(sys.stdout, bbox_inches='tight')
-    else:
-        fig.savefig(args.output, bbox_inches='tight')
     
+    if args.output is not None:
+        fig.savefig(args.output, bbox_inches='tight')
+    else:
+        plt.show()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--match', type=str, required=True)
     parser.add_argument('--extracted', type=str, required=True)
     parser.add_argument('--reference', type=str, required=True)
-    parser.add_argument('-o', '--output', required=True,
-            type=str, help='Output image name')
+    parser.add_argument('-o', '--output', required=False,
+            type=argparse.FileType(mode='w'), help='Output image name')
     main(parser.parse_args())

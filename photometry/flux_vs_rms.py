@@ -99,16 +99,16 @@ def main(args):
     fig.tight_layout()
 
     logger.info('Saving to %s', args.output)
-    if args.output.strip() == '-':
-        fig.savefig(sys.stdout, bbox_inches='tight')
-    else:
+    if args.output is not None:
         fig.savefig(args.output, bbox_inches='tight')
+    else:
+        plt.show()
     
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-o', '--output', required=True,
-            type=str, help='Output image name')
+    parser.add_argument('-o', '--output', required=False,
+            type=argparse.FileType(mode='w'), help='Output image name')
     parser.add_argument('--pre-sysrem', help='Input filename',
             type=str)
     parser.add_argument('--post-sysrem', help='Input filename',

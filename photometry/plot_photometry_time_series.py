@@ -37,11 +37,15 @@ def main(args):
 
     logger.info('Rendering to %s', args.output)
     fig.tight_layout()
-    fig.savefig(args.output, bbox_inches='tight')
+    if args.output is not None:
+        fig.savefig(args.output, bbox_inches='tight')
+    else:
+        plt.show()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('filename')
-    parser.add_argument('-o', '--output', required=True)
+    parser.add_argument('-o', '--output', required=False,
+            type=argparse.FileType(mode='w'))
     main(parser.parse_args())
 

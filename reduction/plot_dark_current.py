@@ -59,17 +59,17 @@ def main(args):
         plot_night_breaks(ax, data.mjd)
 
     fig.tight_layout()
-    if args.output.strip() == '-':
-        fig.savefig(sys.stdout, bbox_inches='tight')
-    else:
-        fig.savefig(args.output, bbox_inches='tight')
 
+    if args.output is not None:
+        fig.savefig(args.output, bbox_inches='tight')
+    else:
+        plt.show()
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--output', help='Output image',
-            required=True, type=str)
+            required=False, type=argparse.FileType(mode='w'))
     parser.add_argument('extracted', type=str, help='List of files')
     main(parser.parse_args())
 
