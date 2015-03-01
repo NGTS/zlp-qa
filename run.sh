@@ -27,8 +27,8 @@ plot_overscan_levels() {
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-overscan-levels.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         find -L ${rootdir}/OriginalData/images -name 'IMAGE*.fits' > ${TMPDIR}/bias-frames.list
-        python reduction/extract_overscan.py ${TMPDIR}/bias-frames.list -o ${TMPDIR}/extracted-bias-levels.csv
-        python reduction/plot_overscan_levels.py ${TMPDIR}/extracted-bias-levels.csv -o ${OUTPUTFILE}
+        python reduction/extract_overscan.py ${TMPDIR}/bias-frames.list -o - | \
+            python reduction/plot_overscan_levels.py - -o ${OUTPUTFILE}
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
@@ -43,8 +43,8 @@ plot_dark_levels() {
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-dark-levels.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         find -L ${rootdir}/OriginalData/images -type d -name '*dark*' | xargs -I {} find -L {} -name 'IMAGE*.fits' > ${TMPDIR}/dark-frames.list
-        python reduction/extract_dark_current.py ${TMPDIR}/dark-frames.list -o ${TMPDIR}/extracted-dark-levels.csv
-        python reduction/plot_dark_current.py ${TMPDIR}/extracted-dark-levels.csv -o ${OUTPUTFILE}
+        python reduction/extract_dark_current.py ${TMPDIR}/dark-frames.list -o - | \
+            python reduction/plot_dark_current.py - -o ${OUTPUTFILE}
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
@@ -201,8 +201,8 @@ plot_extracted_astrometic_parameters() {
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-extracted-astrometric-parameters.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         find -L ${rootdir}/Reduction/output/ -name 'proc*.fits' | grep -v 'skybkg' | grep image > ${TMPDIR}/science-images-list.txt
-        python astrometry/extract_wcs_parameters.py ${TMPDIR}/science-images-list.txt -o ${TMPDIR}/astrometric-extraction.csv
-        python astrometry/plot_astrometric_parameters.py ${TMPDIR}/astrometric-extraction.csv -o ${OUTPUTFILE}
+        python astrometry/extract_wcs_parameters.py ${TMPDIR}/science-images-list.txt -o - | \
+            python astrometry/plot_astrometric_parameters.py - -o ${OUTPUTFILE}
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi

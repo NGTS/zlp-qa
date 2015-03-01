@@ -9,16 +9,20 @@ logger = get_logger(__file__)
 
 class CSVContainer(object):
 
-    def __init__(self, fname, sort_key='mjd'):
-        self.fname = fname
+    def __init__(self, infile, sort_key='mjd'):
+        self.infile = infile
         self.sort_key = sort_key
         self.load_data()
         self.data = None
 
+    @classmethod
+    def from_filename(cls, filename, *args, **kwargs):
+        with open(filename) as infile:
+            return cls(infile, *args, **kwargs)
+
     def load_data(self):
-        with open(self.fname) as infile:
-            reader = csv.DictReader(infile)
-            self.data = [row for row in reader]
+        reader = csv.DictReader(self.infile)
+        self.data = [row for row in reader]
 
         self.sort_data()
 

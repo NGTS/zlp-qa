@@ -40,6 +40,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--output', help='Output image',
             required=False, type=argparse.FileType(mode='w'))
-    parser.add_argument('extracted', type=str, help='List of files')
+    parser.add_argument('extracted', type=argparse.FileType(mode='r'),
+            help='List of files')
     main(parser.parse_args())
 
