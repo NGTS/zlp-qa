@@ -58,7 +58,9 @@ plot_dark_correlation() {
 
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-dark-correlation.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        python reduction/plot_dark_current_correlation.py ${TMPDIR}/extracted-dark-levels.csv -o ${OUTPUTFILE}
+        find -L ${rootdir}/OriginalData/images -type d -name '*dark*' | xargs -I {} find -L {} -name 'IMAGE*.fits' > ${TMPDIR}/dark-frames.list
+        python reduction/extract_dark_current.py ${TMPDIR}/dark-frames.list -o - | \
+            python reduction/plot_dark_current_correlation.py - -o ${OUTPUTFILE}
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
