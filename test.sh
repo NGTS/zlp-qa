@@ -2,16 +2,10 @@
 
 set -e
 
-cleanup_temp_files() {
-    if [ -z "${TMPDIR}" ]; then
-        TMPDIR=/tmp
-    fi
+export TMPDIR=${PWD}/tmp
 
-    for fname in bias-frames.list dark-frames.list science-images-list.txt astrometric-pngs.txt psf-pngs.txt
-    do
-        fullpath="${TMPDIR}/${fname}"
-        test -f "${fullpath}" && rm "${fullpath}" || true
-    done
+cleanup_temp_files() {
+    find "${TMPDIR}" -type f -not -name '.gitkeep' -delete
 }
 
 main() {
