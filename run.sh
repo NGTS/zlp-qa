@@ -26,13 +26,17 @@ plot_overscan_levels() {
     # extract overscan levels
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-overscan-levels.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        find -L ${rootdir}/OriginalData/images -name 'IMAGE*.fits' > ${TMPDIR}/bias-frames.list
-        python reduction/extract_overscan.py ${TMPDIR}/bias-frames.list -o - | \
+        python reduction/extract_overscan.py \
+            <(find -L ${rootdir}/OriginalData/images -name 'IMAGE*.fits') -o - | \
             python reduction/plot_overscan_levels.py - -o ${OUTPUTFILE}
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
 
+}
+
+find_dark_frames() {
+    find -L ${rootdir}/OriginalData/images -type d -name '*dark*' | xargs -I {} find -L {} -name 'IMAGE*.fits'
 }
 
 plot_dark_levels() {
@@ -42,9 +46,7 @@ plot_dark_levels() {
 
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-dark-levels.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        find -L ${rootdir}/OriginalData/images -type d -name '*dark*' | xargs -I {} find -L {} -name 'IMAGE*.fits' > ${TMPDIR}/dark-frames.list
-        python reduction/extract_dark_current.py ${TMPDIR}/dark-frames.list -o - | \
-            python reduction/plot_dark_current.py - -o ${OUTPUTFILE}
+         python reduction/extract_dark_current.py <(find_dark_frames) -o - | python reduction/plot_dark_current.py - -o ${OUTPUTFILE}
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
@@ -58,8 +60,7 @@ plot_dark_correlation() {
 
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-dark-correlation.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        find -L ${rootdir}/OriginalData/images -type d -name '*dark*' | xargs -I {} find -L {} -name 'IMAGE*.fits' > ${TMPDIR}/dark-frames.list
-        python reduction/extract_dark_current.py ${TMPDIR}/dark-frames.list -o - | \
+        python reduction/extract_dark_current.py <(find_dark_frames) -o - | \
             python reduction/plot_dark_current_correlation.py - -o ${OUTPUTFILE}
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
