@@ -9,3 +9,5 @@ tom-testing
 *.pyc
 *.swp
 *.log
+tmp/*
+!tmp/.gitkeep
