@@ -94,9 +94,12 @@ def main(args):
             chosen_flux = corrected_flux[ind][:, exptime_ind]
 
             chosen_fluxerr = fluxerr[ind][:, exptime_ind]
-            binned_lc = np.average(chosen_flux, axis=0,
+            try:
+                binned_lc = np.average(chosen_flux, axis=0,
                                    weights=1. / chosen_fluxerr ** 2)
-            binned_lc_err = np.sqrt(1. / np.sum(chosen_fluxerr ** -2., axis=0))
+            except ZeroDivisionError:
+                binned_lc = np.average(chosen_flux, axis=0)
+
             axis.plot(tmid[exptime_ind], binned_lc, '.', zorder=2,
                       color=colour)
 
