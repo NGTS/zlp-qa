@@ -3,7 +3,6 @@
 
 from __future__ import division, print_function, absolute_import
 import argparse
-import fitsio
 import numpy as np
 from multiprocessing.pool import ThreadPool as Pool
 import csv
@@ -11,6 +10,7 @@ import csv
 from qa_common import get_logger
 from plot_overscan_levels import sigma_clipped_mean, compute_limits
 from qa_common.util import NullPool
+from pipeutils import open_fits_file
 
 
 logger = get_logger(__file__)
@@ -23,9 +23,9 @@ def compute_bias_signal(image, left, right):
     return y
 
 def extract_from_file(fname):
-    with fitsio.FITS(fname) as infile:
-        header = infile[0].read_header()
-        image = infile[0].read()
+    with open_fits_file(fname) as infile:
+        header = infile[0].header
+        image = infile[0].data
 
     if not header['imgtype'].strip() == 'DARK':
         return None

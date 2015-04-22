@@ -3,7 +3,6 @@
 
 from __future__ import division, print_function, absolute_import
 import argparse
-import fitsio
 import numpy as np
 from multiprocessing.pool import ThreadPool as Pool
 import csv
@@ -12,6 +11,7 @@ import re
 from qa_common import get_logger
 from qa_common.plotting import plt
 from qa_common.util import NullPool
+from pipeutils import open_fits_file
 
 
 logger = get_logger(__file__)
@@ -36,9 +36,9 @@ def sigma_clipped_mean(values, nsigma=3):
 
 def extract_from_file(fname):
     logger.info('Analysing file %s', fname)
-    with fitsio.FITS(fname) as infile:
-        header = infile[0].read_header()
-        image = infile[0].read()
+    with open_fits_file(fname) as infile:
+        header = infile[0].header
+        image = infile[0].data
 
     # sx, sy = parse_overscan_region(header['biassec'])
 

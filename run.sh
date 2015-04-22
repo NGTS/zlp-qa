@@ -27,7 +27,7 @@ plot_overscan_levels() {
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-overscan-levels.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         python reduction/extract_overscan.py \
-            <(find -L ${rootdir}/OriginalData/images -name 'IMAGE*.fits') -o - | \
+            <(find -L ${rootdir}/OriginalData/images -name 'IMAGE*.fits*') -o - | \
             python reduction/plot_overscan_levels.py - -o ${OUTPUTFILE}
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
@@ -36,7 +36,7 @@ plot_overscan_levels() {
 }
 
 find_dark_frames() {
-    find -L ${rootdir}/OriginalData/images -type d -name '*dark*' | xargs -I {} find -L {} -name 'IMAGE*.fits'
+    find -L ${rootdir}/OriginalData/images -type d -name '*dark*' | xargs -I {} find -L {} -name 'IMAGE*.fits*'
 }
 
 plot_dark_levels() {
