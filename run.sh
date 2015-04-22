@@ -329,10 +329,11 @@ validate_arguments() {
 }
 
 setup_environment() {
-    if [[ -d ${HOME}/anaconda ]]; then
-        export PATH=${HOME}/anaconda/bin:${PATH}
+    if [[ -z ${DISABLE_ANACONDA} ]]; then
+        if [[ -d ${HOME}/anaconda ]]; then
+            export PATH=${HOME}/anaconda/bin:${PATH}
+        fi
     fi
-
     export PYTHONPATH=$(abspath $0):$PYTHONPATH
 }
 
