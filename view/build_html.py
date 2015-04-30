@@ -25,6 +25,10 @@ class Image(object):
                 .split()[1:])
                 .capitalize())
 
+    @property
+    def anchor(self):
+        return self.title.lower().replace(' ', '-')
+
     def __str__(self):
         return '<Image "{}">'.format(self.stub)
 
@@ -37,6 +41,7 @@ class Document(object):
         self.images.append({
             'title': i.title,
             'location': i.fname,
+            'anchor': i.anchor,
             })
 
     def render(self, width=800):
