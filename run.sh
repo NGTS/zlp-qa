@@ -335,6 +335,7 @@ setup_environment() {
         fi
     fi
     export PYTHONPATH=$(abspath $0):$PYTHONPATH
+    echo "Using python: $(which python)"
 }
 
 usage() {

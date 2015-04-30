@@ -18,7 +18,7 @@
 <body>
 <div id="images">
     {%- for image in images -%}
-    <h3>{{ image['title'] }}</h3>
+    <h3 id="{{ image['anchor'] }}">{{ image['title'] }}</h3>
     <img src="{{ image['location'] }}" width="{{ width }}" />
     <br />
     {% endfor %}

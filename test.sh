@@ -15,7 +15,7 @@ main() {
     test -d ${plotdir} && rm -rf ${plotdir}
     cleanup_temp_files
 
-    TESTQA=true bash ./run.sh ${rootdir} ${plotdir} 2>&1 | tee test.log
+    DISABLE_ANACONDA=true TESTQA=true bash ./run.sh ${rootdir} ${plotdir} 2>&1 | tee test.log
 }
 
 main
