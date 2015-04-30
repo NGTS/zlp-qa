@@ -18,7 +18,7 @@ def test_csv_container_sort_my_mjd(tmpdir):
         for (a, b) in zip(mjd, value):
             writer.writerow({'mjd': a, 'value': b})
 
-    container = CSVContainer(str(outfile_name))
+    container = CSVContainer.from_filename(str(outfile_name))
 
     assert np.all(container.mjd == [1, 2, 5]) and np.all(container.value == [1, 3, 2])
 
@@ -36,10 +36,10 @@ def test_no_mjd(tmpdir):
         for (a, b) in zip(time, value):
             writer.writerow({'time': a, 'value': b})
 
-    container = CSVContainer(str(outfile_name))
+    container = CSVContainer.from_filename(str(outfile_name))
     assert (np.all(container.time == [1, 5, 2]) and
             np.all(container.value == [1, 2, 3]))
 
-    container = CSVContainer(str(outfile_name), sort_key='time')
+    container = CSVContainer.from_filename(str(outfile_name), sort_key='time')
     assert (np.all(container.time == [1, 2, 5]) and
             np.all(container.value == [1, 3, 2]))
