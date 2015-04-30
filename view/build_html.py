@@ -6,10 +6,14 @@ import glob
 import argparse
 from jinja2 import Template
 from qa_common import get_logger
+from collections import defaultdict
 
 logger = get_logger(__file__)
 
 class Image(object):
+
+    counter = defaultdict(int)
+
     def __init__(self, fname):
         self.fname = fname
 
@@ -27,7 +31,13 @@ class Image(object):
 
     @property
     def anchor(self):
-        return self.title.lower().replace(' ', '-')
+        _anchor = self.title.lower().replace(' ', '-')
+        increment = self.counter.get(_anchor, 0)
+        self.counter[_anchor] += 1
+        if increment:
+            return _anchor + '-{:02d}'.format(increment)
+        else:
+            return _anchor
 
     def __str__(self):
         return '<Image "{}">'.format(self.stub)
