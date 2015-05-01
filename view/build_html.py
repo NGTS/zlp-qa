@@ -10,6 +10,36 @@ from collections import defaultdict
 
 logger = get_logger(__file__)
 
+help_lookup = {
+        'overscan-levels': 'overscan-levels.html',
+        'dark-levels': 'dark-levels.html',
+        'dark-correlation': 'dark-correlation.html',
+        'mbias': 'masters.html',
+        'mbias-smoothed': 'masters.html',
+        'mdark': 'masters.html',
+        'mdark-smoothed': 'masters.html',
+        'mflat': 'masters.html',
+        'mflat-smoothed': 'masters.html',
+        'total-flat-adu': 'total-flat-adu.html',
+        'flux-vs-rms': 'flux-vs-rms.html',
+        'rms-vs-time': 'rms-vs-time.html',
+        'rms-with-binning': 'rms-with-binning.html',
+        'photometry-time-series': 'photometry-time-series.html',
+        'binned-lightcurves-by-brightness': 'binned-lightcurves-by-brightness.html',
+        'extracted-astrometric-parameters': 'extracted-astrometric-parameters.html',
+        'pixel-centre-of-mass': 'pixel-centre-of-mass.html',
+        'pixel-centre-of-mass': 'pixel-centre-of-mass.html',
+        'vector-astrometry': 'astrometry-rms.html',
+        'psf': 'psf.html',
+        }
+
+for i in range(10):
+    name = 'vector-astrometry-{:02d}'.format(i)
+    help_lookup[name] = 'astrometry-rms.html'
+
+    name = 'psf-{:02d}'.format(i)
+    help_lookup[name] = 'psf.html'
+
 class Image(object):
 
     counter = defaultdict(int)
@@ -56,7 +86,8 @@ class Document(object):
 
     def render(self, width=800):
         result = self.template.render(images=self.images,
-                                      width='{}px'.format(width))
+                help_lookup=help_lookup,
+                width='{}px'.format(width))
         return(result)
         
 def main(args):
