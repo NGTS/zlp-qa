@@ -26,7 +26,7 @@ def main(args):
 
     logger.info('Plotting')
     fig, axes = plt.subplots(3, 1, sharex=True)
-    labels = ['FWHM / pixels', 'Seeing', 'Clouds']
+    labels = ['FWHM / pixels', '"Seeing"', 'Frame S/N']
     for ax, data, label in zip(axes, [fwhm, seeing, clouds], labels):
         ax.plot(frames, data, marker='.', ls='None')
         ax.set_ylabel(label)
