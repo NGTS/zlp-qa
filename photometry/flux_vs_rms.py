@@ -7,7 +7,6 @@ import numpy as np
 import argparse
 from collections import namedtuple
 import sys
-from qa_common.airmass_correct import remove_extinction
 from qa_common.filter_objects import good_measurement_indices
 from qa_common.plotting import plt
 from qa_common import get_logger
@@ -40,12 +39,6 @@ def extract_flux_data(fname, zp=21.18, clouds=None, airmass_correct=True):
     airmass = airmass[per_image_ind]
 
     logger.info('Flux array shape initial: %s, final: %s', initial_shape, flux.shape)
-    if airmass_correct:
-        logger.debug('Removing extinction')
-        flux = remove_extinction(flux, airmass,
-                                flux_min=1E4,
-                                flux_max=6E5)
-
 
     av_flux = np.average(flux, axis=1)
     std_flux = np.std(flux, axis=1)

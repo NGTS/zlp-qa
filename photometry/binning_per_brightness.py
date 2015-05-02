@@ -10,7 +10,6 @@ import numpy as np
 import os
 from qa_common import get_logger
 from qa_common.plotting import plt
-from qa_common.airmass_correct import remove_extinction
 from qa_common.filter_objects import good_measurement_indices_from_fits
 from qa_common.photometry import build_bins
 
@@ -73,14 +72,11 @@ def main(args):
     flux /= exposure
     fluxerr /= exposure
     logger.info('Removing extinction')
-    corrected_flux = remove_extinction(flux, airmass,
-                                       flux_min=ledges[2],
-                                       flux_max=ledges[5])
 
     MJD0 = int(tmid.min())
     tmid -= MJD0
 
-    flux_mean = np.average(corrected_flux, axis=1, weights=1. / fluxerr ** 2)
+    flux_mean = np.average(flux, axis=1, weights=1. / fluxerr ** 2)
 
     fig, axes = plt.subplots(len(ledges) + len(PLOT_KEYS), 1, sharex=True,
                              figsize=(8, 15))
@@ -91,7 +87,7 @@ def main(args):
         for exptime, colour in zip(unique_exposure_times, colours):
             ind = (flux_mean >= ledge) & (flux_mean < redge)
             exptime_ind = exposure == exptime
-            chosen_flux = corrected_flux[ind][:, exptime_ind]
+            chosen_flux = flux[ind][:, exptime_ind]
 
             chosen_fluxerr = fluxerr[ind][:, exptime_ind]
             try:
