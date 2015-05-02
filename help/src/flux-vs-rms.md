@@ -12,4 +12,4 @@ Only a small region of parameter space is limited by source brightness, between 
 
 For example an approximate noise model projected for the instrument and 30 second exposures. The scintillation level is uncertain.
 
-<img src="/help/static/noise-model.svg" style="width: 80%;" alt="Noise model"></img>
+<img src="/pipeline/qa/help/noise-model.svg" style="width: 80%;" alt="Noise model"></img>
