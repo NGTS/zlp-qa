@@ -6,7 +6,6 @@ import sys
 import numpy as np
 from qa_common import get_logger
 from qa_common.plotting import plt
-from qa_common.airmass_correct import remove_extinction
 from qa_common.filter_objects import good_measurement_indices
 from qa_common.util import NullPool
 import matplotlib.colors as colors
@@ -124,11 +123,6 @@ def load_data(filename, mask=[]):
     tmid = tmid[per_image_ind]
 
     logger.info('Flux array shape initial: %s, final: %s', initial_shape, flux.shape)
-    logger.debug('Removing extinction')
-    flux = remove_extinction(flux, airmass,
-                             flux_min=1E4,
-                             flux_max=6E5)
-
     logger.info('Nights in data: %s', dateclip[:, 0])
 
     if len(mask) > 0:

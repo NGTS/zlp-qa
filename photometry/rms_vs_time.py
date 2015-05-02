@@ -9,7 +9,6 @@ import argparse
 from collections import namedtuple
 from scipy.stats import scoreatpercentile
 
-from qa_common.airmass_correct import remove_extinction
 from qa_common.filter_objects import good_measurement_indices
 from qa_common.plotting import plt
 from qa_common import get_logger
@@ -44,11 +43,6 @@ def extract_flux_data(fname, chosen_exptime=None):
         airmass, mjd]]
 
     logger.info('Flux array shape initial: %s, final: %s', initial_shape, flux.shape)
-    logger.debug('Removing extinction')
-    flux = remove_extinction(flux, airmass,
-                             flux_min=1E4,
-                             flux_max=6E5)
-
     per_ap_median = np.median(flux, axis=1)
     ind = (per_ap_median > 0)
     normalise_flux = ((flux[ind].T / per_ap_median[ind]) - 1.0).T
