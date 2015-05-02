@@ -18,7 +18,7 @@
 <body>
 <div id="images">
     {%- for image in images -%}
-    <h3 id="{{ image['anchor'] }}" onclick="window.open('/help/{{ help_lookup.get(image['anchor']) }}')", "Help", "width=400px, height=500pxk, menubar=no, status=no, titlebar=no, toolbar=no")">{{ image['title'] }}</h3>
+    <h3 id="{{ image['anchor'] }}" onclick="window.open('/pipeline/qa/help/{{ help_lookup.get(image['anchor']) }}')", "Help", "width=400px, height=500pxk, menubar=no, status=no, titlebar=no, toolbar=no")">{{ image['title'] }}</h3>
     <img src="{{ image['location'] }}" width="{{ width }}" />
     <br />
     {% endfor %}
