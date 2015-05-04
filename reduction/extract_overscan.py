@@ -51,11 +51,14 @@ def extract_from_file(fname):
     chstemp = header.get('chstemp', 0)
     ccdtemp = header.get('ccdtemp', 0)
     image_id = header['image_id']
+    roof_status_value = header['roofstat']
+    roof_open = True if roof_status_value.lower() == 'full open' else False
 
     return {
             'mjd': mjd,
             'exposure': float(exposure),
             'image_id': image_id,
+            'roof_open': roof_open,
             'left': sigma_clipped_mean(left).astype(float),
             'right': sigma_clipped_mean(right).astype(float),
             'airmass': airmass,

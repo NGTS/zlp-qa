@@ -17,6 +17,13 @@ from qa_common.util import NullPool
 
 logger = get_logger(__file__)
 
+
+def highlight_roof_closed_sections(ax, roof_closed_ind):
+    for frame, ind in enumerate(roof_closed_ind):
+        if ind:
+            ax.axvspan(frame - 0.5, frame + 0.5, color='0.9', zorder=-100)
+
+
 def sigma_clipped_mean(values, nsigma=3):
     median_value = np.median(values)
     limit = nsigma * np.std(values)
@@ -62,10 +69,12 @@ def compute_limits(data, nsigma=3, precomputed_median=None):
 
 def main(args):
     logger.info('Reading data from %s', args.extracted)
-    data = qa_common.CSVContainer(args.extracted)
+    data = qa_common.CSVContainer(args.extracted,
+            key_type_map={'roof_open': qa_common.CSVContainer.bool_converter})
 
     mjd0 = int(data.mjd.min())
     data['mjd'] = data['mjd'] - mjd0
+    roof_closed = ~data['roof_open']
 
     frames = np.arange(data.mjd.size)
 
@@ -102,8 +111,9 @@ def main(args):
     axes[-1].set_xlabel('Frame')
 
     for ax in axes:
-        ax.grid(True, axis='y')
         plot_night_breaks(ax, data.mjd)
+        highlight_roof_closed_sections(ax, roof_closed)
+        ax.grid(True, axis='y')
 
     fig.tight_layout()
 
