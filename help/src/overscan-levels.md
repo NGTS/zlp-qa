@@ -1,6 +1,9 @@
 # Overscan levels
 
 <dl>
+  <dt>Exposure time</dt>
+  <dd>Exposure time, plotted on a log axis to show the full range</dd>
+
   <dt>Left - Right</dt>
   <dd>Mean of the prescan minus the mean of the overscan. See the next point for how these means are computed.</dd>
 
@@ -16,3 +19,5 @@
   <dt>Airmass</dt>
   <dd>Airmass as reported by Paladin.</dd>
 </dl>
+
+Regions with a grey background are where the roof is closed.
