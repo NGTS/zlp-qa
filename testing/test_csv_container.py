@@ -43,3 +43,21 @@ def test_no_mjd(tmpdir):
     container = CSVContainer.from_filename(str(outfile_name), sort_key='time')
     assert (np.all(container.time == [1, 2, 5]) and
             np.all(container.value == [1, 3, 2]))
+
+
+def test_booleans_survive(tmpdir):
+    from qa_common.csv_container import CSVContainer
+    outfile_name = tmpdir.join('data.csv')
+    with open(str(outfile_name), 'w') as outfile:
+        writer = csv.DictWriter(outfile, fieldnames=['time', 'roof_open'])
+        writer.writeheader()
+
+        time = [1, 5, 2]
+        roof_open = [True, True, False]
+
+        for (a, b) in zip(time, roof_open):
+            writer.writerow({'time': a, 'roof_open': b})
+
+    container = CSVContainer.from_filename(str(outfile_name),
+            key_type_map={'roof_open': CSVContainer.bool_converter})
+    assert np.all(container.roof_open == np.array([True, True, False])).all()

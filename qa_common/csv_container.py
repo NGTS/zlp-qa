@@ -9,8 +9,9 @@ logger = get_logger(__file__)
 
 class CSVContainer(object):
 
-    def __init__(self, infile, sort_key='mjd'):
+    def __init__(self, infile, sort_key='mjd', key_type_map={}):
         self.infile = infile
+        self.key_type_map = key_type_map
         self.sort_key = sort_key
         self.load_data()
         self.data = None
@@ -27,14 +28,19 @@ class CSVContainer(object):
         self.sort_data()
 
         for key in self.data[0]:
+            converter = self.key_type_map.get(key, float)
             setattr(self, key,
-                    np.array([float(row[key]) for row in self.data]))
+                    np.array([converter(row[key]) for row in self.data]))
 
     def sort_data(self):
         try:
             self.data.sort(key=lambda row: row[self.sort_key])
         except KeyError as err:
             logger.warn('Cannot find key %s in data, no sorting', self.sort_key)
+
+    @staticmethod
+    def bool_converter(value):
+        return value.lower() == 'true'
 
     def __setitem__(self, name, value):
         return setattr(self, name, value)
