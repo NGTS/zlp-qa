@@ -70,29 +70,34 @@ def main(args):
     frames = np.arange(data.mjd.size)
 
     logger.info('Plotting')
-    fig, axes = plt.subplots(5, 1, figsize=(11, 8), sharex=True)
-    axes[0].plot(frames, data.right - data.left, 'k.')
-    axes[0].set_ylabel(r'Left - Right')
-    axes[0].set_ylim(*compute_limits(data.right - data.left))
+    fig, axes = plt.subplots(6, 1, figsize=(11, 16), sharex=True)
+    ind = data['exposure'] > 0.
+    axes[0].semilogy(frames[ind], data['exposure'][ind], 'k.')
+    axes[0].set_ylabel(r'Exposure time / s')
+    axes[0].yaxis.set_major_formatter(plt.LogFormatter())
 
-    axes[1].plot(frames, data.left, 'r.', label='left')
-    axes[1].plot(frames, data.right, 'g.', label='right')
-    axes[1].set_ylabel(r'Overscan level / counts')
+    axes[1].plot(frames, data.right - data.left, 'k.')
+    axes[1].set_ylabel(r'Left - Right')
+    axes[1].set_ylim(*compute_limits(data.right - data.left))
+
+    axes[2].plot(frames, data.left, 'r.', label='left')
+    axes[2].plot(frames, data.right, 'g.', label='right')
+    axes[2].set_ylabel(r'Overscan level / counts')
 
     ll_left, ul_left = compute_limits(data.left)
     ll_right, ul_right = compute_limits(data.right)
-    axes[1].set_ylim(min(ll_left, ll_right),
+    axes[2].set_ylim(min(ll_left, ll_right),
                      max(ul_left, ul_right))
 
-    axes[2].plot(frames, data.chstemp, 'r.')
-    axes[2].set_ylabel(r'Chassis temp')
-    axes[2].set_ylim(*compute_limits(data.chstemp))
+    axes[3].plot(frames, data.chstemp, 'r.')
+    axes[3].set_ylabel(r'Chassis temp')
+    axes[3].set_ylim(*compute_limits(data.chstemp))
 
-    axes[3].plot(frames, data.ccdtemp, 'r.')
-    axes[3].set_ylabel(r'CCD temp')
+    axes[4].plot(frames, data.ccdtemp, 'r.')
+    axes[4].set_ylabel(r'CCD temp')
 
-    axes[4].plot(frames, data.airmass, 'r.')
-    axes[4].set_ylabel(r'Airmass')
+    axes[5].plot(frames, data.airmass, 'r.')
+    axes[5].set_ylabel(r'Airmass')
 
     axes[-1].set_xlabel('Frame')
 

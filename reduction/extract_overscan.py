@@ -45,6 +45,7 @@ def extract_from_file(fname):
     mjd = header['mjd']
     left = image[4:, 1:20]
     right = image[4:, -15:]
+    exposure = header['exposure']
 
     airmass = header.get('airmass', 0)
     chstemp = header.get('chstemp', 0)
@@ -53,6 +54,7 @@ def extract_from_file(fname):
 
     return {
             'mjd': mjd,
+            'exposure': float(exposure),
             'image_id': image_id,
             'left': sigma_clipped_mean(left).astype(float),
             'right': sigma_clipped_mean(right).astype(float),
