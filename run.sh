@@ -203,8 +203,7 @@ plot_extracted_astrometic_parameters() {
 
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-extracted-astrometric-parameters.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        find -L ${rootdir}/Reduction/output/ -name 'proc*.fits' | grep -v 'skybkg' | grep image > ${TMPDIR}/science-images-list.txt
-        python astrometry/extract_wcs_parameters.py ${TMPDIR}/science-images-list.txt -o - | \
+        python astrometry/extract_wcs_parameters.py <(find -L ${rootdir}/Reduction/output/ -name 'proc*.fits' | grep -v 'skybkg' | grep image) -o - | \
             python astrometry/plot_astrometric_parameters.py - -o ${OUTPUTFILE}
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
@@ -262,21 +261,13 @@ compute_plot_number() {
 make_astrometric_summary() {
     local readonly rootdir="${1}"
     local readonly plotsdir="${2}"
-
-    local readonly imglist=${TMPDIR}/astrometric-pngs.txt
-
-    find -L ${rootdir}/Reduction/output -name '*.png' | grep -v psf > ${imglist}
-    python scripts/copy_pngs.py ${imglist} -o ${plotsdir} --stub vector-astrometry --offset 80
+    python scripts/copy_pngs.py <(find -L ${rootdir}/Reduction/output -name '*.png' | grep -v psf) -o ${plotsdir} --stub vector-astrometry --offset 80
 }
 
 make_psf_summary() {
     local readonly rootdir="${1}"
     local readonly plotsdir="${2}"
-
-    local readonly imglist=${TMPDIR}/psf-pngs.txt
-
-    find -L ${rootdir}/Reduction/output -name '*.png' | grep psf > ${imglist}
-    python scripts/copy_pngs.py ${imglist} -o ${plotsdir} --stub psf --offset 90
+    python scripts/copy_pngs.py <(find -L ${rootdir}/Reduction/output -name '*.png' | grep psf) -o ${plotsdir} --stub psf --offset 90
 }
 
 make_html() {
