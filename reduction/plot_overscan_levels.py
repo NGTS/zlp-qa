@@ -76,21 +76,19 @@ def main(args):
     data['mjd'] = data['mjd'] - mjd0
     roof_closed = ~data['roof_open']
 
-    frames = np.arange(data.mjd.size)
-
     logger.info('Plotting')
     fig, axes = plt.subplots(6, 1, figsize=(11, 16), sharex=True)
     ind = data['exposure'] > 0.
-    axes[0].semilogy(frames[ind], data['exposure'][ind], 'k.')
+    axes[0].semilogy(data['mjd'][ind], data['exposure'][ind], 'k.')
     axes[0].set_ylabel(r'Exposure time / s')
     axes[0].yaxis.set_major_formatter(plt.LogFormatter())
 
-    axes[1].plot(frames, data.right - data.left, 'k.')
+    axes[1].plot(data['mjd'], data.right - data.left, 'k.')
     axes[1].set_ylabel(r'Left - Right')
     axes[1].set_ylim(*compute_limits(data.right - data.left))
 
-    axes[2].plot(frames, data.left, 'r.', label='left')
-    axes[2].plot(frames, data.right, 'g.', label='right')
+    axes[2].plot(data['mjd'], data.left, 'r.', label='left')
+    axes[2].plot(data['mjd'], data.right, 'g.', label='right')
     axes[2].set_ylabel(r'Overscan level / counts')
 
     ll_left, ul_left = compute_limits(data.left)
@@ -98,17 +96,17 @@ def main(args):
     axes[2].set_ylim(min(ll_left, ll_right),
                      max(ul_left, ul_right))
 
-    axes[3].plot(frames, data.chstemp, 'r.')
+    axes[3].plot(data['mjd'], data.chstemp, 'r.')
     axes[3].set_ylabel(r'Chassis temp')
     axes[3].set_ylim(*compute_limits(data.chstemp))
 
-    axes[4].plot(frames, data.ccdtemp, 'r.')
+    axes[4].plot(data['mjd'], data.ccdtemp, 'r.')
     axes[4].set_ylabel(r'CCD temp')
 
-    axes[5].plot(frames, data.airmass, 'r.')
+    axes[5].plot(data['mjd'], data.airmass, 'r.')
     axes[5].set_ylabel(r'Airmass')
 
-    axes[-1].set_xlabel('Frame')
+    axes[-1].set_xlabel('MJD - {}'.format(mjd0))
 
     for ax in axes:
         plot_night_breaks(ax, data.mjd)
