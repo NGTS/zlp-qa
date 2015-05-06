@@ -22,18 +22,17 @@ def main(args):
     mjd0 = int(mjd.min())
     mjd -= mjd0
 
-    frames = np.arange(mjd.size)
 
     logger.info('Plotting')
     fig, axes = plt.subplots(3, 1, sharex=True)
     labels = ['FWHM / pixels', '"Seeing"', 'Frame S/N']
     for ax, data, label in zip(axes, [fwhm, seeing, clouds], labels):
-        ax.plot(frames, data, marker='.', ls='None')
+        ax.plot(mjd, data, marker='.', ls='None')
         ax.set_ylabel(label)
         ax.grid(True, axis='y')
         plot_night_breaks(ax, mjd)
 
-    axes[-1].set_xlabel('Frame')
+    axes[-1].set_xlabel('MJD - {}'.format(mjd0))
 
     fig.tight_layout()
     if args.output is not None:
