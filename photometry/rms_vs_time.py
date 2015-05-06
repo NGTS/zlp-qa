@@ -15,18 +15,18 @@ from qa_common import get_logger
 
 logger = get_logger(__file__)
 
-summary = namedtuple('Summary', ['frames', 'flux', 'breaks', 'lq', 'uq', 'std'])
+summary = namedtuple('Summary', ['mjd', 'flux', 'breaks', 'lq', 'uq', 'std'])
 
 def extract_flux_data(fname, chosen_exptime=None):
     logger.info("Extracting from %s", fname)
     with fitsio.FITS(fname) as infile:
-        mjd = infile['hjd'][0:1, :][0]
         flux = infile['flux'].read()
         imagelist = infile['imagelist']
         cloud_data = imagelist['clouds'].read()
         airmass = imagelist['airmass'].read()
         shift = imagelist['shift'].read()
         exptime = imagelist['exposure'].read()
+        mjd = imagelist['tmid'].read()
 
         ccdx = infile['ccdx'][:, :1].flatten()
         ccdy = infile['ccdy'][:, :1].flatten()
@@ -52,22 +52,23 @@ def extract_flux_data(fname, chosen_exptime=None):
     med_flux = np.median(normalise_flux, axis=0)
     assert med_flux.size == mjd.size, (med_flux.size, mjd.size)
 
-    frames = np.arange(mjd.size)
     breaks = np.where(np.diff(mjd) > 0.5)[0]
 
     lq, uq = scoreatpercentile(normalise_flux, [25, 75], axis=0)
     std = np.std(normalise_flux, axis=0) / np.sqrt(normalise_flux.shape[0])
 
-    return summary(frames, med_flux, breaks, lq, uq, std)
+    return summary(mjd, med_flux, breaks, lq, uq, std)
 
 
 def plot_summary(s, colour, label, ax=None):
     ax = ax if ax else plt.gca()
 
-    ax.plot(s.frames, s.flux, ls='None', marker='.', color='k',
+    mjd0 = int(s.mjd.min())
+    mjd = s.mjd - mjd0
+    ax.plot(mjd, s.flux, ls='None', marker='.', color='k',
             label=label, zorder=2)
     lims = (ax.get_xlim(), ax.get_ylim())
-    ax.errorbar(s.frames, s.flux, s.std, ls='None', color=colour, alpha=0.5,
+    ax.errorbar(mjd, s.flux, s.std, ls='None', color=colour, alpha=0.5,
                 zorder=1)
     ax.set_xlim(*lims[0])
     ax.set_ylim(*lims[1])
@@ -108,7 +109,7 @@ def main(args):
     ax.axhline(-1E-3, ls=':', color='k')
     ax.axhline(1E-3, ls=':', color='k')
 
-    ax.set_xlabel(r'Frame')
+    ax.set_xlabel(r'$\Delta \mathrm{mjd}$')
     ax.set_ylabel(r'FRMS')
 
     if args.nsigma is not None:
