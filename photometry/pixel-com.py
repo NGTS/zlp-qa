@@ -21,20 +21,20 @@ def main(args):
         ccdy = infile['ccdy'].read()
         mjd = infile['imagelist']['tmid'].read()
 
-    frames = np.arange(mjd.size)
-
+    mjd0 = int(mjd.min())
+    mjd -= mjd0
     fn = np.median
 
     logger.info('Plotting')
     fig, axis = plt.subplots()
-    mappable_x = axis.plot(frames, fn(ccdx, axis=0), 'b.')[0]
+    mappable_x = axis.plot(mjd, fn(ccdx, axis=0), 'b.')[0]
     axis2 = axis.twinx()
-    mappable_y = axis2.plot(frames, fn(ccdy, axis=0), 'g.')[0]
+    mappable_y = axis2.plot(mjd, fn(ccdy, axis=0), 'g.')[0]
 
     axis2.legend([mappable_x, mappable_y], ['X', 'Y'], loc='best')
     axis.set_ylabel(r'X')
     axis2.set_ylabel(r'Y')
-    axis.set_xlabel('Frame')
+    axis.set_xlabel('MJD - {}'.format(mjd0))
 
     plot_night_breaks(axis, mjd)
 
