@@ -109,7 +109,7 @@ def main(args):
     axes[-1].set_xlabel('MJD - {}'.format(mjd0))
 
     for ax in axes:
-        highlight_roof_closed_sections(ax, mjd, roof_closed)
+        highlight_roof_closed_sections(ax, data['mjd'], roof_closed)
         ax.grid(True, axis='y')
 
     fig.tight_layout()
