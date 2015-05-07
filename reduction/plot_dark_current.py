@@ -15,7 +15,7 @@ import qa_common
 from qa_common import plot_night_breaks, get_logger
 from qa_common.plotting import plt
 from qa_common.util import NullPool
-from plot_overscan_levels import sigma_clipped_mean, compute_limits
+from plot_overscan_levels import sigma_clipped_mean
 
 
 logger = get_logger(__file__)
@@ -34,16 +34,13 @@ def main(args):
 
     axes[1].plot(data['mjd'], data.right - data.left, 'k.')
     axes[1].set_ylabel(r'Left - Right')
-    axes[1].set_ylim(*compute_limits(data.right - data.left))
 
     axes[2].plot(data['mjd'], data.left, 'r.', label='left')
     axes[2].plot(data['mjd'], data.right, 'g.', label='right')
     axes[2].set_ylabel(r'Overscan level / counts')
-    axes[2].set_ylim(*compute_limits(data.right))
 
     axes[3].plot(data['mjd'], data.chstemp, 'r.')
     axes[3].set_ylabel(r'Chassis temp')
-    axes[3].set_ylim(*compute_limits(data.chstemp))
 
     axes[4].plot(data['mjd'], data.ccdtemp, 'r.')
     axes[4].set_ylabel(r'CCD temp')

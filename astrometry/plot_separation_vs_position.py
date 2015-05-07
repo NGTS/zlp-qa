@@ -21,16 +21,6 @@ def link_y_limits(ax1, ax2):
     for ax in [ax1, ax2]:
         ax.set_ylim(ll, ul)
 
-def compute_limits(data, nsigma=3, precomputed_median=None):
-    med = (precomputed_median if precomputed_median is not None
-            else np.median(data))
-
-    std = np.std(data)
-
-    ll = med - nsigma * std
-    ul = med + nsigma * std
-
-    return ll, ul
 
 def compute_binned(x, y, nbins, statistic='median'):
     binned, ledges, _ = stats.binned_statistic(x, y, statistic=statistic,
@@ -89,10 +79,6 @@ def main(args):
                 color='r', ls='None')
         ax.plot(ledges, x_binned, color='r', drawstyle='steps-post')
 
-    x_zoomed.set_ylim(*compute_limits(x_binned, nsigma=nsigma))
-    x_zoomed.set_ylabel(r'X zoomed')
-
-
     y_axis.plot(y, separations, 'k.', color='0.4')
     y_axis.set_ylabel(r'y')
 
@@ -103,9 +89,6 @@ def main(args):
         ax.errorbar(bin_centres[:-1], y_binned[:-1], x_binned_error[:-1],
                 color='r', ls='None')
         ax.plot(ledges, y_binned, color='r', drawstyle='steps-post')
-
-    y_zoomed.set_ylim(*compute_limits(y_binned, nsigma=nsigma))
-    y_zoomed.set_ylabel(r'y zoomed')
 
     link_y_limits(x_zoomed, y_zoomed)
 

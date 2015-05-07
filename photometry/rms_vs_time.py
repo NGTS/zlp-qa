@@ -80,16 +80,6 @@ def plot_breaks(s, ax=None):
         ax.axvline(b, ls='--', color='k',
                 zorder=-10)
 
-def compute_limits(data, nsigma=3, precomputed_median=None):
-    med = (precomputed_median if precomputed_median is not None
-            else np.median(data))
-
-    std = np.std(data)
-
-    ll = med - nsigma * std
-    ul = med + nsigma * std
-
-    return ll, ul
 
 def main(args):
     fig, ax = plt.subplots(figsize=(11, 8))
@@ -111,12 +101,6 @@ def main(args):
 
     ax.set_xlabel(r'$\Delta \mathrm{mjd}$')
     ax.set_ylabel(r'FRMS')
-
-    if args.nsigma is not None:
-        if args.post_sysrem:
-            ax.set_ylim(*compute_limits(post.flux, nsigma=args.nsigma))
-        elif args.pre_sysrem:
-            ax.set_ylim(*compute_limits(pre.flux, nsigma=args.nsigma))
 
     fig.tight_layout()
 

@@ -56,16 +56,6 @@ def extract_from_file(fname):
             'chstemp': chstemp,
             }
 
-def compute_limits(data, nsigma=3, precomputed_median=None):
-    med = (precomputed_median if precomputed_median is not None
-            else np.median(data))
-
-    std = np.std(data)
-
-    ll = med - nsigma * std
-    ul = med + nsigma * std
-
-    return ll, ul
 
 def main(args):
     logger.info('Reading data from %s', args.extracted)
@@ -85,20 +75,13 @@ def main(args):
 
     axes[1].plot(data['mjd'], data.right - data.left, 'k.')
     axes[1].set_ylabel(r'Left - Right')
-    axes[1].set_ylim(*compute_limits(data.right - data.left))
 
     axes[2].plot(data['mjd'], data.left, 'r.', label='left')
     axes[2].plot(data['mjd'], data.right, 'g.', label='right')
     axes[2].set_ylabel(r'Overscan level / counts')
 
-    ll_left, ul_left = compute_limits(data.left)
-    ll_right, ul_right = compute_limits(data.right)
-    axes[2].set_ylim(min(ll_left, ll_right),
-                     max(ul_left, ul_right))
-
     axes[3].plot(data['mjd'], data.chstemp, 'r.')
     axes[3].set_ylabel(r'Chassis temp')
-    axes[3].set_ylim(*compute_limits(data.chstemp))
 
     axes[4].plot(data['mjd'], data.ccdtemp, 'r.')
     axes[4].set_ylabel(r'CCD temp')

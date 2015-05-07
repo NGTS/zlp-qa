@@ -9,7 +9,6 @@ import os
 from qa_common import get_logger
 from qa_common.plotting import plt
 import qa_common
-from plot_overscan_levels import compute_limits
 
 logger = get_logger(__file__)
 
@@ -23,7 +22,6 @@ def main(args):
     fig, axis = plt.subplots()
 
     axis.plot(data.chstemp + offset, data.dark, 'k.')
-    axis.set_ylim(1, 7)
     axis.grid(True)
     axis.set_xlabel(r'Chassis temperature / C')
     axis.set_ylabel(r'Dark current / $\mathrm{e}^- s^{-1}$')

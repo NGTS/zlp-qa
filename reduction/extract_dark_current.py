@@ -8,7 +8,7 @@ from multiprocessing.pool import ThreadPool as Pool
 import csv
 
 from qa_common import get_logger
-from plot_overscan_levels import sigma_clipped_mean, compute_limits
+from plot_overscan_levels import sigma_clipped_mean
 from qa_common.util import NullPool
 from pipeutils import open_fits_file
 
