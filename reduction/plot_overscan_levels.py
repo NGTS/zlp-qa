@@ -18,10 +18,10 @@ from qa_common.util import NullPool
 logger = get_logger(__file__)
 
 
-def highlight_roof_closed_sections(ax, roof_closed_ind):
-    for frame, ind in enumerate(roof_closed_ind):
+def highlight_roof_closed_sections(ax, mjd, roof_closed_ind):
+    for frame, ind in enumerate(roof_closed_ind[:-1]):
         if ind:
-            ax.axvspan(frame - 0.5, frame + 0.5, color='0.9', zorder=-100)
+            ax.axvspan(mjd[frame], mjd[frame + 1], color='0.9', zorder=-100)
 
 
 def sigma_clipped_mean(values, nsigma=3):
@@ -109,8 +109,7 @@ def main(args):
     axes[-1].set_xlabel('MJD - {}'.format(mjd0))
 
     for ax in axes:
-        plot_night_breaks(ax, data.mjd)
-        highlight_roof_closed_sections(ax, roof_closed)
+        highlight_roof_closed_sections(ax, data['mjd'], roof_closed)
         ax.grid(True, axis='y')
 
     fig.tight_layout()
