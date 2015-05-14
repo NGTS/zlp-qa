@@ -63,7 +63,7 @@ def main(args):
     low, med, high = compute_stats(stack)
     _errorbar(axes[4], mjd, med, low, high)
 
-    labels = ['fwhm', 'a', 'b', r'$\theta$', 'e']
+    labels = [r'$\mathrm{fwhm}$', r'$a$', r'$b$', r'$\theta$', r'$e$']
     for (ax, label) in zip(axes, labels):
         ax.grid(True)
         ax.set_ylabel(label)

@@ -46,8 +46,8 @@ def main(args):
         axes[1].plot(mjd, ratio_b, '.')
         axes[2].plot(mjd, ratio_e, '.')
 
-    labels = [r'$A_{\mathrm{edge}} / A_{\mathrm{centre}}$',
-            r'$B_{\mathrm{edge}} / B_{\mathrm{centre}}$',
+    labels = [r'$a_{\mathrm{edge}} / a_{\mathrm{centre}}$',
+            r'$b_{\mathrm{edge}} / b_{\mathrm{centre}}$',
             r'$e_{\mathrm{edge}} - e_{\mathrm{centre}}$']
     for ax, label in zip(axes, labels):
         ax.grid(True)
