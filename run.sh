@@ -231,6 +231,7 @@ plot_psf_measurements() {
     local readonly plotsdir="$2"
     local readonly plot_number="$3"
 
+    set +e
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-psf-measurements.${EXT}"
     PSFTEMPFILENAME=${TMPDIR}/psf_measurements.csv
     if [[ ! -f ${OUTPUTFILE} ]]; then
@@ -241,6 +242,7 @@ plot_psf_measurements() {
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
+    set -e
 }
 
 plot_psf_ratios() {
@@ -248,6 +250,7 @@ plot_psf_ratios() {
     local readonly plotsdir="$2"
     local readonly plot_number="$3"
 
+    set +e
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-psf-ratios.${EXT}"
     PSFTEMPFILENAME=${TMPDIR}/psf_measurements.csv
     if [[ ! -f ${OUTPUTFILE} ]]; then
@@ -258,6 +261,7 @@ plot_psf_ratios() {
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
+    set -e
 }
 
 plot_pixel_centre_of_mass() {
