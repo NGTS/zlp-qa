@@ -46,22 +46,24 @@ def main(args):
     mjd0 = int(mjd.min())
     mjd -= mjd0
 
-    fig, axes = plt.subplots(4, 1, sharex=True)
-    render(axes[0], mjd, data, key_type='A')
-    render(axes[1], mjd, data, key_type='B')
-    render(axes[2], mjd, data, key_type='T')
+    fig, axes = plt.subplots(5, 1, sharex=True)
+    render(axes[1], mjd, data, key_type='A')
+    render(axes[2], mjd, data, key_type='B')
+    render(axes[3], mjd, data, key_type='T')
 
     stack = []
     for i in psf_indices:
         A = data['psf_A_{}'.format(i)]
         B = data['psf_B_{}'.format(i)]
+        fwhm = (A + B) / 2.
+        axes[0].plot(mjd, fwhm, '.')
         e = np.sqrt(1. - (B / A) ** 2)
         stack.append(e)
-        axes[3].plot(mjd, e, '.', label='Ecc. {}'.format(i), alpha=0.5)
+        axes[4].plot(mjd, e, '.', label='Ecc. {}'.format(i), alpha=0.5)
     low, med, high = compute_stats(stack)
-    _errorbar(axes[3], mjd, med, low, high)
+    _errorbar(axes[4], mjd, med, low, high)
 
-    labels = ['a', 'b', r'$\theta$', 'e']
+    labels = ['fwhm', 'a', 'b', r'$\theta$', 'e']
     for (ax, label) in zip(axes, labels):
         ax.grid(True)
         ax.set_ylabel(label)
