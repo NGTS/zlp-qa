@@ -3,7 +3,7 @@
 
 import argparse
 import os
-from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing import Pool
 from collections import namedtuple
 from astropy.io import fits
 import csv
@@ -21,7 +21,7 @@ def extract(filename):
 
 def main(args):
     filenames = (os.path.realpath(line.strip()) for line in args.filelist)
-    pool = ThreadPool()
+    pool = Pool()
     results = pool.map(extract, filenames)
     results.sort(key=lambda row: row.mjd)
 
