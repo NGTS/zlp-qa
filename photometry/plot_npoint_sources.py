@@ -3,7 +3,7 @@
 
 import argparse
 from qa_common.plotting import plt
-from qa_common import plot_night_breaks, get_logger
+from qa_common import get_logger
 import csv
 import numpy as np
 
@@ -14,11 +14,13 @@ def main(args):
     reader = csv.DictReader(args.data)
     mjd, nsources = map(np.array, zip(*[(float(row['mjd']), float(row['nsources']))
                                         for row in reader]))
+    logger.info('Read point source data')
     error = np.sqrt(nsources)
 
     mjd0 = int(mjd.min())
     mjd -= mjd0
 
+    logger.info('Plotting to %s', args.output)
     fig, axis = plt.subplots()
     axis.errorbar(mjd, nsources, error, ls='', marker='', capsize=0., lw=1.,
             alpha=0.5, color='k')
