@@ -211,6 +211,21 @@ plot_extracted_astrometic_parameters() {
 
 }
 
+
+plot_number_of_point_sources() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
+    local readonly plot_number="$3"
+
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-number-of-point-sources.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        python photometry/extract_npoint_sources.py <(find -L ${rootdir}/Reduction/output/ -name 'proc*.cat') -o - | \
+            python photometry/plot_npoint_sources.py - -o ${OUTPUTFILE}
+    else
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+}
+
 plot_pixel_centre_of_mass() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
@@ -243,9 +258,10 @@ make_images() {
     plot_rms_vs_time "${rootdir}" "${plotsdir}" 8
     plot_rms_with_binning "${rootdir}" "${plotsdir}" 9
     plot_photometric_time_series "${rootdir}" "${plotsdir}" 10
-    plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" 11
-    plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  12
-    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 13
+    plot_number_of_point_sources "${rootdir}" "${plotsdir}" 11
+    plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" 12
+    plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  13
+    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 14
 
     make_astrometric_summary "${rootdir}" "${plotsdir}"
     make_psf_summary "${rootdir}" "${plotsdir}"
