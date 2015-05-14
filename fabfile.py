@@ -3,7 +3,7 @@ from fabric.api import *
 env.use_ssh_config = True
 env.hosts = ['ngtshead.astro']
 
-@task
+@task(default=True)
 def deploy():
     build()
     copy_to_destination()
