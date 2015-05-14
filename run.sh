@@ -226,6 +226,44 @@ plot_number_of_point_sources() {
     fi
 }
 
+plot_psf_measurements() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
+    local readonly plot_number="$3"
+
+    set +e
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-psf-measurements.${EXT}"
+    PSFTEMPFILENAME=${TMPDIR}/psf_measurements.csv
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        if [ ! -f ${PSFTEMPFILENAME} ]; then
+            python photometry/extract_psf_measurements.py <(find -L ${rootdir}/Reduction/output/ -name 'proc*.phot') -o ${PSFTEMPFILENAME}
+        fi
+        python photometry/plot_psf_measurements.py ${PSFTEMPFILENAME} -o ${OUTPUTFILE}
+    else
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+    set -e
+}
+
+plot_psf_ratios() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
+    local readonly plot_number="$3"
+
+    set +e
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-psf-ratios.${EXT}"
+    PSFTEMPFILENAME=${TMPDIR}/psf_measurements.csv
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        if [ ! -f ${PSFTEMPFILENAME} ]; then
+            python photometry/extract_psf_measurements.py <(find -L ${rootdir}/Reduction/output/ -name 'proc*.phot') -o ${PSFTEMPFILENAME}
+        fi
+        python photometry/plot_psf_ratios.py ${PSFTEMPFILENAME} -o ${OUTPUTFILE}
+    else
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+    set -e
+}
+
 plot_pixel_centre_of_mass() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
@@ -259,9 +297,11 @@ make_images() {
     plot_rms_with_binning "${rootdir}" "${plotsdir}" 9
     plot_photometric_time_series "${rootdir}" "${plotsdir}" 10
     plot_number_of_point_sources "${rootdir}" "${plotsdir}" 11
-    plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" 12
-    plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  13
-    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 14
+    plot_psf_measurements "${rootdir}" "${plotsdir}" 12
+    plot_psf_ratios "${rootdir}" "${plotsdir}" 13
+    plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" 14
+    plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  15
+    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 16
 
     make_astrometric_summary "${rootdir}" "${plotsdir}"
     make_psf_summary "${rootdir}" "${plotsdir}"
