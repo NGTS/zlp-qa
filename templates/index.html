@@ -1,6 +1,7 @@
 <!doctype html5>
 <html
 <head>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <style>
         body {
             background-color: #4B7399;
@@ -18,7 +19,10 @@
 <body>
 <div id="images">
     {%- for image in images -%}
-    <h3 id="{{ image['anchor'] }}" onclick="window.open('/pipeline/qa/help/{{ help_lookup.get(image['anchor'], image['anchor'] + '.html') }}')", "Help", "width=400px, height=500pxk, menubar=no, status=no, titlebar=no, toolbar=no")">{{ image['title'] }}</h3>
+    <h3 id="{{ image['anchor'] }}">
+        <span onclick="window.open('/pipeline/qa/help/{{ help_lookup.get(image['anchor'], image['anchor'] + '.html') }}')", "Help", "width=400px, height=500pxk, menubar=no, status=no, titlebar=no, toolbar=no")">{{ image['title'] }}</span>
+        <a href="#{{ image['anchor'] }}"><i class="fa fa-link"></i></a>
+    </h3>
     <img src="{{ image['location'] }}" width="{{ width }}" />
     <br />
     {% endfor %}
