@@ -211,6 +211,18 @@ plot_extracted_astrometic_parameters() {
 
 }
 
+plot_field_rotation() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
+    local readonly plot_number="$3"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-field-rotation.${EXT}"
+    if [[ ! -f "${OUTPUTFILE}" ]]; then
+        REDUCED_FILES_DIR="$(dirname $(find -L ${rootdir}/Reduction/output -name 'proc*.fits' | grep -v skybkg | grep image | head -n 1))"
+        python external/field-rotation/run_on_files.py -o /dev/null ${REDUCED_FILES_DIR} -p ${OUTPUTFILE}
+    else
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+}
 
 plot_number_of_point_sources() {
     local readonly rootdir="$1"
@@ -301,7 +313,8 @@ make_images() {
     plot_psf_ratios "${rootdir}" "${plotsdir}" 13
     plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" 14
     plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  15
-    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 16
+    plot_field_rotation "${rootdir}" "${plotsdir}"  16
+    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 17
 
     make_astrometric_summary "${rootdir}" "${plotsdir}"
     make_psf_summary "${rootdir}" "${plotsdir}"
