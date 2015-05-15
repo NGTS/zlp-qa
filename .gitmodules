@@ -1,0 +1,3 @@
+[submodule "external/field-rotation"]
+	path = external/field-rotation
+	url = https://github.com/NGTS/pipeline-field-rotation
