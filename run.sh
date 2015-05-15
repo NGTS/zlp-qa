@@ -126,6 +126,20 @@ plot_flux_vs_rms() {
     fi
 }
 
+plot_casu_flux_vs_rms() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
+    local readonly plot_number="$3"
+
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-casu-flux-vs-rms.${EXT}"
+    if [[ ! -f ${OUTPUTFILE} ]]; then
+        local readonly filename=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
+        python photometry/flux_vs_rms_with_casu.py ${filename} -o ${OUTPUTFILE}
+    else
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+}
+
 plot_rms_vs_time() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
@@ -305,16 +319,17 @@ make_images() {
     plot_hist_equalised_master "${rootdir}" "${plotsdir}" "flat" 5
     plot_total_flat_adu "${rootdir}" "${plotsdir}" 6
     plot_flux_vs_rms "${rootdir}" "${plotsdir}" 7
-    plot_rms_vs_time "${rootdir}" "${plotsdir}" 8
-    plot_rms_with_binning "${rootdir}" "${plotsdir}" 9
-    plot_photometric_time_series "${rootdir}" "${plotsdir}" 10
-    plot_number_of_point_sources "${rootdir}" "${plotsdir}" 11
-    plot_psf_measurements "${rootdir}" "${plotsdir}" 12
-    plot_psf_ratios "${rootdir}" "${plotsdir}" 13
-    plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" 14
-    plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  15
-    plot_field_rotation "${rootdir}" "${plotsdir}"  16
-    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 17
+    plot_casu_flux_vs_rms "${rootdir}" "${plotsdir}" 8
+    plot_rms_vs_time "${rootdir}" "${plotsdir}" 9
+    plot_rms_with_binning "${rootdir}" "${plotsdir}" 10
+    plot_photometric_time_series "${rootdir}" "${plotsdir}" 11
+    plot_number_of_point_sources "${rootdir}" "${plotsdir}" 12
+    plot_psf_measurements "${rootdir}" "${plotsdir}" 13
+    plot_psf_ratios "${rootdir}" "${plotsdir}" 14
+    plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" 15
+    plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  16
+    plot_field_rotation "${rootdir}" "${plotsdir}"  17
+    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 18
 
     make_astrometric_summary "${rootdir}" "${plotsdir}"
     make_psf_summary "${rootdir}" "${plotsdir}"
