@@ -30,16 +30,6 @@ def extract_flux_data(fname, zp=21.18, clouds=None, airmass_correct=True):
     logger.info('Normalising by exposure time')
     flux /= exptime
 
-    # Filter out bad points
-    per_object_ind, per_image_ind = good_measurement_indices(shift, cloud_data,
-                                                             airmass,
-                                                             ccdx, ccdy)
-    initial_shape = flux.shape
-    flux = flux[per_object_ind][:, per_image_ind]
-    airmass = airmass[per_image_ind]
-
-    logger.info('Flux array shape initial: %s, final: %s', initial_shape, flux.shape)
-
     av_flux = np.average(flux, axis=1)
     std_flux = np.std(flux, axis=1)
 

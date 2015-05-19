@@ -54,15 +54,12 @@ def main(args):
 
     logger.info('Reading data from %s', args.filename)
     with fitsio.FITS(args.filename) as infile:
-        per_object_ind, per_image_ind = good_measurement_indices_from_fits(
-            infile)
-
-        flux = infile['flux'].read()[per_object_ind][:, per_image_ind]
-        fluxerr = infile['fluxerr'].read()[per_object_ind][:, per_image_ind]
+        flux = infile['flux'].read()
+        fluxerr = infile['fluxerr'].read()
         imagelist = infile['imagelist']
-        airmass = imagelist['airmass'].read()[per_image_ind]
-        exposure = imagelist['exposure'].read()[per_image_ind]
-        tmid = imagelist['tmid'].read()[per_image_ind]
+        airmass = imagelist['airmass'].read()
+        exposure = imagelist['exposure'].read()
+        tmid = imagelist['tmid'].read()
 
     unique_exposure_times = sorted(list(set(exposure)))
     logger.info('Found %s exposure times: %s', len(unique_exposure_times),

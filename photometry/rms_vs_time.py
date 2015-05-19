@@ -34,15 +34,6 @@ def extract_flux_data(fname, chosen_exptime=None):
     logger.info('Normalising by exposure time')
     flux /= exptime
 
-    # Filter out bad points
-    per_object_ind, per_image_ind = good_measurement_indices(
-        shift, cloud_data, airmass, ccdx, ccdy)
-    initial_shape = flux.shape
-    flux = flux[per_object_ind][:, per_image_ind]
-    airmass, mjd = [data[per_image_ind] for data in [
-        airmass, mjd]]
-
-    logger.info('Flux array shape initial: %s, final: %s', initial_shape, flux.shape)
     per_ap_median = np.median(flux, axis=1)
     ind = (per_ap_median > 0)
     normalise_flux = ((flux[ind].T / per_ap_median[ind]) - 1.0).T
