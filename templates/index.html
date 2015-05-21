@@ -45,7 +45,7 @@
     {%- for image in images -%}
     <a title="Permalink" class="permalink" href="#{{ image['anchor'] }}"><i class="fa fa-link"></i></a>
     <h3 title="Help text" id="{{ image['anchor'] }}">
-        <span onclick="window.open('/pipeline/qa/help/{{ help_lookup.get(image['anchor'], image['anchor'] + '.html') }}')", "Help", "width=400px, height=500pxk, menubar=no, status=no, titlebar=no, toolbar=no")">{{ image['title'] }}</span>
+        <span onclick="javascript:void(window.open('/pipeline/qa/help/{{ help_lookup.get(image['anchor'], image['anchor'] + '.html') }}', '', 'width=400px, height=500px, menubar=no, status=no, titlebar=no, toolbar=no'))">{{ image['title'] }}</span>
     </h3>
     <img src="{{ image['location'] }}" width="{{ width }}" />
     <br />
