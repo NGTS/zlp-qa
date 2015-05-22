@@ -8,10 +8,9 @@ import logging
 from astropy.io import fits
 import numpy as np
 from qa_common.plotting import plt, subplots
+from qa_common.qa_logging import get_logger
 
-logging.basicConfig(
-    level='INFO', format='%(levelname)7s %(message)s')
-logger = logging.getLogger(__name__)
+logger = get_logger(__file__)
 
 
 def main(args):
@@ -19,6 +18,7 @@ def main(args):
         logger.setLevel('DEBUG')
     logger.debug(args)
 
+    logger.info('Reading autoguider stats from %s', args.filename)
     imagelist = fits.getdata(args.filename)
 
     colours = ['#d95f02', '#1b9e77']
@@ -30,10 +30,12 @@ def main(args):
     full_keys = (a + b for (a, b) in product(keys, axes_labels))
     with subplots(6, 1, sharex=True, figsize=(11, 11)) as (fig, axes):
         for (key, ax, colour) in zip(full_keys, axes, cycle(colours)):
+            logger.debug('Plotting %s', key)
             ax.plot(mjd, imagelist[key], '.', color=colour)
             ax.set_ylabel(key)
         axes[-1].set_xlabel(r'MJD - {}'.format(mjd0))
 
+    logger.info('Rendering to %s', args.output)
     fig.savefig(args.output, bbox_inches='tight')
 
 
