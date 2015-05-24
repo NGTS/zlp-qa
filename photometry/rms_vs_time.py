@@ -22,9 +22,7 @@ def extract_flux_data(fname, chosen_exptime=None):
     with fitsio.FITS(fname) as infile:
         flux = infile['flux'].read()
         imagelist = infile['imagelist']
-        cloud_data = imagelist['clouds'].read()
         airmass = imagelist['airmass'].read()
-        shift = imagelist['shift'].read()
         exptime = imagelist['exposure'].read()
         mjd = imagelist['tmid'].read()
 

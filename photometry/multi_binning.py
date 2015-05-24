@@ -96,8 +96,6 @@ def load_data(filename, mask=[]):
         tmid = imagelist['tmid'].read()
         meanbias = imagelist['meanbias'].read()
         airmass = imagelist['airmass'].read()
-        shift = imagelist['shift'].read()
-        clouds = imagelist['clouds'].read()
         T = imagelist['T'].read()
         exposure = imagelist['exposure'].read()
 
@@ -112,17 +110,6 @@ def load_data(filename, mask=[]):
     # Normalise by exposure time
     flux /= exposure
 
-    # Filter out bad points
-    per_object_ind, per_image_ind = good_measurement_indices(shift, clouds,
-                                                             airmass,
-                                                             ccdx, ccdy)
-    initial_shape = flux.shape
-    flux = flux[per_object_ind][:, per_image_ind]
-    mean_fluxes = mean_fluxes[per_object_ind]
-    airmass = airmass[per_image_ind]
-    tmid = tmid[per_image_ind]
-
-    logger.info('Flux array shape initial: %s, final: %s', initial_shape, flux.shape)
     logger.info('Nights in data: %s', dateclip[:, 0])
 
     if len(mask) > 0:
