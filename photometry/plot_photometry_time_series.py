@@ -15,18 +15,17 @@ def main(args):
     with fitsio.FITS(args.filename) as infile:
         imagelist_hdu = infile['imagelist']
         mjd = imagelist_hdu['tmid'].read()
-        fwhm = imagelist_hdu['fwhm'].read()
         seeing = imagelist_hdu['seeing'].read()
-        clouds = imagelist_hdu['clouds'].read()
+        frame_sn = imagelist_hdu['frame_sn'].read()
 
     mjd0 = int(mjd.min())
     mjd -= mjd0
 
 
     logger.info('Plotting')
-    fig, axes = plt.subplots(3, 1, sharex=True)
-    labels = ['FWHM / pixels', '"Seeing"', 'Frame S/N']
-    for ax, data, label in zip(axes, [fwhm, seeing, clouds], labels):
+    fig, axes = plt.subplots(2, 1, sharex=True)
+    labels = ['"Seeing"', 'Frame S/N']
+    for ax, data, label in zip(axes, [seeing, frame_sn], labels):
         ax.plot(mjd, data, marker='.', ls='None')
         ax.set_ylabel(label)
         ax.grid(True, axis='y')
