@@ -24,7 +24,7 @@ def main(args):
     logger.info('Copying %s files', nfiles)
 
     for i, file_index in enumerate(xrange(0, nfiles, nfiles / args.nfiles)):
-        copy_file(args.offset + i, files[file_index], args.outputdir, args.stub)
+        copy_file(args.plot_index_offset + i, files[file_index], args.outputdir, args.stub)
 
 
 
@@ -34,5 +34,5 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--outputdir', required=True)
     parser.add_argument('--stub', required=True)
     parser.add_argument('--nfiles', type=int, default=5, required=False)
-    parser.add_argument('--offset', type=int, required=True)
+    parser.add_argument('--plot-index-offset', type=int, required=True)
     main(parser.parse_args())

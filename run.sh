@@ -380,19 +380,19 @@ make_astrometric_summary() {
     python scripts/copy_pngs.py <(find -L ${rootdir}/Reduction/output -name '*.png' | \
         grep -v psf | \
         grep -v model | \
-        grep -v residuals) -o ${plotsdir} --stub vector-astrometry --offset 70
+        grep -v residuals) -o ${plotsdir} --stub vector-astrometry --plot-index-offset 70
 }
 
 make_psf_summary() {
     local readonly rootdir="${1}"
     local readonly plotsdir="${2}"
-    python scripts/copy_pngs.py <(find -L ${rootdir}/Reduction/output -name '*.png' | grep psf) -o ${plotsdir} --stub psf --offset 80
+    python scripts/copy_pngs.py <(find -L ${rootdir}/Reduction/output -name '*.png' | grep psf) -o ${plotsdir} --stub psf --plot-index-offset 80
 }
 
 make_psf_residuals_summary() {
     local readonly rootdir="${1}"
     local readonly plotsdir="${2}"
-    python scripts/copy_pngs.py <(find -L ${rootdir}/Reduction/output -name '*.png' | grep residuals) -o ${plotsdir} --stub psf-residuals --offset 90
+    python scripts/copy_pngs.py <(find -L ${rootdir}/Reduction/output -name '*.png' | grep residuals) -o ${plotsdir} --stub psf-residuals --plot-index-offset 90
 }
 
 make_html() {
