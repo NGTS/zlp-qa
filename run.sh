@@ -376,7 +376,10 @@ compute_plot_number() {
 make_astrometric_summary() {
     local readonly rootdir="${1}"
     local readonly plotsdir="${2}"
-    python scripts/copy_pngs.py <(find -L ${rootdir}/Reduction/output -name '*.png' | grep -v psf) -o ${plotsdir} --stub vector-astrometry --offset 80
+    python scripts/copy_pngs.py <(find -L ${rootdir}/Reduction/output -name '*.png' | \
+        grep -v psf | \
+        grep -v model | \
+        grep -v residuals) -o ${plotsdir} --stub vector-astrometry --offset 70
 }
 
 make_psf_summary() {
