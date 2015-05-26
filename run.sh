@@ -364,6 +364,7 @@ make_images() {
 
     make_astrometric_summary "${rootdir}" "${plotsdir}"
     make_psf_summary "${rootdir}" "${plotsdir}"
+    make_psf_residuals_summary "${rootdir}" "${plotsdir}"
 
     make_html "${outputdir}"
 }
@@ -385,7 +386,13 @@ make_astrometric_summary() {
 make_psf_summary() {
     local readonly rootdir="${1}"
     local readonly plotsdir="${2}"
-    python scripts/copy_pngs.py <(find -L ${rootdir}/Reduction/output -name '*.png' | grep psf) -o ${plotsdir} --stub psf --offset 90
+    python scripts/copy_pngs.py <(find -L ${rootdir}/Reduction/output -name '*.png' | grep psf) -o ${plotsdir} --stub psf --offset 80
+}
+
+make_psf_residuals_summary() {
+    local readonly rootdir="${1}"
+    local readonly plotsdir="${2}"
+    python scripts/copy_pngs.py <(find -L ${rootdir}/Reduction/output -name '*.png' | grep residuals) -o ${plotsdir} --stub psf-residuals --offset 90
 }
 
 make_html() {
