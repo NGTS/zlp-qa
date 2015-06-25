@@ -94,9 +94,7 @@ def load_data(filename, mask=[]):
     with fitsio.FITS(filename) as infile:
         imagelist = infile['imagelist']
         tmid = imagelist['tmid'].read()
-        meanbias = imagelist['meanbias'].read()
         airmass = imagelist['airmass'].read()
-        T = imagelist['T'].read()
         exposure = imagelist['exposure'].read()
 
         flux = infile['flux'].read()
@@ -125,8 +123,7 @@ def load_data(filename, mask=[]):
     tmid = tmid[cut]
     flux = flux[:, cut]
 
-    outdict = {'time': tmid, 'flux': flux, 'mean_fluxes': mean_fluxes[
-        cut], 'meanbias': meanbias[cut], 'T': T[cut]}
+    outdict = {'time': tmid, 'flux': flux, 'mean_fluxes': mean_fluxes[cut]} 
 
     return outdict
 
