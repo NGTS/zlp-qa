@@ -3,6 +3,7 @@
 
 import fitsio
 import numpy as np
+import os
 import argparse
 from collections import namedtuple
 import sys
@@ -57,7 +58,7 @@ def main(args):
     fig, ax = plt.subplots(figsize=(11, 8))
     plot_summary(extracted, 'r', ax=ax)
     ax.set(xlabel='Kepler magnitude', ylabel='FRMS', yscale='log',
-            title='{}:{}'.format( args.filename, args.hdu),
+            title='{}:{}'.format(os.path.basename(args.filename), args.hdu),
             xlim=(5, 20), ylim=(1E-3, 10))
     ax.yaxis.set_major_formatter(plt.ScalarFormatter())
     ax.grid(True)

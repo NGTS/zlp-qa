@@ -104,16 +104,15 @@ plot_total_flat_adu() {
 plot_flux_vs_rms() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
+    local readonly hdu="$3"
 
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-flux-vs-rms.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
-        local readonly postsysrem=$(find -L ${rootdir}/AperturePhot/output -name 'tamout.fits')
-        if [[ -z ${postsysrem} ]]; then
-            print_warning "No post-sysrem file found"
-            python photometry/flux_vs_rms.py --pre-sysrem ${presysrem} -o ${OUTPUTFILE}
+        local readonly fluxfile=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
+        if [[ -z ${fluxfile} ]]; then
+            print_warning "No flux file found"
         else
-            python photometry/flux_vs_rms.py --pre-sysrem ${presysrem} --post-sysrem ${postsysrem} -o ${OUTPUTFILE}
+            python photometry/flux_vs_rms.py ${fluxfile} --hdu ${hdu} -o ${OUTPUTFILE}
         fi
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
@@ -331,7 +330,9 @@ make_images() {
     run_then_inc_plot_counter plot_hist_equalised_master "${rootdir}" "${plotsdir}" "dark"
     run_then_inc_plot_counter plot_hist_equalised_master "${rootdir}" "${plotsdir}" "flat"
     run_then_inc_plot_counter plot_total_flat_adu "${rootdir}" "${plotsdir}"
-    run_then_inc_plot_counter plot_flux_vs_rms "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_flux_vs_rms "${rootdir}" "${plotsdir}" flux
+    run_then_inc_plot_counter plot_flux_vs_rms "${rootdir}" "${plotsdir}" tamflux
+    run_then_inc_plot_counter plot_flux_vs_rms "${rootdir}" "${plotsdir}" casudet
     run_then_inc_plot_counter plot_casu_flux_vs_rms "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_rms_vs_time "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_casu_rms_vs_time "${rootdir}" "${plotsdir}"
