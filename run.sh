@@ -340,6 +340,7 @@ make_images() {
 
     ensure_directory "${plotsdir}"
 
+    set +e
     plot_overscan_levels "${rootdir}" "${plotsdir}" 0
     plot_dark_levels "${rootdir}" "${plotsdir}" 1
     plot_dark_correlation "${rootdir}" "${plotsdir}" 2
@@ -365,6 +366,7 @@ make_images() {
     make_astrometric_summary "${rootdir}" "${plotsdir}"
     make_psf_summary "${rootdir}" "${plotsdir}"
     make_psf_residuals_summary "${rootdir}" "${plotsdir}"
+    set -e
 
     make_html "${outputdir}"
 }
