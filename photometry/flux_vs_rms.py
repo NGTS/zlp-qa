@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 import fitsio
 import numpy as np
 import argparse
@@ -15,15 +14,16 @@ logger = get_logger(__file__)
 
 summary = namedtuple('Summary', ['mags', 'frms'])
 
-def extract_flux_data(fname, zp=21.18, airmass_correct=True):
+
+def extract_flux_data(fname, hdu, zp=21.18, airmass_correct=False):
     with fitsio.FITS(fname) as infile:
-        flux = infile['flux'].read()
+        flux = infile[hdu].read()
         imagelist = infile['imagelist']
         airmass = imagelist['airmass'].read()
         exptime = imagelist['exposure'].read()
 
-        ccdx = infile['ccdx'][:, :1].flatten()
-        ccdy = infile['ccdy'][:, :1].flatten()
+        ccdx = infile['ccdx'][:,:1].flatten()
+        ccdy = infile['ccdy'][:,:1].flatten()
 
     logger.info('Normalising by exposure time')
     flux /= exptime
@@ -33,10 +33,8 @@ def extract_flux_data(fname, zp=21.18, airmass_correct=True):
 
     before_size = av_flux.size
 
-    ind = ((av_flux > 0) &
-            (std_flux > 0) &
-            (av_flux == av_flux) &
-            (std_flux == std_flux))
+    ind = ((av_flux > 0) & (std_flux > 0) & (av_flux == av_flux) &
+           (std_flux == std_flux))
     av_flux, std_flux = [data[ind] for data in [av_flux, std_flux]]
 
     logger.info("Rejecting %s objects", before_size - av_flux.size)
@@ -45,36 +43,24 @@ def extract_flux_data(fname, zp=21.18, airmass_correct=True):
 
     return summary(mags.astype(float), (std_flux / av_flux).astype(float))
 
-def plot_summary(s, colour, label, ax=None):
+
+def plot_summary(s, colour, label='', ax=None):
     ax = ax if ax else plt.gca()
 
-    ax.plot(s.mags, s.frms, ls='None', marker='.', color=colour,
-            label=label)
+    ax.plot(s.mags, s.frms, ls='None', marker='.', color=colour, label=label)
+
 
 def main(args):
-    if args.pre_sysrem:
-        logger.info("Loading pre-sysrem data from %s", args.pre_sysrem)
-        pre = extract_flux_data(args.pre_sysrem,
-                                airmass_correct=not args.no_pre_airmass_correct)
-    if args.post_sysrem:
-        logger.info("Loading post-sysrem data from %s", args.post_sysrem)
-        post = extract_flux_data(args.post_sysrem,
-                                 airmass_correct=args.post_airmass_correct)
+    logger.info('Loading flux data from %s', args.filename)
+    extracted = extract_flux_data(args.filename, hdu=args.hdu)
 
     fig, ax = plt.subplots(figsize=(11, 8))
-    if args.pre_sysrem:
-        plot_summary(pre, 'b', 'Pre', ax=ax)
-    if args.post_sysrem:
-        plot_summary(post, 'r', 'Post', ax=ax)
-    ax.legend(loc='best')
-    ax.set_yscale('log')
+    plot_summary(extracted, 'r', ax=ax)
+    ax.set(xlabel='Kepler magnitude', ylabel='FRMS', yscale='log',
+            title='{}:{}'.format( args.filename, args.hdu),
+            xlim=(5, 20), ylim=(1E-3, 10))
     ax.yaxis.set_major_formatter(plt.ScalarFormatter())
-
-    ax.set_xlabel(r'Kepler magnitude')
-    ax.set_ylabel(r'FRMS')
     ax.grid(True)
-    ax.set_xlim(5, 20)
-    ax.set_ylim(1E-3, 10)
     fig.tight_layout()
 
     logger.info('Saving to %s', args.output)
@@ -82,19 +68,15 @@ def main(args):
         fig.savefig(args.output, bbox_inches='tight')
     else:
         plt.show()
-    
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-o', '--output', required=False,
-            type=argparse.FileType(mode='w'), help='Output image name')
-    parser.add_argument('--pre-sysrem', help='Input filename',
-            type=str)
-    parser.add_argument('--post-sysrem', help='Input filename',
-            type=str)
-    parser.add_argument('--no-pre-airmass-correct', help='Airmass correct pre-sysrem data',
-                        action='store_true', default=False)
-    parser.add_argument('--post-airmass-correct', help='Airmass correct post-sysrem data',
-                        action='store_true', default=False)
+    parser.add_argument('-o', '--output',
+                        required=False,
+                        type=argparse.FileType(mode='w'),
+                        help='Output image name')
+    parser.add_argument('filename', help='File to analyse')
+    parser.add_argument('-H', '--hdu', help='HDU to analyse', required=True)
 
     main(parser.parse_args())
