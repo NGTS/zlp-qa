@@ -168,12 +168,13 @@ plot_casu_rms_vs_time() {
 plot_rms_with_binning() {
     local readonly rootdir="$1"
     local readonly plotsdir="${2}"
+    local readonly hdu="$3"
 
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-rms-with-binning.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
+        local readonly filename=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         if [[ -z ${TESTQA} ]]; then
-            python photometry/multi_binning.py ${presysrem} -o ${OUTPUTFILE}
+            python photometry/multi_binning.py ${filename} -o ${OUTPUTFILE} --hdu ${hdu}
         else
             print_status "RMS with binning test disabled; it does not work with this data set"
         fi
@@ -337,7 +338,9 @@ make_images() {
     run_then_inc_plot_counter plot_rms_vs_time "${rootdir}" "${plotsdir}" tamflux
     run_then_inc_plot_counter plot_rms_vs_time "${rootdir}" "${plotsdir}" casudet
     run_then_inc_plot_counter plot_casu_rms_vs_time "${rootdir}" "${plotsdir}"
-    run_then_inc_plot_counter plot_rms_with_binning "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_rms_with_binning "${rootdir}" "${plotsdir}" flux
+    run_then_inc_plot_counter plot_rms_with_binning "${rootdir}" "${plotsdir}" tamflux
+    run_then_inc_plot_counter plot_rms_with_binning "${rootdir}" "${plotsdir}" casudet
     run_then_inc_plot_counter plot_photometric_time_series "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_number_of_point_sources "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_psf_measurements "${rootdir}" "${plotsdir}"

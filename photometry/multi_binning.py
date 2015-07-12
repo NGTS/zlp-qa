@@ -26,7 +26,7 @@ logger = get_logger(__file__)
 
 def main(args):
     filename = args.filename
-    data_dict = load_data(filename)
+    data_dict = load_data(filename, hdu=args.hdu)
 
     left_edges = 10 ** np.linspace(2, 5, 10)[:-1]
     right_edges = 10 ** (np.log10(left_edges) + 3. / 9.)
@@ -88,7 +88,9 @@ def create_colourbar(fig, values, mymap, cNorm):
     return cbar
 
 
-def load_data(filename, mask=[]):
+def load_data(filename, hdu, mask=None):
+    mask = mask if mask is not None else []
+
     dateclip = datesplit(filename)
 
     with fitsio.FITS(filename) as infile:
@@ -97,7 +99,7 @@ def load_data(filename, mask=[]):
         airmass = imagelist['airmass'].read()
         exposure = imagelist['exposure'].read()
 
-        flux = infile['flux'].read()
+        flux = infile[hdu].read()
 
         catalogue = infile['catalogue']
         mean_fluxes = catalogue['flux_mean'].read()
@@ -298,6 +300,8 @@ if __name__ == '__main__':
                         required=False)
     parser.add_argument('--serial', help='Do not use parallel processing',
                         action='store_true', default=False)
+    parser.add_argument('-H', '--hdu', required=True,
+            help='HDU to plot')
     try:
         main(parser.parse_args())
     except Exception as e:
