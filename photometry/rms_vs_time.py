@@ -17,10 +17,10 @@ logger = get_logger(__file__)
 
 summary = namedtuple('Summary', ['mjd', 'flux', 'breaks', 'lq', 'uq', 'std'])
 
-def extract_flux_data(fname, chosen_exptime=None):
+def extract_flux_data(fname, hdu, chosen_exptime=None):
     logger.info("Extracting from %s", fname)
     with fitsio.FITS(fname) as infile:
-        flux = infile['flux'].read()
+        flux = infile[hdu].read()
         imagelist = infile['imagelist']
         airmass = imagelist['airmass'].read()
         exptime = imagelist['exposure'].read()
@@ -49,18 +49,19 @@ def extract_flux_data(fname, chosen_exptime=None):
     return summary(mjd, med_flux, breaks, lq, uq, std)
 
 
-def plot_summary(s, colour, label, ax=None):
+def plot_summary(s, colour, title, ax=None):
     ax = ax if ax else plt.gca()
 
     mjd0 = int(s.mjd.min())
     mjd = s.mjd - mjd0
     ax.plot(mjd, s.flux, ls='None', marker='.', color='k',
-            label=label, zorder=2)
+            zorder=2)
     lims = (ax.get_xlim(), ax.get_ylim())
     ax.errorbar(mjd, s.flux, s.std, ls='None', color=colour, alpha=0.5,
                 zorder=1)
     ax.set_xlim(*lims[0])
     ax.set_ylim(*lims[1])
+    ax.set(title=title)
 
 
 def plot_breaks(s, ax=None):
@@ -73,14 +74,9 @@ def plot_breaks(s, ax=None):
 def main(args):
     fig, ax = plt.subplots(figsize=(11, 8))
 
-    if args.pre_sysrem:
-        pre = extract_flux_data(args.pre_sysrem, args.exptime)
-        plot_summary(pre, 'b', 'Pre', ax=ax)
-
-    if args.post_sysrem:
-        post = extract_flux_data(args.post_sysrem, args.exptime)
-        plot_summary(post, 'r', 'Post', ax=ax)
-        plot_breaks(post)
+    flux_data = extract_flux_data(args.filename, hdu=args.hdu,
+            chosen_exptime=args.exptime)
+    plot_summary(flux_data, 'b', title=args.hdu, ax=ax)
 
     ax.legend(loc='best')
 
@@ -104,10 +100,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--output', required=False,
             type=argparse.FileType(mode='w'), help='Output image name')
-    parser.add_argument('--pre-sysrem', help='Input filename',
+    parser.add_argument('filename', help='Input filename',
             type=str)
-    parser.add_argument('--post-sysrem', help='Input filename',
-            type=str)
+    parser.add_argument('-H', '--hdu', help='Plot hdu',
+            required=True)
     parser.add_argument('--exptime', help='Exposure time to filter out',
                         required=False, default=None, type=float)
     parser.add_argument('-n', '--nsigma', help='Sigma clip the output',

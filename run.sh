@@ -135,16 +135,15 @@ plot_casu_flux_vs_rms() {
 plot_rms_vs_time() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
+    local readonly hdu="$3"
 
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-rms-vs-time.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
-        local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
-        local readonly postsysrem=$(find -L ${rootdir}/AperturePhot/output -name 'tamout.fits')
-        if [[ -z ${postsysrem} ]]; then 
-            print_warning "No post-sysrem file found"
-            python photometry/rms_vs_time.py --pre-sysrem ${presysrem} -o ${OUTPUTFILE}
+        local readonly filename=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
+        if [[ -z ${filename} ]]; then 
+            print_warning "no photometry file found"
         else
-            python photometry/rms_vs_time.py --pre-sysrem ${presysrem} --post-sysrem ${postsysrem} -o ${OUTPUTFILE}
+            python photometry/rms_vs_time.py ${filename} -o ${OUTPUTFILE} --hdu ${hdu}
         fi
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
@@ -334,7 +333,9 @@ make_images() {
     run_then_inc_plot_counter plot_flux_vs_rms "${rootdir}" "${plotsdir}" tamflux
     run_then_inc_plot_counter plot_flux_vs_rms "${rootdir}" "${plotsdir}" casudet
     run_then_inc_plot_counter plot_casu_flux_vs_rms "${rootdir}" "${plotsdir}"
-    run_then_inc_plot_counter plot_rms_vs_time "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_rms_vs_time "${rootdir}" "${plotsdir}" flux
+    run_then_inc_plot_counter plot_rms_vs_time "${rootdir}" "${plotsdir}" tamflux
+    run_then_inc_plot_counter plot_rms_vs_time "${rootdir}" "${plotsdir}" casudet
     run_then_inc_plot_counter plot_casu_rms_vs_time "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_rms_with_binning "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_photometric_time_series "${rootdir}" "${plotsdir}"
