@@ -21,10 +21,9 @@ EXT=png
 plot_overscan_levels() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
     # extract overscan levels
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-overscan-levels.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-overscan-levels.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         python reduction/extract_overscan.py \
             <(find -L ${rootdir}/OriginalData/images -name 'IMAGE*.fits*') -o - | \
@@ -42,9 +41,8 @@ find_dark_frames() {
 plot_dark_levels() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-dark-levels.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-dark-levels.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
          python reduction/extract_dark_current.py <(find_dark_frames) -o - | python reduction/plot_dark_current.py - -o ${OUTPUTFILE}
     else
@@ -56,9 +54,8 @@ plot_dark_levels() {
 plot_dark_correlation() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-dark-correlation.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-dark-correlation.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         python reduction/extract_dark_current.py <(find_dark_frames) -o - | \
             python reduction/plot_dark_current_correlation.py - -o ${OUTPUTFILE}
@@ -72,11 +69,10 @@ plot_hist_equalised_master() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
     local readonly frame_type="${3}"
-    local readonly plot_number="$4"
 
     MASTERFILE=$(find ${rootdir}/Reduction/output -iname "*master${frame_type}*.fits" | head -n 1)
     if [[ ! -z "${MASTERFILE}" ]]; then
-        OUTPUTSTUB="${plotsdir}/$(compute_plot_number ${plot_number})-m${frame_type}"
+        OUTPUTSTUB="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-m${frame_type}"
         OUTPUTFILE="${OUTPUTSTUB}.png"
         if [[ ! -f "${OUTPUTFILE}" ]]; then
             python scripts/plot_hist_equalised.py ${MASTERFILE} --stub ${OUTPUTSTUB} --ext ${EXT}
@@ -91,10 +87,9 @@ plot_hist_equalised_master() {
 plot_total_flat_adu() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
     INFILE=$(find ${rootdir}/Reduction/output -name 'flat_total.fits' | head -n 1)
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-flat-total-adu.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-flat-total-adu.${EXT}"
     if [[ ! -z "${INFILE}" ]]; then
         if [[ ! -f "${OUTPUTFILE}" ]]; then
             python reduction/plot_total_flat_adu.py "${INFILE}" -o "${OUTPUTFILE}"
@@ -109,9 +104,8 @@ plot_total_flat_adu() {
 plot_flux_vs_rms() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-flux-vs-rms.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-flux-vs-rms.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         local readonly postsysrem=$(find -L ${rootdir}/AperturePhot/output -name 'tamout.fits')
@@ -129,9 +123,8 @@ plot_flux_vs_rms() {
 plot_casu_flux_vs_rms() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-casu-flux-vs-rms.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-casu-flux-vs-rms.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly filename=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         python photometry/flux_vs_rms_with_casu.py ${filename} -o ${OUTPUTFILE}
@@ -143,9 +136,8 @@ plot_casu_flux_vs_rms() {
 plot_rms_vs_time() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-rms-vs-time.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-rms-vs-time.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         local readonly postsysrem=$(find -L ${rootdir}/AperturePhot/output -name 'tamout.fits')
@@ -164,9 +156,8 @@ plot_rms_vs_time() {
 plot_casu_rms_vs_time() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-casu-rms-vs-time.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-casu-rms-vs-time.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly filename=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         python photometry/rms_vs_time_with_casu.py ${filename} -o ${OUTPUTFILE}
@@ -179,9 +170,8 @@ plot_casu_rms_vs_time() {
 plot_rms_with_binning() {
     local readonly rootdir="$1"
     local readonly plotsdir="${2}"
-    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-rms-with-binning.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-rms-with-binning.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         if [[ -z ${TESTQA} ]]; then
@@ -197,9 +187,8 @@ plot_rms_with_binning() {
 plot_photometric_time_series() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-photometry-time-series.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-photometry-time-series.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         python photometry/plot_photometry_time_series.py ${presysrem} -o ${OUTPUTFILE}
@@ -212,9 +201,8 @@ plot_photometric_time_series() {
 plot_binned_lightcurves_with_brightness() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-binned-lightcurves-by-brightness.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-binned-lightcurves-by-brightness.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         local readonly rawfiles=$(find -L ${rootdir}/Reduction/output -name 'proc*.phot' | sed 's/.phot$//')
@@ -228,9 +216,8 @@ plot_binned_lightcurves_with_brightness() {
 plot_ag_stats() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-autoguider-results.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-autoguider-results.${EXT}"
     if [[ ! -f "${OUTPUTFILE}" ]]; then
         local readonly resultfile=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         python astrometry/plot_ag_parameters.py "${resultfile}" -o "${OUTPUTFILE}"
@@ -242,9 +229,8 @@ plot_ag_stats() {
 plot_extracted_astrometic_parameters() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-extracted-astrometric-parameters.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-extracted-astrometric-parameters.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         python astrometry/extract_wcs_parameters.py <(find -L ${rootdir}/Reduction/output/ -name 'proc*.fits' | grep -v 'skybkg' | grep image) -o - | \
             python astrometry/plot_astrometric_parameters.py - -o ${OUTPUTFILE}
@@ -257,8 +243,7 @@ plot_extracted_astrometic_parameters() {
 plot_field_rotation() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-field-rotation.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-field-rotation.${EXT}"
     if [[ ! -f "${OUTPUTFILE}" ]]; then
         REDUCED_FILES_DIR="$(dirname $(find -L ${rootdir}/Reduction/output -name 'proc*.fits' | grep -v skybkg | grep image | head -n 1))"
         python external/field-rotation/run_on_files.py -o /dev/null ${REDUCED_FILES_DIR} -p ${OUTPUTFILE}
@@ -270,9 +255,8 @@ plot_field_rotation() {
 plot_number_of_point_sources() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-number-of-point-sources.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-number-of-point-sources.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         python photometry/extract_npoint_sources.py <(find -L ${rootdir}/Reduction/output/ -name 'proc*.cat') -o - | \
             python photometry/plot_npoint_sources.py - -o ${OUTPUTFILE}
@@ -284,10 +268,9 @@ plot_number_of_point_sources() {
 plot_psf_measurements() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
     set +e
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-psf-measurements.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-psf-measurements.${EXT}"
     PSFTEMPFILENAME=${TMPDIR}/psf_measurements.csv
     if [[ ! -f ${OUTPUTFILE} ]]; then
         if [ ! -f ${PSFTEMPFILENAME} ]; then
@@ -303,10 +286,9 @@ plot_psf_measurements() {
 plot_psf_ratios() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
     set +e
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-psf-ratios.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-psf-ratios.${EXT}"
     PSFTEMPFILENAME=${TMPDIR}/psf_measurements.csv
     if [[ ! -f ${OUTPUTFILE} ]]; then
         if [ ! -f ${PSFTEMPFILENAME} ]; then
@@ -322,9 +304,8 @@ plot_psf_ratios() {
 plot_pixel_centre_of_mass() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
-    local readonly plot_number="$3"
 
-    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${plot_number})-pixel-centre-of-mass.${EXT}"
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-pixel-centre-of-mass.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly filename=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         python photometry/pixel-com.py "${filename}" -o "${OUTPUTFILE}"
@@ -340,28 +321,30 @@ make_images() {
 
     ensure_directory "${plotsdir}"
 
+    PLOTCOUNTER="1"
+
     set +e
-    plot_overscan_levels "${rootdir}" "${plotsdir}" 0
-    plot_dark_levels "${rootdir}" "${plotsdir}" 1
-    plot_dark_correlation "${rootdir}" "${plotsdir}" 2
-    plot_hist_equalised_master "${rootdir}" "${plotsdir}" "bias" 3
-    plot_hist_equalised_master "${rootdir}" "${plotsdir}" "dark" 4
-    plot_hist_equalised_master "${rootdir}" "${plotsdir}" "flat" 5
-    plot_total_flat_adu "${rootdir}" "${plotsdir}" 6
-    plot_flux_vs_rms "${rootdir}" "${plotsdir}" 7
-    plot_casu_flux_vs_rms "${rootdir}" "${plotsdir}" 8
-    plot_rms_vs_time "${rootdir}" "${plotsdir}" 9
-    plot_casu_rms_vs_time "${rootdir}" "${plotsdir}" 10
-    plot_rms_with_binning "${rootdir}" "${plotsdir}" 11
-    plot_photometric_time_series "${rootdir}" "${plotsdir}" 12
-    plot_number_of_point_sources "${rootdir}" "${plotsdir}" 13
-    plot_psf_measurements "${rootdir}" "${plotsdir}" 14
-    plot_psf_ratios "${rootdir}" "${plotsdir}" 15
-    plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" 16
-    plot_ag_stats "${rootdir}" "${plotsdir}"  17
-    plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"  18
-    plot_field_rotation "${rootdir}" "${plotsdir}"  19
-    plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}" 20
+    run_then_inc_plot_counter plot_overscan_levels "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_dark_levels "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_dark_correlation "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_hist_equalised_master "${rootdir}" "${plotsdir}" "bias"
+    run_then_inc_plot_counter plot_hist_equalised_master "${rootdir}" "${plotsdir}" "dark"
+    run_then_inc_plot_counter plot_hist_equalised_master "${rootdir}" "${plotsdir}" "flat"
+    run_then_inc_plot_counter plot_total_flat_adu "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_flux_vs_rms "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_casu_flux_vs_rms "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_rms_vs_time "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_casu_rms_vs_time "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_rms_with_binning "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_photometric_time_series "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_number_of_point_sources "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_psf_measurements "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_psf_ratios "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_ag_stats "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_field_rotation "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_pixel_centre_of_mass "${rootdir}" "${plotsdir}"
 
     make_astrometric_summary "${rootdir}" "${plotsdir}"
     make_psf_summary "${rootdir}" "${plotsdir}"
@@ -374,6 +357,12 @@ make_images() {
 compute_plot_number() {
     local readonly number="$1"
     printf "%02d" "${number}"
+}
+
+# Keep the plot counter incrementing
+run_then_inc_plot_counter() {
+    $*
+    ((PLOTCOUNTER++))
 }
 
 make_astrometric_summary() {
