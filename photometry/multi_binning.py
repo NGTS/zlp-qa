@@ -64,14 +64,15 @@ def main(args):
     nicelist = [int(left_edges[0])] + [int(x) for x in right_edges]
     cbar.ax.set_yticklabels(nicelist[::-1])  # vertically oriented colorbar
 
-    axis.set_yscale('log')
-    axis.set_xscale('log')
-    axis.set_xlabel("Bin size (Minutes)")
-    axis.set_ylabel("Fractional RMS (millimags)")
-    axis.set_yticks((0.5, 1, 2, 5, 10, 20, 50, 100))
-    axis.set_yticklabels(('0.5', '1', '2', '5', '10', '20', '50', '100'))
-    axis.set_xticks((1, 5, 10, 60))
-    axis.set_xticklabels(('1', '5', '10', '60'))
+    axis.set(yscale='log',
+            xscale='log',
+            xlabel="Bin size (Minutes)",
+            ylabel="Fractional RMS (millimags)",
+            title=':'.join([os.path.basename(args.filename), args.hdu]),
+            yticks=(0.5, 1, 2, 5, 10, 20, 50, 100),
+            yticklabels=('0.5', '1', '2', '5', '10', '20', '50', '100'),
+            xticks=(1, 5, 10, 60),
+            xticklabels=('1', '5', '10', '60'))
 
     fig.tight_layout()
     if args.output is not None:
