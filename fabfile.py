@@ -1,7 +1,7 @@
 from fabric.api import *
 
 env.use_ssh_config = True
-env.hosts = ['ngtshead.astro']
+env.hosts = ['ngtshead']
 
 @task(default=True)
 def deploy():
@@ -27,3 +27,11 @@ def copy_to_destination():
     with cd('/ngts/pipeline/qa'):
         run('mkdir -p help')
         put('help/build/*', 'help/')
+
+
+@task
+def copy_static_files():
+    ''' Copy static files to ngtshead '''
+    with cd('/ngts/pipeline/qa'):
+        run('mkdir -p static')
+        put('static/*', 'static/')
