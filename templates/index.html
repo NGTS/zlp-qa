@@ -47,9 +47,12 @@
     <h3 title="Help text" id="{{ image['anchor'] }}">
         <span onclick="javascript:void(window.open('/pipeline/qa/help/{{ help_lookup.get(image['anchor'], image['anchor'] + '.html') }}', '', 'width=400px, height=500px, menubar=no, status=no, titlebar=no, toolbar=no'))">{{ image['title'] }}</span>
     </h3>
-    <img src="{{ image['location'] }}" width="{{ width }}" />
+    <button class="button-showhide" type="button" id="btn-{{ image['anchor'] }}">hide</button>
+    <img id="img-{{ image['anchor'] }}" src="{{ image['location'] }}" width="{{ width }}" />
     <br />
     {% endfor %}
 </div>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="/pipeline/qa/static/main.js"></script>
 </body>
 </html>
