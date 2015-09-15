@@ -54,7 +54,7 @@ def main(args):
 
     logger.info('Reading data from %s', args.filename)
     with fitsio.FITS(args.filename) as infile:
-        flux = infile['flux'].read()
+        flux = infile[args.hdu].read()
         fluxerr = infile['fluxerr'].read()
         imagelist = infile['imagelist']
         airmass = imagelist['airmass'].read()
@@ -104,6 +104,7 @@ def main(args):
         plot_metadata_series(axis, metadata, key, ls='None', marker='.')
 
     axes[-1].set_xlabel(r'MJD - {}'.format(MJD0))
+    axes[0].set_title(args.hdu)
 
     fig.tight_layout()
 
@@ -119,4 +120,5 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--output', required=False,
             type=argparse.FileType(mode='w'))
     parser.add_argument('-r', '--reduced-files', nargs='+')
+    parser.add_argument('-H', '--hdu', required=False, default='flux')
     main(parser.parse_args())

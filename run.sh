@@ -200,12 +200,15 @@ plot_photometric_time_series() {
 plot_binned_lightcurves_with_brightness() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
+    local readonly hduname="$3"
 
     OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-binned-lightcurves-by-brightness.${EXT}"
     if [[ ! -f ${OUTPUTFILE} ]]; then
         local readonly presysrem=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
         local readonly rawfiles=$(find -L ${rootdir}/Reduction/output -name 'proc*.phot' | sed 's/.phot$//')
-        python photometry/binning_per_brightness.py ${presysrem} -o ${OUTPUTFILE} -r ${rawfiles}
+        set +e
+        python photometry/binning_per_brightness.py ${presysrem} -o ${OUTPUTFILE} -r ${rawfiles} -H ${hduname}
+        set -e
     else
         print_status "Output file ${OUTPUTFILE} exists, skipping"
     fi
@@ -345,7 +348,9 @@ make_images() {
     run_then_inc_plot_counter plot_number_of_point_sources "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_psf_measurements "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_psf_ratios "${rootdir}" "${plotsdir}"
-    run_then_inc_plot_counter plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" flux
+    run_then_inc_plot_counter plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" tamflux
+    run_then_inc_plot_counter plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" casudet
     run_then_inc_plot_counter plot_ag_stats "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_extracted_astrometic_parameters "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_field_rotation "${rootdir}" "${plotsdir}"
