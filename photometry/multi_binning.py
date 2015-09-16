@@ -168,6 +168,7 @@ def noisecharacterise(i, flux_limits, datadict, c='b', model=True, ax=None):
     avflux = np.median(flux, axis=1)
     stdflux = np.std(flux, axis=1)
     rms = stdflux
+    # Fractional rms in units of mmag
     rms = abs(1.0857 * 1000.0 * stdflux / avflux)
 
     sane_keys = ((rms > 0) &
@@ -211,8 +212,10 @@ def noisecharacterise(i, flux_limits, datadict, c='b', model=True, ax=None):
         N_bin_list += [N]
         rms_error += [(np.std(rms[sanity])) / np.sqrt(rms[sanity].size)]
 
+    # Get the limits of the median list
     prior = [median_list[0], median_list[-1]]
 
+    # Convert to numpy arrays
     N_bin_list = np.array(N_bin_list)
     median_list = np.array(median_list)
     rms_error = np.array(rms_error)
