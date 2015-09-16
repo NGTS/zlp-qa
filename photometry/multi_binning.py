@@ -169,8 +169,10 @@ def noisecharacterise(i, flux_limits, datadict, c='b', model=True, ax=None):
     rms = stdflux
     rms = abs(1.0857 * 1000.0 * stdflux / avflux)
 
-    sane_keys = [((rms != np.inf) & (avflux != np.inf) & (rms != 0) & (rms < rms_lim) & (
-        avflux != 0) & (rms != np.NaN) & (avflux != np.NaN) & (avflux < maxflux) & (avflux > minflux))]
+    sane_keys = ((rms > 0) &
+                 (avflux > 0) &
+                 (avflux < maxflux) &
+                 (avflux > minflux))
 
     flux_sane = flux[sane_keys].copy()
 
