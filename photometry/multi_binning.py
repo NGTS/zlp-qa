@@ -17,6 +17,7 @@ from collections import namedtuple
 import multiprocessing as mp
 from functools import partial
 import logging
+from scipy import stats
 
 NoiseResult = namedtuple('NoiseResult', ['x', 'y', 'yerr', 'white'])
 
@@ -259,24 +260,18 @@ def datesplit(filename):
 
 def binning(series, bin):
     '''bins a time series to the level specified by `bin`'''
+    logger.debug('Binning')
     bins = np.floor(len(series[0, :]) / bin)
+    x = np.arange(series.shape[1])
 
     binned = []
+    for lc in series:
+        by, _, _ = stats.binned_statistic(
+            x, lc, bins=bins, statistic='mean')
+        binned.append(by)
+    binned = np.array(binned)
 
-    length = len(series[:, 0])
-
-    binned = np.zeros((length, bins))
-
-    for i in np.arange(0, length):
-        for x in np.arange(0, bins):
-            place = x * bin
-
-            summ = 0
-
-            for y in range(0, bin):
-                summ += series[i, place + y]
-
-            binned[i, x] = summ / bin
+    logger.debug('Binning complete')
 
     return binned
 
