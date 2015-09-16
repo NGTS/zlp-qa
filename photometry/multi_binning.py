@@ -269,7 +269,7 @@ def binning(series, bin):
     binned = []
     for lc in series:
         by, _, _ = stats.binned_statistic(
-            x, lc, bins=bins, statistic='mean')
+            x, lc, bins=bins, statistic='median')
         binned.append(by)
     binned = np.array(binned)
 
