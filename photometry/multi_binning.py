@@ -73,6 +73,7 @@ def main(args):
             yticklabels=('0.5', '1', '2', '5', '10', '20', '50', '100'),
             xticks=(1, 5, 10, 60),
             xticklabels=('1', '5', '10', '60'))
+    axis.set(xlim=(0.1, 150), ylim=(0.1, 100))
 
     fig.tight_layout()
     if args.output is not None:
