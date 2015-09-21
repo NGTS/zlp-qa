@@ -209,7 +209,7 @@ def noisecharacterise(i, flux_limits, datadict, c='b', model=True, ax=None):
         median_list += [np.median(rmssane)]
         quartiles += [[np.percentile(rmssane, 25), np.percentile(rmssane, 75)]]
         N_bin_list += [N]
-        rms_error += [(np.std(rms[sanity])) / np.sqrt(1000 * len(rms[sanity]))]
+        rms_error += [(np.std(rms[sanity])) / np.sqrt(rms[sanity].size)]
 
     prior = [median_list[0], median_list[-1]]
 
