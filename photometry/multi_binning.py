@@ -203,8 +203,8 @@ def noisecharacterise(i, flux_limits, datadict, c='b', model=True, ax=None):
         rms = stdflux
         rms = abs(1.0857 * 1000.0 * stdflux / avflux)
 
-        sanity = ((rms != np.inf) & (avflux != np.inf) & (rms != 0) & (avflux != 0) & (
-            rms != np.NaN) & (avflux != np.NaN) & (avflux < maxflux) & (avflux > minflux))
+        sanity = ((avflux < maxflux) & (avflux > minflux))
+
         rmssane = rms[sanity]
         median_list += [np.median(rmssane)]
         quartiles += [[np.percentile(rmssane, 25), np.percentile(rmssane, 75)]]
