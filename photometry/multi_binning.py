@@ -58,7 +58,8 @@ def main(args):
 
     for i, r in enumerate(plot_data):
         colorVal = scalarMap.to_rgba(values[i])
-        axis.errorbar(r.x, r.y, r.yerr, color=colorVal, linewidth=2.0)
+        axis.plot(r.x, r.y, color=colorVal, linewidth=2.0)
+        # axis.errorbar(r.x, r.y, r.yerr, color=colorVal, linewidth=2.0)
         axis.plot(r.x, r.white, '--', color='grey', alpha=0.8)
 
     cbar = create_colourbar(fig, values, mymap, cNorm)
