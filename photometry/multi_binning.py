@@ -18,10 +18,71 @@ import multiprocessing as mp
 from functools import partial
 import logging
 from scipy import stats
+import sqlite3
 
 NoiseResult = namedtuple('NoiseResult', ['x', 'y', 'yerr', 'white'])
 
 logger = get_logger(__file__)
+
+
+
+class NoiseResultRenderer(object):
+    def __init__(self, results, night, camera_id):
+        self.results = results
+        self.night = night
+        self.camera_id = camera_id
+
+        self.tablename = 'results'
+
+    def save(self, filename):
+        logger.info("Rendering")
+        with sqlite3.connect(filename) as connection:
+            cursor = connection.cursor()
+            self.run_query(cursor, self.drop_db_query())
+            self.run_query(cursor, self.create_db_query())
+            self.addrows(cursor)
+            connection.commit()
+
+    def addrows(self, cursor):
+        print('Uploading')
+        query = '''insert into {self.tablename} (
+        night, left_edge, right_edge, bin_value, frms_binned, expected_white,
+        bin_index, camera_id)
+        values (?, ?, ?, ?, ?, ?, ?, ?)'''.format(self=self)
+        cursor.executemany(query, self.items)
+
+    @property
+    def items(self):
+        for i, (ledge, redge, bin_stats) in enumerate(self.results):
+            for (bin_value, frms_binned, _, expected_white) in zip(*bin_stats):
+                yield (self.night, ledge, redge, bin_value, frms_binned,
+                       expected_white, i, int(self.camera_id))
+
+    def run_query(self, cursor, query_str, params=None):
+        logger.debug(query_str.replace('\n', ''))
+        if params:
+            cursor.execute(query_str, params)
+        else:
+            cursor.execute(query_str)
+
+    def drop_db_query(self):
+        return '''drop table if exists {self.tablename}'''.format(self=self)
+
+    def create_db_query(self):
+        return '''
+    create table {self.tablename} (
+    id integer primary key,
+    camera_id integer not null,
+    night string not null,
+    left_edge float not null,
+    right_edge float not null,
+    bin_value integer not null,
+    frms_binned float not null,
+    expected_white float not null,
+    bin_index integer not null,
+    unique(camera_id, night) on conflict replace
+    )'''.format(self=self)
+
 
 
 
@@ -47,20 +108,20 @@ def main(args):
 
     fig, axis = plt.subplots()
 
-    flux_limits = [(left_edges[i], right_edges[i]) for i in
-                   xrange(len(left_edges))]
-    fn = partial(noisecharacterise, datadict=data_dict,
-                 flux_limits=flux_limits,
-                 ax=axis)
+    plot_data = extract_plot_data(left_edges, right_edges, data_dict, pool_class)
+    plot_data_sorted = sorted(plot_data, key=lambda row: row[0])
+    if args.render:
+        r = NoiseResultRenderer(plot_data_sorted, night=data_dict['night'],
+                                camera_id=data_dict['camera_id'])
+        r.save(args.render)
 
-    pool = pool_class()
-    plot_data = pool.map(fn, range(0, len(left_edges)))
-
-    for i, r in enumerate(plot_data):
+    for i, (_, _, r) in enumerate(plot_data):
         colorVal = scalarMap.to_rgba(values[i])
         axis.plot(r.x, r.y, color=colorVal, linewidth=2.0)
         # axis.errorbar(r.x, r.y, r.yerr, color=colorVal, linewidth=2.0)
         axis.plot(r.x, r.white, '--', color='grey', alpha=0.8)
+
+
 
     cbar = create_colourbar(fig, values, mymap, cNorm)
     nicelist = [int(left_edges[0])] + [int(x) for x in right_edges]
@@ -84,6 +145,19 @@ def main(args):
         plt.show()
 
 
+def extract_plot_data(left_edges, right_edges, data_dict,
+                      pool_class):
+    flux_limits = [(left_edges[i], right_edges[i]) for i in
+                   xrange(len(left_edges))]
+    fn = partial(noisecharacterise, datadict=data_dict,
+                 flux_limits=flux_limits, ax=None)
+
+    pool = pool_class()
+    return pool.map(fn, range(0, len(left_edges)))
+
+
+
+
 def create_colourbar(fig, values, mymap, cNorm):
     ax = fig.get_axes()[0]
     Z = [[0, 0], [0, 0]]
@@ -99,6 +173,8 @@ def load_data(filename, hdu, mask=None):
 
     with fitsio.FITS(filename) as infile:
         imagelist = infile['imagelist']
+        night = imagelist['night'].read()[0]
+        camera_id = imagelist['cameraid'].read()[0]
         tmid = imagelist['tmid'].read()
         airmass = imagelist['airmass'].read()
         exposure = imagelist['exposure'].read()
@@ -111,7 +187,8 @@ def load_data(filename, hdu, mask=None):
         ccdx = infile['ccdx'][:, :1].flatten()
         ccdy = infile['ccdy'][:, :1].flatten()
 
-    # Normalise by exposure time
+
+    # Normalise by exposure time
     flux /= exposure
 
     logger.info('Nights in data: %s', dateclip[:, 0])
@@ -129,7 +206,8 @@ def load_data(filename, hdu, mask=None):
     tmid = tmid[cut]
     flux = flux[:, cut]
 
-    outdict = {'time': tmid, 'flux': flux, 'mean_fluxes': mean_fluxes[cut]} 
+    outdict = {'time': tmid, 'flux': flux, 'mean_fluxes': mean_fluxes[cut],
+               'night': night, 'camera_id': camera_id} 
 
     return outdict
 
@@ -235,7 +313,7 @@ def noisecharacterise(i, flux_limits, datadict, c='b', model=True, ax=None):
     white_curve = noisemodel([final[0], 0], N_bin_list)
     red_curve = noisemodel([0, final[1]], N_bin_list)
 
-    return NoiseResult(
+    return minflux, maxflux, NoiseResult(
         cadence * N_bin_list,
         median_list,
         rms_error,
@@ -301,6 +379,8 @@ if __name__ == '__main__':
     parser.add_argument('filename')
     parser.add_argument('-o', '--output', help='Save to output file',
                         required=False)
+    parser.add_argument('-r', '--render', required=False,
+                        help='Save extracted noise results to file')
     parser.add_argument('--serial', help='Do not use parallel processing',
                         action='store_true', default=False)
     parser.add_argument('-H', '--hdu', required=True,

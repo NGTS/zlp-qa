@@ -12,3 +12,4 @@ tom-testing
 tmp/*
 !tmp/.gitkeep
 venv
+.tmp
