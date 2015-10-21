@@ -345,7 +345,6 @@ make_images() {
     run_then_inc_plot_counter plot_rms_with_binning "${rootdir}" "${plotsdir}" tamflux
     run_then_inc_plot_counter plot_rms_with_binning "${rootdir}" "${plotsdir}" casudet
     run_then_inc_plot_counter plot_photometric_time_series "${rootdir}" "${plotsdir}"
-    run_then_inc_plot_counter plot_number_of_point_sources "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_psf_measurements "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_psf_ratios "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" flux
