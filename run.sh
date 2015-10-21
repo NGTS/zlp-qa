@@ -303,6 +303,19 @@ plot_psf_ratios() {
     set -e
 }
 
+plot_eso_ambient_stats() {
+    local readonly rootdir="$1"
+    local readonly plotsdir="$2"
+
+    OUTPUTFILE="${plotsdir}/$(compute_plot_number ${PLOTCOUNTER})-eso-ambient.${EXT}"
+    if [[ ! -f "${OUTPUTFILE}" ]]; then
+        local readonly filename=$(find -L ${rootdir}/AperturePhot/output -name 'output.fits')
+        python photometry/plot_eso_ambient_stats.py "${filename}" -o "${OUTPUTFILE}"
+    else
+        print_status "Output file ${OUTPUTFILE} exists, skipping"
+    fi
+}
+
 plot_pixel_centre_of_mass() {
     local readonly rootdir="$1"
     local readonly plotsdir="$2"
@@ -347,6 +360,7 @@ make_images() {
     run_then_inc_plot_counter plot_photometric_time_series "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_psf_measurements "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_psf_ratios "${rootdir}" "${plotsdir}"
+    run_then_inc_plot_counter plot_eso_ambient_stats "${rootdir}" "${plotsdir}"
     run_then_inc_plot_counter plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" flux
     run_then_inc_plot_counter plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" tamflux
     run_then_inc_plot_counter plot_binned_lightcurves_with_brightness "${rootdir}" "${plotsdir}" casudet
